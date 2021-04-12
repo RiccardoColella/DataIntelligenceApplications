@@ -19,51 +19,51 @@ class Environment:
         self.customer_classes = [self.customer_class_1, self.customer_class_2, self.customer_class_3]
 
 
-        def get_all_new_users_daily(bid):
-            """
-            Given a bid this function returns the number of new users for each class
-            :param bid: the proposed bid
-            :return: a triplet with (n_users_class1, n_users_class2, n_users_class3)
-            """
-            new_user_1 = get_new_users_daily(bid, 1)
-            new_user_2 = get_new_users_daily(bid, 2)
-            new_user_3 = get_new_users_daily(bid, 3)
+    def get_all_new_users_daily(self,bid):
+        """
+        Given a bid this function returns the number of new users for each class
+        :param bid: the proposed bid
+        :return: a triplet with (n_users_class1, n_users_class2, n_users_class3)
+        """
+        new_user_1 = self.get_new_users_daily(bid, 1)
+        new_user_2 = self.get_new_users_daily(bid, 2)
+        new_user_3 = self.get_new_users_daily(bid, 3)
 
-            return new_user_1, new_user_2, new_user_3
+        return new_user_1, new_user_2, new_user_3
 
-        def get_all_cost_per_click(bid):
-            """
-            Given a bid, this function returns the cost of every click for every customer in each category
-            :param bid: the proposed bid
-            :return: a triplet containing the cost of each click for evey customer class
-            """
-            cost1 = get_cost_per_click(bid, 1)
-            cost2 = get_cost_per_click(bid, 2)
-            cost3 = get_cost_per_click(bid, 3)
-            return cost1, cost2, cost3
+    def get_all_cost_per_click(self,bid):
+        """
+        Given a bid, this function returns the cost of every click for every customer in each category
+        :param bid: the proposed bid
+        :return: a triplet containing the cost of each click for evey customer class
+        """
+        cost1 = self.get_cost_per_click(bid, 1)
+        cost2 = self.get_cost_per_click(bid, 2)
+        cost3 = self.get_cost_per_click(bid, 3)
+        return cost1, cost2, cost3
 
-        def buy(price, chosen_class):
-            """
-            This function tells if the user will buy or not the item
-            :param price: price of selling
-            :param chosen_class: class the user belongs
-            :return: 1 if buys, 0 if not
-            """
-            return self.customer_classes[chosen_class - 1].buy(price)
+    def buy(self, price, chosen_class):
+        """
+        This function tells if the user will buy or not the item
+        :param price: price of selling
+        :param chosen_class: class the user belongs
+        :return: 1 if buys, 0 if not
+        """
+        return self.customer_classes[chosen_class - 1].buy(price)
 
-        def n_time_comeback(chosen_class):
-            """
-            This function returns a stocastic number of how many times the user will come back
-            :param chosen_class: class the user belongs
-            :return: number of times the user will come back in the following 30 days
-            """
-            return self.customer_classes[chosen_class].n_times_comeback()
+    def n_time_comeback(self, chosen_class):
+        """
+        This function returns a stocastic number of how many times the user will come back
+        :param chosen_class: class the user belongs
+        :return: number of times the user will come back in the following 30 days
+        """
+        return self.customer_classes[chosen_class].n_times_comeback()
 
-        def get_new_users_daily(bid, chosen_class):
-            return self.customer_classes[chosen_class - 1].new_users_daily_clicks(bid)
+    def get_new_users_daily(self, bid, chosen_class):
+        return self.customer_classes[chosen_class - 1].new_users_daily_clicks(bid)
 
-        def get_cost_per_click(bid, chosen_class):
-            return self.customer_classes[chosen_class - 1].cost_per_click_daily(bid)
+    def get_cost_per_click(self, bid, chosen_class):
+        return self.customer_classes[chosen_class - 1].cost_per_click_daily(bid)
 
 
 class Customer:
