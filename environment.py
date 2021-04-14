@@ -2,7 +2,8 @@ import numpy as np
 
 
 class Environment:
-    def __init__(self):
+    def __init__(self, product_price):
+        self.product_price = product_price
         self.customer_class_1 = Customer(a_new_users=-5, b_new_users=1, c_new_users=1, d_new_users=100,
                                          a_cost_per_click=0.9,
                                          a_conversion_rate=-1, b_conversion_rate=20, c_conversion_rate=0.7,
@@ -18,6 +19,8 @@ class Environment:
 
         self.customer_classes = [self.customer_class_1, self.customer_class_2, self.customer_class_3]
 
+    def get_margin(self, selling_price):
+        return selling_price - self.product_price
 
     def get_all_new_users_daily(self,bid):
         """
