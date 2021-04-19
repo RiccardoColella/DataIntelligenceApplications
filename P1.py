@@ -50,17 +50,17 @@ prices=np.linspace(10,50,num=20)
 
 
 #find the best joint bid and price strategy for all the customer classes
-for i in range(0,3):
+for i in range(1,4):
     print(get_best_bid_and_price(bids,prices,i))
+
+#find the best joint bid and price strategy if it is not possible to discrimate between the classes
 
 revenuesmatrix=np.arange(bids.size*prices.size)
 revenuesmatrix=revenuesmatrix.reshape(bids.size,prices.size)
 
-#find the best joint bid and price strategy if it is not possible to discrimate between the classes
-
 for i in range(bids.size):
     for j in range(prices.size):
-        for c in range(0,3):
+        for c in range(1,4):
             revenuesmatrix[i][j]+=get_bid_and_price_revenue(bids[i], prices[i], c)
 
 best_bid=bids[np.unravel_index(np.argmax(revenuesmatrix),revenuesmatrix.shape)[0]]
