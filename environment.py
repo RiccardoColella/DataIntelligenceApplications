@@ -87,9 +87,12 @@ class Environment:
     def get_new_users_daily(self, bid, chosen_class):
         return self.customer_classes[chosen_class - 1].new_users_daily_clicks(bid)
 
+    def get_mean_new_users_daily(self,bid,chosen_class):
+        return self.customer_classes[chosen_class - 1].new_users_daily_clicks_mean(bid)
+
     def get_mean_n_times_comeback(self, chosen_class):
         return self.customer_classes[chosen_class - 1].get_mean_n_times_comeback()
-    
+
 
 
 class Customer:

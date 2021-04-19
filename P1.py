@@ -18,7 +18,7 @@ def get_best_price(prices, customer_class):
 def get_bid_revenue(bid, price, customer_class):
     '''returns the mean daily revenue given a bid , a price and a customer class'''
     cost_per_click = env.get_cost_per_click(bid, customer_class)
-    new_users_daily = env.get_new_users_daily(bid, customer_class)
+    new_users_daily = env.get_mean_new_users_daily(bid, customer_class)
     buy_percentage = env.get_conversion_rate(price, customer_class)
     mean_comebacks = env.get_mean_n_times_comeback(customer_class)
 
