@@ -1,4 +1,5 @@
 import environment
+import numpy as np
 
 env = environment.Environment()
 
@@ -45,12 +46,7 @@ def get_best_bid_and_price(bids, prices, customer_class):
 
 
 bids=np.linspace(0,1,num=10)
-price=np.linspace(10,50,num=10)
+prices=np.linspace(10,50,num=10)
 
-for i in range(0,2):
+for i in range(0,3):
     print(get_best_bid_and_price(bids,prices,i))
-    
-
-    
-    
-    
