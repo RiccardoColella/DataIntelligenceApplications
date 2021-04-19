@@ -93,6 +93,9 @@ class Environment:
     def get_mean_n_times_comeback(self, chosen_class):
         return self.customer_classes[chosen_class - 1].get_mean_n_times_comeback()
 
+    def get_comeback_days(self, chosen_class):
+        return self.customer_classes[chosen_class - 1].get_comeback_days()
+
 
 
 class Customer:
@@ -200,6 +203,22 @@ class Customer:
         loc = self.get_mean_n_times_comeback()
         scale = self.dev_n_times_comeback
         return round(np.random.normal(loc=loc, scale=scale, size=1))
+
+    def get_comeback_days(self):
+        """
+        This method returns the days when a customer will comeback in the following 30 days after the first purchase
+        :return: the list of days when the customer will come back after the first purchase
+        """
+        n_comebacks = self.n_times_comeback()
+
+        comebacks = []
+        period = 30 / n_comebacks
+        for i in range(1, n_comebacks + 1):
+            mean = i*period
+            return_day = round(np.random.normal(loc=mean, scale=2, size=1))
+            comebacks.append(max(min(return_day, 30), 0))
+
+        return comebacks
 
     def get_mean_n_times_comeback(self):
         return self.mean_n_times_comeback
