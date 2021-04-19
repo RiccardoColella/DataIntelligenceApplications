@@ -2,7 +2,8 @@ import numpy as np
 
 
 class Environment:
-    def __init__(self, product_price):
+    def __init__(self):
+        product_price=10
         self.product_price = product_price
         self.customer_class_1 = Customer(a_new_users=-5, b_new_users=1, c_new_users=1, d_new_users=100, var_new_users=2,
                                          a_cost_per_click=0.9,
@@ -201,4 +202,4 @@ class Customer:
         return round(np.random.normal(loc=loc, scale=scale, size=1))
 
     def get_mean_n_times_comeback(self):
-        return self.get_mean_n_times_comeback()
+        return self.mean_n_times_comeback

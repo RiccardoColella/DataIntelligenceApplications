@@ -1,6 +1,6 @@
 import environment
 
-env = environment.Environment(product_price=10)
+env = environment.Environment()
 
 
 def get_best_price(prices, customer_class):
@@ -59,4 +59,3 @@ def get_best_bid_having_common_price(bids, prices):
     best_bid_2 = get_best_bid(bids, best_price, 2)
     best_bid_3 = get_best_bid(bids, best_price, 3)
     return best_bid_1, best_bid_2, best_bid_3
-
