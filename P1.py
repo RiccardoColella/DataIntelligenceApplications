@@ -8,7 +8,7 @@ def get_best_price(prices, customer_class):
     '''this function returns the best price among a vector of prices for a given customer class'''
     revenues = []
     for price in prices:
-        revenue = env.get_margin(price) * env.get_conversion_rate(price, customer_class)
+        revenue = env.get_margin(price) * env.get_conversion_rate(price, customer_class) * env.get_mean_n_times_comeback(customer_class)
         revenues.append(revenue)
 
     max_revenue = max(revenues)
@@ -46,7 +46,7 @@ def get_best_bid_and_price(bids, prices, customer_class):
 
 
 bids=np.linspace(0,1,num=10)
-prices=np.linspace(10,50,num=20)
+prices=np.linspace(1,10,num=20)
 
 
 #find the best joint bid and price strategy for all the customer classes
