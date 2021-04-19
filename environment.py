@@ -89,6 +89,7 @@ class Environment:
 
     def get_mean_n_times_comeback(self, chosen_class):
         return self.customer_classes[chosen_class - 1].get_mean_n_times_comeback()
+    
 
 
 class Customer:
@@ -149,10 +150,6 @@ class Customer:
         """
         # Functions that assign the number of clicks to a given budget
         # They are monotone increasing in [0,1]
-        a = self.a_new_users
-        b = self.b_new_users
-        c = self.c_new_users
-        d = self.d_new_users
         mean = self.new_users_daily_clicks_mean(bid)
         var = self.var_new_users
         return round(np.random.normal(loc=mean, scale=var))
