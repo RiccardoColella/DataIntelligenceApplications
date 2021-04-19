@@ -15,7 +15,7 @@ def get_best_price(prices, customer_class):
     return prices[revenues.index(max_revenue)]
 
 
-def get_bid_revenue(bid, price, customer_class):
+def get_bid_and_price_revenue(bid, price, customer_class):
     '''returns the mean daily revenue given a bid , a price and a customer class'''
     cost_per_click = env.get_cost_per_click(bid, customer_class)
     new_users_daily = env.get_mean_new_users_daily(bid, customer_class)
@@ -32,7 +32,7 @@ def get_best_bid(bids, price, customer_class):
     '''return the bid associated to the best revenue given a price snd a customer class'''
     revenues = []
     for bid in bids:
-        revenues.append(get_bid_revenue(bid, price, customer_class))
+        revenues.append(get_bid_and_price_revenue(bid, price, customer_class))
 
     max_revenue = max(revenues)
     return bids[revenues.index(max_revenue)]
@@ -46,7 +46,24 @@ def get_best_bid_and_price(bids, prices, customer_class):
 
 
 bids=np.linspace(0,1,num=10)
-prices=np.linspace(10,50,num=10)
+prices=np.linspace(10,50,num=20)
 
+
+#find the best joint bid and price strategy for all the customer classes
 for i in range(0,3):
     print(get_best_bid_and_price(bids,prices,i))
+
+revenuesmatrix=np.arange(bids.size*prices.size)
+revenuesmatrix=revenuesmatrix.reshape(bids.size,prices.size)
+
+#find the best joint bid and price strategy if it is not possible to discrimate between the classes
+
+for i in range(bids.size):
+    for j in range(prices.size):
+        for c in range(0,3):
+            revenuesmatrix[i][j]+=get_bid_and_price_revenue(bids[i], prices[i], c)
+
+best_bid=bids[np.unravel_index(np.argmax(revenuesmatrix),revenuesmatrix.shape)[0]]
+best_price=prices[np.unravel_index(np.argmax(revenuesmatrix),revenuesmatrix.shape)[1]]
+
+print(best_bid,best_price)
