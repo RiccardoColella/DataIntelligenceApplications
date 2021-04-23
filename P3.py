@@ -11,7 +11,7 @@ bids=[1]
 
 #mettere P1 come funzione per poter usare ottimo per calcolare il regret
 
-learner=ucb1_learner(len(prices))
+ucb1_learner=ucb1_learner(len(prices))
 
 for t in range(T):
     [new_user_1,new_user_2,new_user_3] = env.get_all_new_users_daily(bids[0])
@@ -23,7 +23,7 @@ for t in range(T):
     for i in range(0,3):
         total_cost+=new_users[i]*cost[i]
 
-    daily_arm=learner.pull_arm()
+    daily_arm=ucb1_learner.pull_arm()
     daily_price = prices[daily_arm]
 
     print(daily_price)
@@ -35,4 +35,4 @@ for t in range(T):
 
     daily_revenue=daily_bought_items*env.get_margin(daily_price)-total_cost
     print(daily_revenue)
-    learner.update_observations(daily_arm,daily_revenue)
+    ucb1_learner.update_observations(daily_arm,daily_revenue)

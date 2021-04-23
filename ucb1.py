@@ -9,6 +9,9 @@ class ucb1_learner(Learner):
         self.confidence=np.zeros(n_arms)
 
     def pull_arm(self):
+        '''this function return the arm to be pulled at the next round'''
+        '''reminder: always call this function and then call update_observations'''
+
         if self.t < self.n_arms:
             arm = self.t
 
@@ -19,6 +22,8 @@ class ucb1_learner(Learner):
         return arm
 
     def update_observations(self, pulled_arm, reward):
+        '''this function updates the learner's parameter after a arm is pulled'''
+
         self.t += 1
         self.rewards_per_arm[pulled_arm].append(reward)
         self.collected_rewards = np.append(self.collected_rewards, reward)
