@@ -1,7 +1,7 @@
-import environment
+from environment import Environment
 import numpy as np
 
-env = environment.Environment()
+env = Environment()
 
 
 def get_best_price(prices, customer_class):
