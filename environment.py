@@ -26,6 +26,24 @@ class Environment:
     def get_margin(self, selling_price):
         return selling_price - self.product_price
 
+    def get_next_30_days(self, n_customers, price, chosen_class):
+        customer_class = self.customer_classes[chosen_class - 1]
+        earning_margin = self.get_margin(price)
+
+        n_comebacks = 0
+
+        for i in range(n_customers):
+            n_comebacks += customer_class.n_times_comeback()
+
+        next_30_days = [0] * 30
+
+        for i in range(n_comebacks):
+            this_customer_next_30_days = customer_class.get_comeback_days()
+            for j in this_customer_next_30_days:
+                next_30_days[j] += earning_margin
+
+        return next_30_days
+
     def get_all_new_users_daily(self,bid):
         """
         Given a bid this function returns the number of new users for each class
@@ -175,7 +193,6 @@ class Customer:
         This method is a conversion rate function. It provids the probability that a user will buy the item given a
         price.
         :param price: The item's price
-        :param price_min: The item's min price possible
         :return: The probability that a user will buy the item given a price
         """
         a = self.a_conversion_rate
