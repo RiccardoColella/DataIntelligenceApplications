@@ -38,7 +38,6 @@ class Environment:
         n_comebacks=int(n_comebacks)
         next_30_days = [0] * 30
 
-        print(n_comebacks)
         for i in range(n_comebacks):
             this_customer_next_30_days = customer_class.get_comeback_days()
             for j in this_customer_next_30_days:
