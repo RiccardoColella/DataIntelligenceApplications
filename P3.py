@@ -37,9 +37,9 @@ for t in range(T):
     daily_revenue=daily_bought_items*env.get_margin(daily_price)-total_cost
     print(daily_revenue)
 
-    next_30_days=[0]*30
-    for i in range (0,3):
-        next_30_days=list( map(add, next_30_days, env.get_next_30_days( new_users[i-1], daily_price, i)) )
+    next_30_days = [0] * 30
+    for i in range(0, 3):
+        next_30_days = list(map(add, next_30_days, env.get_next_30_days(new_users[i - 1], daily_price, i)))
         '''pointwise list sum'''
 
-    ucb1_learner.update_observations(daily_arm,daily_revenue,next_30_days)
+    ucb1_learner.update_observations(daily_arm, daily_revenue, next_30_days)
