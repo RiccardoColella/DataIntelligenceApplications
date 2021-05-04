@@ -2,6 +2,7 @@ from ucb1 import ucb1_learner
 from environment import Environment
 import numpy as np
 from operator import add
+import matplotlib.pyplot as plt
 
 env = Environment()
 
@@ -38,8 +39,10 @@ for t in range(T):
     print(daily_revenue)
 
     next_30_days=[0]*30
-    for i in range (0,3):
+    for i in range (1,4):
         next_30_days=list( map(add, next_30_days, env.get_next_30_days( new_users[i-1], daily_price, i)) )
         '''pointwise list sum'''
 
     ucb1_learner.update_observations(daily_arm,daily_revenue,next_30_days)
+plt.figure()
+plt.plot(ucb1_learner.collected_rewards)

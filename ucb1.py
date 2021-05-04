@@ -29,9 +29,9 @@ class ucb1_learner(Learner):
             self.last30dayschoice.append(pulled_arm)
             self.delayedreward.append(delayedr)
         else:
-            self.last30dayschoice=self.last30dayschoice.pop(0)
+            self.last30dayschoice.pop(0)
             self.last30dayschoice.append(pulled_arm)
-            self.delayedreward=self.delayedreward.pop(0)
+            self.delayedreward.pop(0)
             self.delayedreward.append(delayedr)
 
         self.t += 1
@@ -39,12 +39,16 @@ class ucb1_learner(Learner):
         self.collected_rewards = np.append(self.collected_rewards, reward)
         self.n_pulled_arms[pulled_arm] += 1
 
-        for i in range(delayedreaward):
-            self.collected_rewards[-i-2] += self.delayedreward[-i-1][0]
-            self.rewards_per_arm[self.last30dayschoice[-i-1]] += self.delayedreward[-i-1][0]
-            self.delayedreward.pop([-i-1][0])
+        if self.t>1:
+            for i in range(len(self.delayedreward)-1):
+                self.collected_rewards[-i-2] += self.delayedreward[-i-1][0]
+                self.rewards_per_arm[self.last30dayschoice[-i-1]] += self.delayedreward[-i-1][0]
+                self.delayedreward[-i-1].pop(0)
+        else:
+            #just remove the empty list at the beginning
+            self.delayedreward.pop(0)
 
         for a in range(self.n_arms):
-            self.empirical_means[a]=self.rewards_per_arm[a]/self.n_pulled_arms[a]
-            if self.n_pulled_arms>0:
-                self.confidence[a] = (2*np.log(self.t)/self.n_pulled_arms)**0.5
+            if self.n_pulled_arms[a]>0:
+                self.empirical_means[a]=self.rewards_per_arm[a]/self.n_pulled_arms[a]
+                self.confidence[a] = (2*np.log(self.t)/self.n_pulled_arms[a])**0.5
