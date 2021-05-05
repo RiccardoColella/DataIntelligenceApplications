@@ -38,22 +38,22 @@ for t in range(T):
     daily_arm_ts=tsgauss_learner.pull_arm()
     daily_price_ts = prices[daily_arm_ts]
     vector_daily_price_ts.append(daily_price_ts)
-       
+
     daily_bought_items_perclass_ucb1=[0, 0, 0]
     daily_bought_items_perclass_ts=[0, 0, 0]
-    
+
     for i in range(0,3):
         for c in range(new_users[i]):
             daily_bought_items_perclass_ucb1[i] += env.buy(daily_price_ucb1,i)
             daily_bought_items_perclass_ts[i] += env.buy(daily_price_ts,i)
-            
+
     daily_bought_items_ucb1 = sum(daily_bought_items_perclass_ucb1)
     daily_bought_items_ts=sum(daily_bought_items_perclass_ts)
 
 
     daily_revenue_ucb1=daily_bought_items_ucb1*env.get_margin(daily_price_ucb1)-total_cost
     daily_revenue_ts=daily_bought_items_ts*env.get_margin(daily_price_ts)-total_cost
-    
+
     vector_daily_revenue_ucb1.append(daily_revenue_ucb1)
     vector_daily_revenue_ts.append(daily_revenue_ts)
 
@@ -67,8 +67,8 @@ for t in range(T):
     next_30_days=[0]*30
     for i in range (1,4):
         next_30_days=list( map(add, next_30_days, env.get_next_30_days( daily_bought_items_perclass_ts[i-1], daily_price_ts, i)) )
-    tsgauss_learner.update_observations(daily_arm_ts,daily_revenue_ts,next_30_days)    
-    
+    tsgauss_learner.update_observations(daily_arm_ts,daily_revenue_ts,next_30_days)
+
 
 plt.figure()
 plt.plot(ucb1_learner.collected_rewards)

@@ -60,6 +60,7 @@ class tsgauss_learner(Learner):
             self.delayedreward.pop(0)
 
         for a in range(self.n_arms):
+            #todo: per aggiornare i dati devo tenere conto della prior distribution e non solo dei dati empirici
             if self.n_pulled_arms[a]>0:
                 self.empirical_means[a]=self.rewards_per_arm[a]/self.n_pulled_arms[a]
                 self.dev[a] = np.std(self.rewards_per_arm[a])
