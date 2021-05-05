@@ -35,7 +35,7 @@ class Environment:
         for i in range(n_customers):
             this_customer_next_30_days = customer_class.get_comeback_days()
             for j in this_customer_next_30_days:
-                next_30_days[j-1] += earning_margin
+                next_30_days[j - 1] += earning_margin
 
         return next_30_days
 
@@ -214,8 +214,7 @@ class Customer:
         # OR Poisson or Gaussian
         loc = self.get_mean_n_times_comeback()
         scale = self.dev_n_times_comeback
-
-        return int(np.round(np.random.normal(loc=loc, scale=scale, size=1)))
+        return int(np.around(np.random.normal(loc=loc, scale=scale, size=1)))
 
     def get_comeback_days(self):
         """
