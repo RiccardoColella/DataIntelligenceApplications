@@ -7,10 +7,10 @@ from tsgauss import tsgauss_learner
 
 env = Environment()
 
-T=395
+T=1000
 
 prices=np.linspace(1,10,num=10)
-bids=[1]
+bids=[0.7]
 
 #mettere P1 come funzione per poter usare ottimo per calcolare il regret
 
@@ -22,6 +22,7 @@ vector_daily_price_ts=[]
 vector_daily_revenue_ts=[]
 
 for t in range(T):
+    print(t)
     [new_user_1,new_user_2,new_user_3] = env.get_all_new_users_daily(bids[0])
     new_users=[new_user_1,new_user_2,new_user_3]
     [cost1,cost2,cost3] = env.get_all_cost_per_click(bids[0])
@@ -59,9 +60,11 @@ for t in range(T):
 
     next_30_days=[0]*30
     for i in range (1,4):
-        next_30_days=list( map(add, next_30_days, env.get_next_30_days( daily_bought_items_perclass_ucb1[i-1], daily_price_ucb1, i)) )
-        '''pointwise list sum'''
+        next_30_days=[next_30_days[j] + env.get_next_30_days( daily_bought_items_perclass_ucb1[i-1], daily_price_ucb1, i)[j] for j in range(len(next_30_days))]
+        #pointwise list sum
     ucb1_learner.update_observations(daily_arm_ucb1,daily_revenue_ucb1,next_30_days)
+
+    print(daily_revenue_ucb1+sum(next_30_days))
 
 
     next_30_days=[0]*30
@@ -73,7 +76,7 @@ for t in range(T):
 plt.figure()
 plt.plot(ucb1_learner.collected_rewards)
 plt.plot(tsgauss_learner.collected_rewards)
-plt.xlim([0, 365])
+plt.xlim([0, T-30])
 plt.legend(['UCB1', 'TS'])
 plt.title('Collected reward')
 plt.xlabel('Days')
@@ -82,7 +85,7 @@ plt.show()
 plt.figure()
 plt.plot(vector_daily_price_ucb1)
 plt.plot(vector_daily_price_ts)
-plt.xlim([0, 365])
+plt.xlim([0, T-30])
 plt.legend(['UCB1', 'TS'])
 plt.title('daily prices')
 plt.xlabel('Days')
@@ -91,7 +94,7 @@ plt.show()
 plt.figure()
 plt.plot(vector_daily_revenue_ucb1)
 plt.plot(vector_daily_revenue_ts)
-plt.xlim([0, 365])
+plt.xlim([0, T-30])
 plt.legend(['UCB1 ',' TS '])
 plt.title('daily revenue')
 plt.xlabel('Days')
@@ -99,8 +102,8 @@ plt.show()
 
 plt.figure()
 plt.plot(ucb1_learner.collected_rewards)
-plt.plot([i * 1000 for i in vector_daily_price_ucb1])
-plt.xlim([0, 365])
+#plt.plot([i * 1000 for i in vector_daily_price_ucb1])
+plt.xlim([0, T-30])
 plt.title('UCB1 confronto prezzo revenue')
 plt.xlabel('Days')
 plt.show()
@@ -108,8 +111,8 @@ plt.show()
 
 plt.figure()
 plt.plot(tsgauss_learner.collected_rewards)
-plt.plot([i * 1000 for i in vector_daily_price_ts])
-plt.xlim([0, 365])
+#plt.plot([i * 1000 for i in vector_daily_price_ts])
+plt.xlim([0, T-30])
 plt.title('TS confronto prezzo revenue')
 plt.xlabel('Days')
 plt.show()

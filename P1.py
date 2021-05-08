@@ -23,8 +23,7 @@ def get_bid_and_price_revenue(bid, price, customer_class):
     mean_comebacks = env.get_mean_n_times_comeback(customer_class)
 
     purchases = new_users_daily * buy_percentage
-    n_comebacks = purchases * mean_comebacks
-    revenue = -new_users_daily * cost_per_click + purchases * n_comebacks * env.get_margin(price)
+    revenue = -new_users_daily * cost_per_click + purchases * mean_comebacks * env.get_margin(price)
     return revenue
 
 
@@ -45,8 +44,8 @@ def get_best_bid_and_price(bids, prices, customer_class):
     return best_bid, best_price
 
 
-bids=np.linspace(0,1,num=10)
-prices=np.linspace(1,10,num=20)
+bids=np.linspace(0.1,1,num=10)
+prices=np.linspace(1,10,num=10)
 
 
 #find the best joint bid and price strategy for all the customer classes
@@ -61,9 +60,10 @@ revenuesmatrix=revenuesmatrix.reshape(bids.size,prices.size)
 for i in range(bids.size):
     for j in range(prices.size):
         for c in range(1,4):
-            revenuesmatrix[i][j]+=get_bid_and_price_revenue(bids[i], prices[i], c)
+            revenuesmatrix[i][j]+=get_bid_and_price_revenue(bids[i], prices[j], c)
 
 best_bid=bids[np.unravel_index(np.argmax(revenuesmatrix),revenuesmatrix.shape)[0]]
 best_price=prices[np.unravel_index(np.argmax(revenuesmatrix),revenuesmatrix.shape)[1]]
 
+print(revenuesmatrix)
 print(best_bid,best_price)

@@ -48,8 +48,8 @@ class ucb1_learner(Learner):
         self.n_pulled_arms[pulled_arm] += 1
 
         if self.t>1:
-            for i in range(len(self.delayedreward)-1):
-                self.collected_rewards[-i-2] += self.delayedreward[-i-1][0]
+            for i in range(len(self.delayedreward)):
+                self.collected_rewards[-i-1] += self.delayedreward[-i-1][0]
                 self.rewards_per_arm[self.last30dayschoice[-i-1]] += self.delayedreward[-i-1][0]
                 self.delayedreward[-i-1].pop(0)
         else:
@@ -60,3 +60,5 @@ class ucb1_learner(Learner):
             if self.n_pulled_arms[a]>0:
                 self.empirical_means[a]=self.rewards_per_arm[a]/self.n_pulled_arms[a]
                 self.confidence[a] = (2*np.log(self.t)/self.n_pulled_arms[a])**0.5
+
+        print(self.collected_rewards)
