@@ -7,7 +7,7 @@ from tsgauss import tsgauss_learner
 
 env = Environment()
 
-T=1000
+T=365
 
 prices=np.linspace(1,10,num=10)
 bids=[0.7]
@@ -52,7 +52,7 @@ for t in range(T):
     daily_bought_items_ts=sum(daily_bought_items_perclass_ts)
 
 
-    daily_revenue_ucb1=daily_bought_items_ucb1*env.get_margin(daily_price_ucb1)-total_cost
+    daily_revenue_ucb1 = daily_bought_items_ucb1*env.get_margin(daily_price_ucb1)-total_cost
     daily_revenue_ts=daily_bought_items_ts*env.get_margin(daily_price_ts)-total_cost
 
     vector_daily_revenue_ucb1.append(daily_revenue_ucb1)

@@ -8,7 +8,7 @@ def get_best_price(prices, customer_class):
     '''this function returns the best price among a vector of prices for a given customer class'''
     revenues = []
     for price in prices:
-        revenue = env.get_margin(price) * env.get_conversion_rate(price, customer_class) * env.get_mean_n_times_comeback(customer_class)
+        revenue = env.get_margin(price) * env.get_conversion_rate(price, customer_class) * (1 + env.get_mean_n_times_comeback(customer_class) )
         revenues.append(revenue)
 
     max_revenue = max(revenues)
@@ -23,7 +23,7 @@ def get_bid_and_price_revenue(bid, price, customer_class):
     mean_comebacks = env.get_mean_n_times_comeback(customer_class)
 
     purchases = new_users_daily * buy_percentage
-    revenue = -new_users_daily * cost_per_click + purchases * mean_comebacks * env.get_margin(price)
+    revenue = -new_users_daily * cost_per_click + purchases * (1 + mean_comebacks) * env.get_margin(price)
     return revenue
 
 
