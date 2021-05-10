@@ -43,22 +43,24 @@ class ucb1_learner(Learner):
             self.delayedreward.append(delayedr)
 
         self.t += 1
-        self.rewards_per_arm[pulled_arm] = self.rewards_per_arm[pulled_arm] + reward
         self.collected_rewards = np.append(self.collected_rewards, reward)
+        self.rewards_per_arm[pulled_arm] = self.rewards_per_arm[pulled_arm] + reward
         self.n_pulled_arms[pulled_arm] += 1
 
-        if self.t>1:
+        if self.t > 1:
             for i in range(len(self.delayedreward)):
                 self.collected_rewards[-i-1] += self.delayedreward[-i-1][0]
                 self.rewards_per_arm[self.last30dayschoice[-i-1]] += self.delayedreward[-i-1][0]
                 self.delayedreward[-i-1].pop(0)
         else:
-            #just remove the empty list at the beginning
+            # just remove the empty list at the beginning
             self.delayedreward.pop(0)
 
         for a in range(self.n_arms):
-            if self.n_pulled_arms[a]>0:
-                self.empirical_means[a]=self.rewards_per_arm[a]/self.n_pulled_arms[a]
-                self.confidence[a] = (2*np.log(self.t)/self.n_pulled_arms[a])**0.5
+            if self.n_pulled_arms[a] > 0:
+                self.empirical_means[a] = self.rewards_per_arm[a] / self.n_pulled_arms[a]
+                self.confidence[a] = (2 * np.log(self.t) / self.n_pulled_arms[a]) ** 0.5
 
+        print("Collected rewards:")
         print(self.collected_rewards)
+
