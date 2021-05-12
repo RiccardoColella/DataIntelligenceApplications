@@ -3,7 +3,7 @@ from environment import Environment
 import numpy as np
 from operator import add
 import matplotlib.pyplot as plt
-from TSGauss import TSLearnerGauss
+from tsgauss import TSLearnerGauss
 
 env = Environment()
 
@@ -20,6 +20,8 @@ vector_daily_price_ucb1 = []
 vector_daily_revenue_ucb1 = []
 vector_daily_price_ts = []
 vector_daily_revenue_ts = []
+
+## TODO: fare runnare N volte (magari in parallerlo) questo for e fare le medie delle collected_rewards alla fine
 
 for t in range(T):
     print("Iteration day: " + str(t))
@@ -51,8 +53,8 @@ for t in range(T):
     # Calculate the number of real bought items
     for i in range(len(new_users)):
         for c in range(new_users[i]):
-            daily_bought_items_perclass_ucb1[i] += env.buy(daily_price_ucb1, i)
-            daily_bought_items_perclass_ts[i] += env.buy(daily_price_ts, i)
+            daily_bought_items_perclass_ucb1[i] += env.buy(daily_price_ucb1, i+1)
+            daily_bought_items_perclass_ts[i] += env.buy(daily_price_ts, i+1)
 
     # Sum up the n. of bought items
     daily_bought_items_ucb1 = sum(daily_bought_items_perclass_ucb1)

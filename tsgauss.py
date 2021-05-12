@@ -5,7 +5,7 @@ import numpy as np
 class TSLearnerGauss(Learner):
     """ Thomson Sampling Learner Class """
 
-    def __init__(self, n_arms, sigma=5):
+    def __init__(self, n_arms, tau=5):
         """
         Initialize the Thompson Sampling Learner class with number of arms, arms, sigma, expected mean.
         :param n_arms:
@@ -15,11 +15,12 @@ class TSLearnerGauss(Learner):
 
         # Assignments and Initializations
         self.n_arms = n_arms
-        self.sigma = sigma
-        self.empirical_means = np.zeros(n_arms)
-        self.dev = np.zeros(n_arms)
-        self.last_30_days_choice = []
-        self.delayed_reward = [[]]
+        self.sigma = 5
+        self.tau = [10] * n_arms
+        self.mu = [800] * n_arms
+        self.last30dayschoice = []
+        self.delayedreward = []
+        self.rewards_per_arm = np.zeros(n_arms)
 
     def pull_arm(self):
         """
@@ -27,13 +28,12 @@ class TSLearnerGauss(Learner):
         :return: The index of the pulled arm
         """
 
-        sampled_values = [0] * self.n_arms
-        for i in range(self.n_arms):
-            sampled_values[i] = np.random.normal(loc=self.empirical_means[i], scale=self.dev[i], size=1)[0]
+        mean = np.random.normal(self.mu[:],self.tau[:])
 
-        return np.argmax(sampled_values)
+        idx = np.argmax(np.random.normal(mean[:], self.sigma))
+        return idx
 
-    def update_observations(self, pulled_arm, reward, delayed_r):
+    def update_observations(self, pulled_arm, reward, delayedr):
         """
         Updates with the given pulled arm and reward.
         :param pulled_arm: The chosen arm
@@ -41,30 +41,25 @@ class TSLearnerGauss(Learner):
         :param delayed_r: The reward from the next 30 days
         :return: NA
         """
-
-        if self.t < 30:
-            self.last_30_days_choice.append(pulled_arm)
-            self.delayed_reward.append(delayed_r)
+        if self.t <= 30:
+            self.last30dayschoice.append(pulled_arm)
+            self.delayedreward.append(sum(delayedr)+reward)
         else:
-            self.last_30_days_choice.pop(0)
-            self.last_30_days_choice.append(pulled_arm)
-            self.delayed_reward.pop(0)
-            self.delayed_reward.append(delayed_r)
+            self.last30dayschoice.pop(0)
+            self.last30dayschoice.append(pulled_arm)
+            self.delayedreward.pop(0)
+            self.delayedreward.append(sum(delayedr)+reward)
 
         self.t += 1
-        self.collected_rewards = np.append(self.collected_rewards, reward)
-        self.rewards_per_arm[pulled_arm] = self.rewards_per_arm[pulled_arm] + reward
-        self.n_pulled_arms[pulled_arm] += 1
 
-        if self.t > 1:
-            for i in range(len(self.delayed_reward)):
-                self.collected_rewards[-i-1] += self.delayed_reward[-i - 1][0]
-                self.rewards_per_arm[self.last_30_days_choice[-i - 1]] += self.delayed_reward[-i - 1][0]
-                self.delayed_reward[-i - 1].pop(0)
-        else:
+        if self.t==1:
             # just remove the empty list at the beginning
-            self.delayed_reward.pop(0)
+            self.delayedreward.pop(0)
+        elif self.t >= 30:
+            self.collected_rewards=np.append(self.collected_rewards,self.delayedreward[0])
+            self.rewards_per_arm[self.last30dayschoice[0]] += self.collected_rewards[-1]
+            self.n_pulled_arms[self.last30dayschoice[0]] += 1
 
-        self.empirical_means[pulled_arm] = self.dev[pulled_arm] * ((self.empirical_means[pulled_arm] /
-                                                                self.dev[pulled_arm]) + reward / self.sigma ** 2)
-        self.dev[pulled_arm] = 1 / (1 / self.dev[pulled_arm] + 1 / self.sigma ** 2)
+            arm = self.last30dayschoice[0]
+            self.mu[arm] = (self.rewards_per_arm[arm] * self.tau[arm] ** 2 + self.sigma ** 2 * self.mu[arm]) / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
+            self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)

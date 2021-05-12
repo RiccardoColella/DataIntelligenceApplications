@@ -36,7 +36,6 @@ class Environment:
             this_customer_next_30_days = customer_class.get_comeback_days()
             for j in this_customer_next_30_days:
                 next_30_days[j-1] += earning_margin
-                #avevamo messo j-1 ma secondo me ci vuole j. confermate?
 
         return next_30_days
 
