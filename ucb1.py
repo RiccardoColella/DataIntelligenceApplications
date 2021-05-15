@@ -2,7 +2,7 @@ from learner import Learner
 import numpy as np
 
 
-class ucb1_learner(Learner):
+class UCB1Learner(Learner):
     def __init__(self, n_arms):
         super().__init__(n_arms)
         self.empirical_means = np.zeros(n_arms)
