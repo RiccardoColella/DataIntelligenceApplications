@@ -145,6 +145,8 @@ if __name__ == '__main__':
 
     cwd = os.getcwd()
     print("Current working directory: " + cwd)
+    plots_folder = os.path.join(cwd, "plots")
+    print("Plots folder: " + plots_folder)
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
@@ -152,7 +154,7 @@ if __name__ == '__main__':
     pyplot.legend(['UCB1', 'TS'])
     pyplot.title('Collected reward')
     pyplot.xlabel('Days')
-    pyplot.savefig(cwd + '/plots/Collected rewards.png')
+    pyplot.savefig(os.path.join(plots_folder, 'Collected rewards.png'))
 
     pyplot.figure()
     pyplot.plot(mean_vector_daily_price_ucb1)
@@ -161,7 +163,7 @@ if __name__ == '__main__':
     pyplot.legend(['UCB1', 'TS'])
     pyplot.title('daily prices')
     pyplot.xlabel('Days')
-    pyplot.savefig(cwd + '/plots/Daily prices.png')
+    pyplot.savefig(os.path.join(plots_folder, 'Daily prices.png'))
 
     pyplot.figure()
     pyplot.plot(mean_vector_daily_revenue_ucb1)
@@ -170,7 +172,7 @@ if __name__ == '__main__':
     pyplot.legend(['UCB1 ', ' TS '])
     pyplot.title('daily revenue')
     pyplot.xlabel('Days')
-    pyplot.savefig(cwd + '/plots/CDaily revenue.png')
+    pyplot.savefig(os.path.join(plots_folder, 'CDaily revenue.png'))
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
@@ -178,7 +180,7 @@ if __name__ == '__main__':
     pyplot.xlim([0, T - 30])
     pyplot.title('UCB1 confronto prezzo revenue')
     pyplot.xlabel('Days')
-    pyplot.savefig( cwd + '/plots/UCB1 confronto prezzo-revenue.png')
+    pyplot.savefig(os.path.join(plots_folder, 'UCB1 confronto prezzo-revenue.png'))
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ts)
@@ -186,4 +188,4 @@ if __name__ == '__main__':
     pyplot.xlim([0, T - 30])
     pyplot.title('TS confronto prezzo revenue')
     pyplot.xlabel('Days')
-    pyplot.savefig(cwd + '/plots/TS confronto prezzo revenue.png')
+    pyplot.savefig(os.path.join(plots_folder, 'TS confronto prezzo revenue.png'))
