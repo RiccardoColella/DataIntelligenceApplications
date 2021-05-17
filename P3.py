@@ -1,3 +1,4 @@
+import os
 from multiprocessing import Process, Queue
 from operator import add
 
@@ -13,7 +14,7 @@ env = Environment()
 prices = numpy.linspace(1, 10, num=10)
 bids = [0.7]
 T = 365
-N = 10
+N = 2
 
 
 def iterate_days(results_queue, idx=0):
@@ -142,13 +143,16 @@ if __name__ == '__main__':
     mean_vector_daily_price_ts = to_np_arr_and_then_mean(vector_daily_price_ts)
     mean_vector_daily_revenue_ts = to_np_arr_and_then_mean(vector_daily_revenue_ts)
 
+    cwd = os.getcwd()
+    print("Current working directory: " + cwd)
+
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
     pyplot.xlim([0, T - 30])
     pyplot.legend(['UCB1', 'TS'])
     pyplot.title('Collected reward')
     pyplot.xlabel('Days')
-    pyplot.savefig('./plots/Collected rewards.png')
+    pyplot.savefig(cwd + '/plots/Collected rewards.png')
 
     pyplot.figure()
     pyplot.plot(mean_vector_daily_price_ucb1)
@@ -157,7 +161,7 @@ if __name__ == '__main__':
     pyplot.legend(['UCB1', 'TS'])
     pyplot.title('daily prices')
     pyplot.xlabel('Days')
-    pyplot.savefig('./plots/Daily prices.png')
+    pyplot.savefig(cwd + '/plots/Daily prices.png')
 
     pyplot.figure()
     pyplot.plot(mean_vector_daily_revenue_ucb1)
@@ -166,7 +170,7 @@ if __name__ == '__main__':
     pyplot.legend(['UCB1 ', ' TS '])
     pyplot.title('daily revenue')
     pyplot.xlabel('Days')
-    pyplot.savefig('./plots/CDaily revenue.png')
+    pyplot.savefig(cwd + '/plots/CDaily revenue.png')
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
@@ -174,7 +178,7 @@ if __name__ == '__main__':
     pyplot.xlim([0, T - 30])
     pyplot.title('UCB1 confronto prezzo revenue')
     pyplot.xlabel('Days')
-    pyplot.savefig('./plots/UCB1 confronto prezzo-revenue.png')
+    pyplot.savefig( cwd + '/plots/UCB1 confronto prezzo-revenue.png')
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ts)
@@ -182,4 +186,4 @@ if __name__ == '__main__':
     pyplot.xlim([0, T - 30])
     pyplot.title('TS confronto prezzo revenue')
     pyplot.xlabel('Days')
-    pyplot.savefig('./plots/TS confronto prezzo revenue.png')
+    pyplot.savefig(cwd + '/plots/TS confronto prezzo revenue.png')
