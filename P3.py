@@ -1,5 +1,5 @@
+import multiprocessing
 import os
-from multiprocessing import Process, Queue
 from operator import add
 
 import numpy
@@ -14,7 +14,7 @@ env = Environment()
 prices = numpy.linspace(1, 10, num=10)
 bids = [0.7]
 T = 365
-N = 2
+N = 50
 
 
 def iterate_days(results_queue, idx=0):
@@ -26,7 +26,7 @@ def iterate_days(results_queue, idx=0):
     vector_daily_revenue_ts_loc = []
 
     for t in range(T):
-        if t % 10 == 0:
+        if t % 20 == 0:
             print("Iteration day: {:3d} - execution: {:3d}".format(t, idx))
         # Get new users in the day t and their costs
         [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(bids[0])
@@ -111,17 +111,15 @@ if __name__ == '__main__':
     vector_daily_price_ts = [] * N
     vector_daily_revenue_ts = [] * N
 
-    processes = [] * N
+    processes = []
     results = [] * N
-    q = Queue()
+    m = multiprocessing.Manager()
+    q = m.Queue()
 
-    for i in range(N):
-        print("Starting Thread N. {:3d}".format(i))
-        p = Process(target=iterate_days, args=(q, i))
-        processes.append(p)
-        p.start()
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()*2)
+    multi_results = [pool.apply_async(iterate_days, args=(q, i,)) for i in range(N)]
 
-    for p in processes:
+    for p in multi_results:
         ret = q.get()
         results.append(ret)
 
