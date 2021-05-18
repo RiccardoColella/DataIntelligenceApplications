@@ -14,7 +14,7 @@ env = Environment()
 prices = numpy.linspace(1, 10, num=10)
 bids = [0.7]
 T = 365
-N = 50
+N = 20
 
 
 def iterate_days(results_queue, idx=0):
@@ -91,12 +91,12 @@ def iterate_days(results_queue, idx=0):
                                                             user)))
         tsgauss_learner.update_observations(daily_arm_ts, daily_revenue_ts, next_30_days)
 
-    results_queue.put((ucb1_learner.collected_rewards, tsgauss_learner.collected_rewards, vector_daily_revenue_ucb1_loc,
+    results_queue.put((ucb1_learner.collected_rewards, tsgauss_learner.collected_rewards, vector_daily_price_ucb1_loc,
                        vector_daily_revenue_ucb1_loc, vector_daily_price_ts_loc, vector_daily_revenue_ts_loc))
 
 
 def to_np_arr_and_then_mean(list_of_lists):
-    print(list_of_lists)
+    # print(list_of_lists)
     np_arr = numpy.array(list_of_lists)
     return np_arr.mean(axis=0)
 
@@ -148,6 +148,7 @@ if __name__ == '__main__':
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
+    pyplot.plot(mean_collected_rewards_ts)
     pyplot.xlim([0, T - 30])
     pyplot.legend(['UCB1', 'TS'])
     pyplot.title('Collected reward')
@@ -156,13 +157,14 @@ if __name__ == '__main__':
 
     pyplot.figure()
     pyplot.plot(mean_vector_daily_price_ucb1)
-    pyplot.plot(vector_daily_price_ts)
+    pyplot.plot(mean_vector_daily_price_ts)
     pyplot.xlim([0, T - 30])
     pyplot.legend(['UCB1', 'TS'])
     pyplot.title('daily prices')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'Daily prices.png'))
 
+    '''
     pyplot.figure()
     pyplot.plot(mean_vector_daily_revenue_ucb1)
     pyplot.plot(mean_vector_daily_revenue_ts)
@@ -170,20 +172,22 @@ if __name__ == '__main__':
     pyplot.legend(['UCB1 ', ' TS '])
     pyplot.title('daily revenue')
     pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'CDaily revenue.png'))
+    pyplot.savefig(os.path.join(plots_folder, 'CDaily revenue.png'))'''
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
-    # plt.plot([i * 1000 for i in vector_daily_price_ucb1])
+    pyplot.plot([i * 100 for i in mean_vector_daily_price_ucb1])
     pyplot.xlim([0, T - 30])
+    pyplot.legend(['collected reward', 'price * 100'])
     pyplot.title('UCB1 confronto prezzo revenue')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'UCB1 confronto prezzo-revenue.png'))
 
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ts)
-    # plt.plot([i * 1000 for i in vector_daily_price_ts])
+    pyplot.plot([i * 100 for i in mean_vector_daily_price_ts])
     pyplot.xlim([0, T - 30])
+    pyplot.legend(['collected reward', 'price * 100'])
     pyplot.title('TS confronto prezzo revenue')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'TS confronto prezzo revenue.png'))
