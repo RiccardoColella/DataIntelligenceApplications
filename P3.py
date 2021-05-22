@@ -14,7 +14,7 @@ env = Environment()
 prices = numpy.linspace(1, 10, num=10)
 bids = [0.7]
 T = 365
-N = 20
+N = 1
 
 
 def iterate_days(results_queue, idx=0):
@@ -146,11 +146,16 @@ if __name__ == '__main__':
     plots_folder = os.path.join(cwd, "plots")
     print("Plots folder: " + plots_folder)
 
+    value_line_to_plot=700
+    plot_line=True
+
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
     pyplot.plot(mean_collected_rewards_ts)
     pyplot.xlim([0, T - 30])
     pyplot.legend(['UCB1', 'TS'])
+    if plot_line:
+        pyplot.plot([value_line_to_plot for i in range(T)])
     pyplot.title('Collected reward')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'Collected rewards.png'))
@@ -179,6 +184,8 @@ if __name__ == '__main__':
     pyplot.plot([i * 100 for i in mean_vector_daily_price_ucb1])
     pyplot.xlim([0, T - 30])
     pyplot.legend(['collected reward', 'price * 100'])
+    if plot_line:
+        pyplot.plot([value_line_to_plot for i in range(T)])
     pyplot.title('UCB1 confronto prezzo revenue')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'UCB1 confronto prezzo-revenue.png'))
@@ -188,6 +195,8 @@ if __name__ == '__main__':
     pyplot.plot([i * 100 for i in mean_vector_daily_price_ts])
     pyplot.xlim([0, T - 30])
     pyplot.legend(['collected reward', 'price * 100'])
+    if plot_line:
+        pyplot.plot([value_line_to_plot for i in range(T)])
     pyplot.title('TS confronto prezzo revenue')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'TS confronto prezzo revenue.png'))

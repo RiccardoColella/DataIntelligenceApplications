@@ -17,7 +17,7 @@ class UCB1Learner(Learner):
         :return: the arm to be pulled at the next round
         """
 
-        if self.t < 40:
+        if self.t < 10:
             arm = self.t % self.n_arms
 
         else:
@@ -42,7 +42,7 @@ class UCB1Learner(Learner):
             self.delayedreward.pop(0)
             self.delayedreward.append(sum(delayedr)+reward)
 
-        self.t += 1
+        print(self.delayedreward)
 
         if self.t==1:
             # just remove the empty list at the beginning
@@ -51,6 +51,10 @@ class UCB1Learner(Learner):
             self.collected_rewards=np.append(self.collected_rewards,self.delayedreward[0])
             self.rewards_per_arm[self.last30dayschoice[0]] += self.collected_rewards[-1]
             self.n_pulled_arms[self.last30dayschoice[0]] += 1
+
+        print(self.collected_rewards)
+
+        self.t += 1
 
         for a in range(self.n_arms):
             if self.n_pulled_arms[a] > 0:

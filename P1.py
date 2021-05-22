@@ -23,7 +23,7 @@ def get_bid_and_price_revenue(bid, price, customer_class):
     mean_comebacks = env.get_mean_n_times_comeback(customer_class)
 
     purchases = new_users_daily * buy_percentage
-    revenue = purchases * (1 + mean_comebacks) * env.get_margin(price) - new_users_daily * cost_per_click
+    revenue = purchases * (1+mean_comebacks) * env.get_margin(price) - new_users_daily * cost_per_click
     return revenue
 
 
