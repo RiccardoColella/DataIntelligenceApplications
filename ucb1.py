@@ -42,7 +42,7 @@ class UCB1Learner(Learner):
             self.delayedreward.pop(0)
             self.delayedreward.append(sum(delayedr)+reward)
 
-        print(self.delayedreward)
+        # print(self.delayedreward)
 
         if self.t==1:
             # just remove the empty list at the beginning
@@ -52,7 +52,7 @@ class UCB1Learner(Learner):
             self.rewards_per_arm[self.last30dayschoice[0]] += self.collected_rewards[-1]
             self.n_pulled_arms[self.last30dayschoice[0]] += 1
 
-        print(self.collected_rewards)
+        # print(self.collected_rewards)
 
         self.t += 1
 
@@ -61,5 +61,5 @@ class UCB1Learner(Learner):
                 self.empirical_means[a] = self.rewards_per_arm[a] / self.n_pulled_arms[a]
                 self.confidence[a] = (2 * np.log(self.t) / self.n_pulled_arms[a]) ** 0.5
 
-        #print("Collected rewards:")
-        #print(self.collected_rewards)
+        # print("Collected rewards:")
+        # print(self.collected_rewards)
