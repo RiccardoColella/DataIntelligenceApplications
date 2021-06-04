@@ -11,13 +11,24 @@ from tsgauss import TSLearnerGauss
 
 env = Environment()
 
+#prices range
 prices = numpy.linspace(1, 10, num=10)
+# bids range
 bids = [0.7]
+# day of algorithm execution
 T = 365
+# How many computation exectute
 N = 1
 
 
 def iterate_days(results_queue, idx=0):
+    """
+    Execute the algorithm at the given day. Function required for parallel programming
+    :param results_queue: queue of previous results
+    :param idx: execution identifier, allows to recognize the iteration number
+    :return: nothing. The results are pushed into the queue
+    """
+    # Declaration of learners and results' vectors
     ucb1_learner = UCB1Learner(len(prices))
     tsgauss_learner = TSLearnerGauss(len(prices))
     vector_daily_price_ucb1_loc = []
@@ -25,6 +36,7 @@ def iterate_days(results_queue, idx=0):
     vector_daily_price_ts_loc = []
     vector_daily_revenue_ts_loc = []
 
+    # For every day:
     for t in range(T):
         if t % 20 == 0:
             print("Iteration day: {:3d} - execution: {:3d}".format(t, idx))
@@ -84,6 +96,7 @@ def iterate_days(results_queue, idx=0):
         # print("Daily revenue UCB1:               {:.5f}".format(daily_revenue_ucb1 + sum(next_30_days)))
         # print("Daily revenue Thomson Sampling:   {:.5f}".format(daily_revenue_ts + sum(next_30_days)))
 
+        # get earnings in the following 30 days
         next_30_days = [0] * 30
         for user in range(1, 4):
             next_30_days = list(
@@ -91,11 +104,17 @@ def iterate_days(results_queue, idx=0):
                                                             user)))
         tsgauss_learner.update_observations(daily_arm_ts, daily_revenue_ts, next_30_days)
 
+    # put results in the given queue
     results_queue.put((ucb1_learner.collected_rewards, tsgauss_learner.collected_rewards, vector_daily_price_ucb1_loc,
                        vector_daily_revenue_ucb1_loc, vector_daily_price_ts_loc, vector_daily_revenue_ts_loc))
 
 
 def to_np_arr_and_then_mean(list_of_lists):
+    """
+    Mean of every value of the list, based on the index
+    :param list_of_lists: list containing the results for every day in a list for every iteration
+    :return: an array of the mean based on values' index
+    """
     # print(list_of_lists)
     np_arr = numpy.array(list_of_lists)
     return np_arr.mean(axis=0)
@@ -111,21 +130,23 @@ if __name__ == '__main__':
     vector_daily_price_ts = [] * N
     vector_daily_revenue_ts = [] * N
 
+    # Multiprocessing initializations
     processes = []
     results = [] * N
     m = multiprocessing.Manager()
     q = m.Queue()
-
+    # Start the execution
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()*2)
     multi_results = [pool.apply_async(iterate_days, args=(q, i,)) for i in range(N)]
 
+    # collect the results
     for p in multi_results:
         ret = q.get()
         results.append(ret)
-
+    # wait for the processes to end
     for i in range(len(processes)):
         processes[i].join()
-
+    # merge the results in a list of lists
     for i in range(len(results)):
         collected_rewards_ucb1.insert(i, results[i][0])
         collected_rewards_ts.insert(i, results[i][1])
@@ -133,7 +154,7 @@ if __name__ == '__main__':
         vector_daily_revenue_ucb1.insert(i, results[i][3])
         vector_daily_price_ts.insert(i, results[i][4])
         vector_daily_revenue_ts.insert(i, results[i][5])
-
+    # calculate the mean values
     mean_collected_rewards_ucb1 = to_np_arr_and_then_mean(collected_rewards_ucb1)
     mean_collected_rewards_ts = to_np_arr_and_then_mean(collected_rewards_ts)
     mean_vector_daily_price_ucb1 = to_np_arr_and_then_mean(vector_daily_price_ucb1)
@@ -146,9 +167,10 @@ if __name__ == '__main__':
     plots_folder = os.path.join(cwd, "plots")
     print("Plots folder: " + plots_folder)
 
-    value_line_to_plot=700
-    plot_line=True
+    value_line_to_plot = 700
+    plot_line = True
 
+    # Plot collected rewards
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
     pyplot.plot(mean_collected_rewards_ts)
@@ -160,6 +182,7 @@ if __name__ == '__main__':
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'Collected rewards.png'))
 
+    # Plot daily prices
     pyplot.figure()
     pyplot.plot(mean_vector_daily_price_ucb1)
     pyplot.plot(mean_vector_daily_price_ts)
@@ -169,16 +192,7 @@ if __name__ == '__main__':
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'Daily prices.png'))
 
-    '''
-    pyplot.figure()
-    pyplot.plot(mean_vector_daily_revenue_ucb1)
-    pyplot.plot(mean_vector_daily_revenue_ts)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['UCB1 ', ' TS '])
-    pyplot.title('daily revenue')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'CDaily revenue.png'))'''
-
+    # Plot UCB1 price and revenue comparison
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
     pyplot.plot([i * 100 for i in mean_vector_daily_price_ucb1])
@@ -190,6 +204,7 @@ if __name__ == '__main__':
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'UCB1 confronto prezzo-revenue.png'))
 
+    # Plot TS price and revenue comparison
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ts)
     pyplot.plot([i * 100 for i in mean_vector_daily_price_ts])
