@@ -17,12 +17,14 @@ class UCB1Learner(Learner):
         :return: the arm to be pulled at the next round
         """
 
-        if self.t < 10:
+        if self.t <= 30:
             arm = self.t % self.n_arms
 
         else:
             upper_bound = self.empirical_means + self.confidence
+            #print('upper_bound: ' + str(upper_bound))
             arm = np.random.choice(np.where(upper_bound == upper_bound.max())[0])
+            #print('arm:' + str(arm))
 
         return arm
 
@@ -33,6 +35,9 @@ class UCB1Learner(Learner):
         :param delayedr: The future 30 rewards (delayed rewards)
         :return: none
         """
+
+        #print('arm, reward: ' + str(pulled_arm) + ', ' + str(sum(delayedr)+reward))
+
         if self.t <= 30:
             self.last30dayschoice.append(pulled_arm)
             self.delayedreward.append(sum(delayedr)+reward)
@@ -42,12 +47,11 @@ class UCB1Learner(Learner):
             self.delayedreward.pop(0)
             self.delayedreward.append(sum(delayedr)+reward)
 
-        # print(self.delayedreward)
+        #print('last30dayschoice: ' + str(self.last30dayschoice))
+        #print('delayedreward: ' + str(self.delayedreward))
 
-        if self.t==1:
-            # just remove the empty list at the beginning
-            self.delayedreward.pop(0)
-        elif self.t >= 30:
+
+        if self.t >= 30:
             self.collected_rewards=np.append(self.collected_rewards,self.delayedreward[0])
             self.rewards_per_arm[self.last30dayschoice[0]] += self.collected_rewards[-1]
             self.n_pulled_arms[self.last30dayschoice[0]] += 1
@@ -63,3 +67,5 @@ class UCB1Learner(Learner):
 
         # print("Collected rewards:")
         # print(self.collected_rewards)
+
+        #print('------')

@@ -24,6 +24,9 @@ def get_bid_and_price_revenue(bid, price, customer_class):
 
     purchases = new_users_daily * buy_percentage
     revenue = purchases * (1+mean_comebacks) * env.get_margin(price) - new_users_daily * cost_per_click
+
+    print('bid, price, customer_class, revenue: ' + str(bid) +str(', ') + str(price) +str(', ')+ str(customer_class) +str(', ')+ str(revenue))
+
     return revenue
 
 
@@ -59,8 +62,8 @@ revenuesmatrix = revenuesmatrix.reshape(bids.size, prices.size)
 
 for i in range(bids.size):
     for j in range(prices.size):
-        for c in range(1, 4):
-            revenuesmatrix[i][j] += get_bid_and_price_revenue(bids[i], prices[j], c)
+        revenuesmatrix[i][j] = get_bid_and_price_revenue(bids[i], prices[j], 1) + get_bid_and_price_revenue(bids[i], prices[j], 2) +  get_bid_and_price_revenue(bids[i], prices[j], 3)
+
 
 best_bid = bids[np.unravel_index(np.argmax(revenuesmatrix), revenuesmatrix.shape)[0]]
 best_price = prices[np.unravel_index(np.argmax(revenuesmatrix), revenuesmatrix.shape)[1]]

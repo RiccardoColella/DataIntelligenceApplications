@@ -52,10 +52,7 @@ class TSLearnerGauss(Learner):
 
         self.t += 1
 
-        if self.t==1:
-            # just remove the empty list at the beginning
-            self.delayedreward.pop(0)
-        elif self.t >= 30:
+        if self.t >= 30:
             self.collected_rewards=np.append(self.collected_rewards,self.delayedreward[0])
             self.rewards_per_arm[self.last30dayschoice[0]] += self.collected_rewards[-1]
             self.n_pulled_arms[self.last30dayschoice[0]] += 1

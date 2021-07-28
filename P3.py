@@ -14,11 +14,11 @@ env = Environment()
 #prices range
 prices = numpy.linspace(1, 10, num=10)
 # bids range
-bids = [0.7]
+bids = [0.6]
 # day of algorithm execution
-T = 365
+T = 394
 # How many computation exectute
-N = 1
+N = 200
 
 
 def iterate_days(results_queue, idx=0):
@@ -70,6 +70,9 @@ def iterate_days(results_queue, idx=0):
             for c in range(new_users[user]):
                 daily_bought_items_per_class_ucb1[user] += env.buy(daily_price_ucb1, user + 1)
                 daily_bought_items_per_class_ts[user] += env.buy(daily_price_ts, user + 1)
+            '''daily_bought_items_per_class_ucb1[user] = round(env.get_conversion_rate(daily_price_ucb1, user + 1) * new_users[user])
+            daily_bought_items_per_class_ts[user] = round(env.get_conversion_rate(daily_price_ts, user + 1) * new_users[user])'''
+
 
         # Sum up the n. of bought items
         daily_bought_items_ucb1 = sum(daily_bought_items_per_class_ucb1)
@@ -86,10 +89,9 @@ def iterate_days(results_queue, idx=0):
         # Get delayed rewards
         next_30_days = [0] * 30
         for user in range(1, 4):
-            next_30_days = [
-                next_30_days[j] + env.get_next_30_days(daily_bought_items_per_class_ucb1[user - 1], daily_price_ucb1,
-                                                       user)[j]
-                for j in range(len(next_30_days))]
+            next_30_days = list(
+                map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class_ucb1[user - 1], daily_price_ucb1,
+                                                            user)))
         # point-wise list sum
         ucb1_learner.update_observations(daily_arm_ucb1, daily_revenue_ucb1, next_30_days)
 
@@ -167,7 +169,7 @@ if __name__ == '__main__':
     plots_folder = os.path.join(cwd, "plots")
     print("Plots folder: " + plots_folder)
 
-    value_line_to_plot = 700
+    value_line_to_plot = 904
     plot_line = True
 
     # Plot collected rewards
@@ -215,3 +217,24 @@ if __name__ == '__main__':
     pyplot.title('TS confronto prezzo revenue')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'TS confronto prezzo revenue.png'))
+
+    #calculate and plot mean regret
+    best_possible_reward = 904
+    mean_regret_ts = [best_possible_reward * x for x in range(1,T-28)]
+    mean_regret_ts = numpy.array(mean_regret_ts)
+
+    mean_regret_ts = numpy.add( mean_regret_ts , -1 * numpy.cumsum(mean_collected_rewards_ts))
+
+    mean_regret_ucb1 = [best_possible_reward * x for x in range(1,T-29)]
+
+    mean_regret_ucb1 = mean_regret_ucb1 - numpy.cumsum(mean_collected_rewards_ucb1)
+
+    pyplot.figure()
+    pyplot.plot(mean_regret_ts)
+    pyplot.plot(mean_regret_ucb1)
+
+    pyplot.legend(['mean_regret_ts', 'mean_regret_ucb1'])
+    pyplot.xlim([0, T - 30])
+    pyplot.title('confronto regret')
+    pyplot.xlabel('Days')
+    pyplot.savefig(os.path.join(plots_folder, 'confronto regret.png'))

@@ -1,5 +1,3 @@
-from environment import Environment
+import numpy
 
-env = Environment()
-
-print(env.get_comeback_days(3))
+numpy.add(numpy.array([2, 1]), numpy.array([2, 1]))
