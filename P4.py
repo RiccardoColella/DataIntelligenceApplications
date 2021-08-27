@@ -125,8 +125,94 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
 
 
 def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
+<<<<<<< HEAD
 
     return False
+=======
+    'return true if we need to split the context c, false otherwise'
+
+    day = len(rev_per_class)
+    n_arms = max(d_arm_per_class)
+
+    # Here we find the best arm for d and we compute some parameters
+    reward_per_arm_d = [0] * n_arms
+    n_pulled_arm_d = [0] * n_arms
+    for i in range(day):
+        n_pulled_arm_d[d_arm_per_class[i][1]] += 1
+        reward_per_arm_d[d_arm_per_class[i][1]] += rev_per_class[i][1]
+
+    mean_per_arm_d = [a / b for a, b in zip(reward_per_arm_d, n_pulled_arm_d)]  # element wise division python
+    mean_best_arm_d = max(mean_per_arm_d)
+    best_arm_d = mean_per_arm_d.index(mean_best_arm_d)
+
+    # Here we find the best arm for e and we compute some parameters
+    reward_per_arm_e = [0] * n_arms
+    n_pulled_arm_e = [0] * n_arms
+    for i in range(day):
+        n_pulled_arm_e[d_arm_per_class[i][2]] += 1
+        reward_per_arm_e[d_arm_per_class[i][2]] += rev_per_class[i][2]
+
+    mean_per_arm_e = [a / b for a, b in zip(reward_per_arm_e, n_pulled_arm_e)]  # element wise division python
+    mean_best_arm_e = max(mean_per_arm_e)
+    best_arm_e = mean_per_arm_e.index(mean_best_arm_e)
+
+    # here we find the best arm in total
+    reward_per_arm_tot = [0] * n_arms
+    n_pulled_arm_tot = [0] * n_arms
+    for i in range(day):
+        n_pulled_arm_tot[d_arm_per_class[i][1]] += 1
+        reward_per_arm_tot[d_arm_per_class[i][1]] += sum(rev_per_class[i][1]) + sum(rev_per_class[i][2])
+
+    mean_per_arm_tot = [a / b for a, b in zip(reward_per_arm_tot, n_pulled_arm_tot)]  # element wise division python
+    mean_best_arm_tot = max(mean_per_arm_tot)
+    best_arm_tot = mean_per_arm_tot.index(mean_best_arm_tot)
+
+    # find probability of context b and c, then compute the lower bounds
+    d_users = 0
+    e_users = 0
+
+    for i in range(day):
+        d_users += us_per_class[i][1]
+        e_users += us_per_class[i][2]
+
+    pd = d_users / (d_users + e_users)
+    pe = e_users / (d_users + e_users)
+
+    #  and pe are lower bounds
+    pd = pd - np.sqrt( - np.log (confidence) / (2 * (d_users + e_users)) )
+    pe = pe - np.sqrt( - np.log (confidence) / (2 * (d_users + e_users)) )
+
+    # compute variance revenue for best arm b, c, and tot
+    rewards_best_arm_d = np.array()
+    rewards_best_arm_e = np.array()
+    rewards_best_arm_tot = np.array()
+
+    for j in range(day):
+
+        if d_arm_per_class[j][1] == best_arm_d:
+            np.append(rewards_best_arm_d, rev_per_class[j][1])
+
+        if d_arm_per_class[j][2] == best_arm_e:
+            np.append(rewards_best_arm_e, (rev_per_class[j][2]))
+
+        if d_arm_per_class[j][1] == best_arm_tot:
+            np.append(rewards_best_arm_tot, (sum(rev_per_class[j][1]) + sum(rev_per_class[j][2]) ) )
+
+    var_d = np.var(rewards_best_arm_d, ddof=1)
+    var_e = np.var(rewards_best_arm_e, ddof=1)
+    var_tot = np.var(rewards_best_arm_tot, ddof=1)
+
+    # find lower bound mub, muc mu0
+    mud = mean_best_arm_d - t.ppf(confidence, (n_pulled_arm_d[best_arm_d] - 1), loc=0, scale=1) * np.sqrt(
+        var_d / n_pulled_arm_d[best_arm_d])
+    mue = mean_best_arm_e - t.ppf(confidence, (n_pulled_arm_e[best_arm_e] - 1), loc=0, scale=1) * np.sqrt(
+        var_e / n_pulled_arm_e[best_arm_e])
+    mu0 = mean_best_arm_tot - t.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
+        var_tot / n_pulled_arm_tot[best_arm_tot])
+
+    return splitting(pd, mud, pe, mue, mu0)
+    
+>>>>>>> 4b9df377c909332c79a31a94355bda85ee1c393a
 
 
 if __name__ == '__main__':
