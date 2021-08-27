@@ -222,7 +222,7 @@ if __name__ == '__main__':
     context = 1
 
     n_arms = len(prices)
-    tsgauss_learner = TSLearnerGauss(n_arms, [], [mu0] * n_arms, [tau] * n_arms, sigma0)
+    tsgauss_learner = TSLearnerGauss(n_arms, [], [mu0] * n_arms, [tau] * n_arms, sigma0, [], [], np.zeros(n_arms), 0)
 
     for t in range(T):
 
