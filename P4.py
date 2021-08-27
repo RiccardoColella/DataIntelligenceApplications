@@ -42,7 +42,7 @@ def splitting(p1, mu1, p2, mu2, mu0):
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     # return true if we need to split the context a, false otherwise
 
-    day = len(rev_per_class)
+    day = len(rev_per_class) - 30 
     n_arms = max(d_arm_per_class)
 
     # Here we find the best arm for b and we compute some parameters
@@ -127,7 +127,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
 def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context c, false otherwise'
 
-    day = len(rev_per_class)
+    day = len(rev_per_class) - 30
     n_arms = max(d_arm_per_class)
 
     # Here we find the best arm for d and we compute some parameters
@@ -207,6 +207,10 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
     return splitting(pd, mud, pe, mue, mu0)
+<<<<<<< HEAD
+=======
+    
+>>>>>>> bd5076faf01ac645dc5193bbd3da60e0cefdb4c7
 
 
 
@@ -245,7 +249,7 @@ if __name__ == '__main__':
 
                 if context > context_old:
                     ## TODO: all
-                    if context == 2
+                    if context == 2:
                         print('A -- > B + C at day: ' + str (t))
                         tsgauss_learner_b = TSLearnerGauss(len(prices), )
 
