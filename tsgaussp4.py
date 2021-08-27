@@ -4,7 +4,6 @@ import numpy as np
 
 class TSLearnerGauss(Learner):
     """ Thomson Sampling Learner Class """
-    # per ora unica cosa diversa rispetto a tsgauss è parametri mu e tau facoltativi, magari basta una funzione
     def __init__(self, n_arms, collected_rewards, mu = [800] * n_arms, tau = [10] * n_arms):
         """
         Initialize the Thompson Sampling Learner class with number of arms, arms, sigma, expected mean.
@@ -50,8 +49,6 @@ class TSLearnerGauss(Learner):
             self.delayedreward.pop(0)
             self.delayedreward.append(sum(delayedr)+reward)
 
-        self.t += 1
-
         if self.t==1:
             # just remove the empty list at the beginning
             self.delayedreward.pop(0)
@@ -63,3 +60,5 @@ class TSLearnerGauss(Learner):
             arm = self.last30dayschoice[0]
             self.mu[arm] = (self.rewards_per_arm[arm] * self.tau[arm] ** 2 + self.sigma ** 2 * self.mu[arm]) / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
             self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
+
+        self.t += 1

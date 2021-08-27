@@ -18,7 +18,7 @@ bids = [0.6]
 # day of algorithm execution
 T = 394
 # How many computation exectute
-N = 200
+N = 50
 
 
 def iterate_days(results_queue, idx=0):
@@ -220,7 +220,7 @@ if __name__ == '__main__':
 
     #calculate and plot mean regret
     best_possible_reward = 904
-    mean_regret_ts = [best_possible_reward * x for x in range(1,T-28)]
+    mean_regret_ts = [best_possible_reward * x for x in range(1,T-29)]
     mean_regret_ts = numpy.array(mean_regret_ts)
 
     mean_regret_ts = numpy.add( mean_regret_ts , -1 * numpy.cumsum(mean_collected_rewards_ts))

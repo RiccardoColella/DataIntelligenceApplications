@@ -37,9 +37,10 @@ def splitting(p1, mu1, p2, mu2, mu0):
     # return true if we need to split the context, false otherwise
     return p1 * mu1 + p2 * mu2 > mu0
 
+# TODO: Should we group all the splitted context in one single function?
 
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
-    # return true if we need to split the context a, false otherwise'''
+    # return true if we need to split the context a, false otherwise
 
     day = len(rev_per_class)
     n_arms = max(d_arm_per_class)
@@ -124,7 +125,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
 
 
 def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
-    # TODO: Should we group all the splitted context in one single function?
+
     return False
 
 
@@ -162,8 +163,11 @@ if __name__ == '__main__':
                 context = split(context_old, revenue_per_class, daily_arm_per_class, users_per_class)
 
                 if context > context_old:
-                    print('todo')
-                    # TODO: change ts gauss in use
+                    ## TODO: all
+                    if context == 2
+                        print('A -- > B + C at day: ' + str (t))
+                        tsgauss_learner_b = TSLearnerGauss(len(prices), )
+
 
             if context == 1:
                 daily_arm = tsgauss_learner.pull_arm()

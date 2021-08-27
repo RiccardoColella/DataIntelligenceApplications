@@ -41,6 +41,9 @@ class TSLearnerGauss(Learner):
         :param delayed_r: The reward from the next 30 days
         :return: NA
         """
+
+        #print('arm, reward: ' + str(pulled_arm) + ', ' + str(sum(delayedr)+reward))
+
         if self.t <= 30:
             self.last30dayschoice.append(pulled_arm)
             self.delayedreward.append(sum(delayedr)+reward)
@@ -50,7 +53,8 @@ class TSLearnerGauss(Learner):
             self.delayedreward.pop(0)
             self.delayedreward.append(sum(delayedr)+reward)
 
-        self.t += 1
+        #print('last30dayschoice: ' + str(self.last30dayschoice))
+        #print('delayedreward: ' + str(self.delayedreward))
 
         if self.t >= 30:
             self.collected_rewards=np.append(self.collected_rewards,self.delayedreward[0])
@@ -60,3 +64,10 @@ class TSLearnerGauss(Learner):
             arm = self.last30dayschoice[0]
             self.mu[arm] = (self.rewards_per_arm[arm] * self.tau[arm] ** 2 + self.sigma ** 2 * self.mu[arm]) / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
             self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
+
+        self.t += 1
+
+        #print("Collected rewards:")
+        #print(self.collected_rewards)
+
+        #print('------')
