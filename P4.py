@@ -329,7 +329,7 @@ if __name__ == '__main__':
 
         if context == 2:
             tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
-            tsgauss_learner_c.update_observations(daily_arm_c, revenue_per_class_today[1] + revenue_per_class_today[2], next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0]) )
+            tsgauss_learner_c.update_observations(daily_arm_c, revenue_per_class_today[1] + revenue_per_class_today[2], [next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0])])
 
         if context == 3:
             tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
