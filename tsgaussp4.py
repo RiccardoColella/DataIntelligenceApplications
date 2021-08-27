@@ -4,7 +4,7 @@ import numpy as np
 
 class TSLearnerGauss(Learner):
     """ Thomson Sampling Learner Class """
-    def __init__(self, n_arms, collected_rewards = [], mu = [800] * n_arms, tau = [10] * n_arms):
+    def __init__(self, n_arms, collected_rewards = [], mu = [800] * n_arms, tau = [10] * n_arms, last30dayschoice = [], delayedreward = [], rewards_per_arm = np.zeros(n_arms)):
         """
         Initialize the Thompson Sampling Learner class with number of arms, arms, sigma, expected mean.
         :param n_arms:
@@ -17,9 +17,10 @@ class TSLearnerGauss(Learner):
         self.sigma = 5
         self.tau = tau
         self.mu = mu
-        self.last30dayschoice = []
-        self.delayedreward = []
-        self.rewards_per_arm = np.zeros(n_arms)
+        self.collected_rewards = collected_rewards
+        self.last30dayschoice = last30dayschoice
+        self.delayedreward = delayedreward
+        self.rewards_per_arm = rewards_per_arm
 
     def pull_arm(self):
         """

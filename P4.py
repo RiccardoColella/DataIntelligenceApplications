@@ -15,7 +15,6 @@ prices = np.linspace(1, 10, num=10)
 bids = [0.7]
 
 users_per_class = []
-revenue_per_class = []
 daily_arm_per_class = []
 
 context = 1
@@ -273,12 +272,22 @@ if __name__ == '__main__':
                 buy = env.buy(daily_price[i], i + 1)
                 daily_bought_items_perclass[i] += buy
 
-        # TODO: manage delay
-
         margin = [env.get_margin(i) for i in daily_price]
 
         revenue_per_class_today = []
         for i in range(margin):
             revenue_per_class_today.append(margin * daily_bought_items_perclass[i] - cost[i] * new_users[i])
 
-        revenue_per_class.append(revenue_per_class_today)
+        next_30_days = [env.get_next_30_days(new_user_1, daily_price, 1), env.get_next_30_days(new_user_2, daily_price, 2), env.get_next_30_days(new_user_3, daily_price, 3)]
+
+        if context == 1:
+            tsgauss_learner.update_observations(daily_arm, sum(revenue_per_class_today), [next_30_days[0][i] + next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0])])
+
+        if context == 2:
+            tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
+            tsgauss_learner_c.update_observations(daily_arm_c, revenue_per_class_today[1] + revenue_per_class_today[2], next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0])] )
+
+        if context == 3:
+            tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
+            tsgauss_learner_d.update_observations(daily_arm_b, revenue_per_class_today[1], next_30_days[1])
+            tsgauss_learner_e.update_observations(daily_arm_b, revenue_per_class_today[2], next_30_days[2])
