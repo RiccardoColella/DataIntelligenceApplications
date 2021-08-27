@@ -125,10 +125,6 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
 
 
 def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
-<<<<<<< HEAD
-
-    return False
-=======
     'return true if we need to split the context c, false otherwise'
 
     day = len(rev_per_class)
@@ -211,8 +207,7 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
     return splitting(pd, mud, pe, mue, mu0)
-    
->>>>>>> 4b9df377c909332c79a31a94355bda85ee1c393a
+
 
 
 if __name__ == '__main__':

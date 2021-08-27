@@ -18,7 +18,7 @@ bids = [0.6]
 # day of algorithm execution
 T = 394
 # How many computation exectute
-N = 50
+N = 200
 
 
 def iterate_days(results_queue, idx=0):
