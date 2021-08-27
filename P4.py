@@ -14,8 +14,15 @@ T = 365
 prices = np.linspace(1, 10, num=10)
 bids = [0.7]
 
+mu0 = 800
+tau = 10
+sigma0 = 5
+
 users_per_class = []
+revenue_per_class = []
 daily_arm_per_class = []
+
+last30dayschoice = []
 
 context = 1
 
@@ -25,7 +32,7 @@ def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
     if split_context == 1 and context_a_split(rev_per_class, d_arm_per_class, us_per_class) is False:
         return 1
 
-    elif split_context == 2 and context_a_split(rev_per_class, d_arm_per_class, us_per_class) is False:
+    elif split_context == 2 and context_c_split(rev_per_class, d_arm_per_class, us_per_class) is False:
         return 2
 
     else:
@@ -173,7 +180,7 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     pd = d_users / (d_users + e_users)
     pe = e_users / (d_users + e_users)
 
-    #  and pe are lower bounds
+    # pd and pe are lower bounds
     pd = pd - np.sqrt( - np.log (confidence) / (2 * (d_users + e_users)) )
     pe = pe - np.sqrt( - np.log (confidence) / (2 * (d_users + e_users)) )
 
@@ -209,7 +216,8 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
 
 if __name__ == '__main__':
     env = Environment()
-    tsgauss_learner = TSLearnerGauss(len(prices))
+    n_arms = len(prices)
+    tsgauss_learner = TSLearnerGauss(n_arms, [], [mu0] * n_arms, [tau] * n_arms, sigma0)
 
     for t in range(T):
 
@@ -244,7 +252,10 @@ if __name__ == '__main__':
                     ## TODO: all
                     if context == 2:
                         print('A -- > B + C at day: ' + str (t))
-                        tsgauss_learner_b = TSLearnerGauss(len(prices), )
+
+                        #mub
+
+                        tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(revenue_per_class)], )
 
 
             if context == 1:
@@ -279,6 +290,7 @@ if __name__ == '__main__':
             revenue_per_class_today.append(margin * daily_bought_items_perclass[i] - cost[i] * new_users[i])
 
         next_30_days = [env.get_next_30_days(new_user_1, daily_price, 1), env.get_next_30_days(new_user_2, daily_price, 2), env.get_next_30_days(new_user_3, daily_price, 3)]
+        sum_next_30_days = [sum(next_30_days[i]) for i in range(next_30_days)]
 
         if context == 1:
             tsgauss_learner.update_observations(daily_arm, sum(revenue_per_class_today), [next_30_days[0][i] + next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0])])
@@ -291,3 +303,5 @@ if __name__ == '__main__':
             tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
             tsgauss_learner_d.update_observations(daily_arm_b, revenue_per_class_today[1], next_30_days[1])
             tsgauss_learner_e.update_observations(daily_arm_b, revenue_per_class_today[2], next_30_days[2])
+
+        revenue_per_class = revenue_per_class.append([revenue_per_class_today[i] + sum_next_30_days[i] for i in range(revenue_per_class_today)])
