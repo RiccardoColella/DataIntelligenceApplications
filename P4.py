@@ -18,35 +18,12 @@ mu0 = 800
 tau = 10
 sigma0 = 5
 
-users_per_class = []
-revenue_per_class = []
-daily_arm_per_class = []
-
-last30dayschoice = []
-
-context = 1
-
-
-def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
-    ## TODO: mi sa che sti if else sono da sistemare lol
-    if split_context == 1 and context_a_split(rev_per_class, d_arm_per_class, us_per_class) is False:
-        return 1
-
-    elif split_context == 2 and context_c_split(rev_per_class, d_arm_per_class, us_per_class) is False:
-        return 2
-
-    else:
-        return 3
-
-
 def splitting(p1, mu1, p2, mu2, mu0):
     # return true if we need to split the context, false otherwise
     return p1 * mu1 + p2 * mu2 > mu0
 
-# TODO: Should we group all the splitted context in one single function?
-
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
-    # return true if we need to split the context a, false otherwise
+    'return true if we need to split the context a, false otherwise'
 
     day = len(rev_per_class) - 30
     n_arms = max(d_arm_per_class)
@@ -214,8 +191,36 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
 
     return splitting(pd, mud, pe, mue, mu0)
 
+def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
+    'decide if a split is needed and return the best context'
+
+    if split_context == 1:
+        if context_a_split(rev_per_class, d_arm_per_class, us_per_class):
+            return 2
+        else:
+            return 1
+
+    elif split_context == 2:
+        if context_c_split(rev_per_class, d_arm_per_class, us_per_class):
+            return 3
+        else:
+            return 2
+
+    else:
+        return 3
+
+## TODO: parallelization like P3
+
 if __name__ == '__main__':
     env = Environment()
+
+    users_per_class = []
+    revenue_per_class = []
+    daily_arm_per_class = []
+    last30dayschoice = []
+
+    context = 1
+
     n_arms = len(prices)
     tsgauss_learner = TSLearnerGauss(n_arms, [], [mu0] * n_arms, [tau] * n_arms, sigma0)
 
@@ -245,7 +250,6 @@ if __name__ == '__main__':
         else:
             if t % 7 == 0:
                 context_old = context
-                # TODO: manage delay
                 context = split(context_old, revenue_per_class, daily_arm_per_class, users_per_class)
 
                 if context > context_old:
@@ -253,10 +257,38 @@ if __name__ == '__main__':
                     if context == 2:
                         print('A -- > B + C at day: ' + str (t))
 
-                        #mub
+                        #compute tau_b and mu_b then create the new tsgauss_learner_b
+                        reward_per_arm_b = [0] * n_arms
+                        n_pulled_arm_b = [0] * n_arms
+                        for i in range(t-30):
+                              n_pulled_arm_b[d_arm_per_class[i][0]] += 1
+                              reward_per_arm_b[d_arm_per_class[i][0]] += rev_per_class[i][0]
 
-                        tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(revenue_per_class)], )
+                        mean_per_arm_b = [a / b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element wise division python
 
+                        mu_b = n_pulled_arm_b * tau^2 * mean_best_arm_b / (n_pulled_arm_b * tau^2 + sigma0^2) + sigma0^2 * mu0 / (n_pulled_arm_b * tau^2 + sigma0^2)
+
+                        tau_b = (sigma0 * tau)^2 / (n_pulled_arm_b * tau^2 + sigma0^2)
+                        k = 29 #magic parameter
+
+                        tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[0][i] for i in range(t-k,t)], [revenue_per_class[0][i] for i in range(t-k,t)], reward_per_arm_b, t)
+
+                        #compute tau_c and mu_c then create the new tsgauss_learner_c
+                        reward_per_arm_c = [0] * n_arms
+                        n_pulled_arm_c = [0] * n_arms
+                        for i in range(day):
+                            n_pulled_arm_c[d_arm_per_class[i][1]] += 1
+                            reward_per_arm_c[d_arm_per_class[i][1]] += rev_per_class[i][1] + rev_per_class[i][2]
+
+                        mean_per_arm_c = [a / b for a, b in zip(reward_per_arm_c, n_pulled_arm_c)]  # element wise division python
+
+                        mu_c = n_pulled_arm_c * tau^2 * mean_best_arm_c / (n_pulled_arm_c * tau^2 + sigma0^2) + sigma0^2 * mu0 / (n_pulled_arm_c * tau^2 + sigma0^2)
+                        tau_c = (sigma0 * tau)^2 / (n_pulled_arm_c * tau^2 + sigma0^2)
+                        k = 29 #magic parameter
+
+                        tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[0][i] for i in range(t-k,t)], [revenue_per_class[1][i] + revenue_per_class[2][i] for i in range(t-k,t)], reward_per_arm_c, t)
+
+                    ## TODO: if context == 3
 
             if context == 1:
                 daily_arm = tsgauss_learner.pull_arm()
@@ -297,7 +329,7 @@ if __name__ == '__main__':
 
         if context == 2:
             tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
-            tsgauss_learner_c.update_observations(daily_arm_c, revenue_per_class_today[1] + revenue_per_class_today[2], next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0])] )
+            tsgauss_learner_c.update_observations(daily_arm_c, revenue_per_class_today[1] + revenue_per_class_today[2], next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0]) )
 
         if context == 3:
             tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
