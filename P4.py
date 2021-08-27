@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.stats import t
+from scipy.stats import t as tstudent
 
 from environment import Environment
 from tsgaussp4 import TSLearnerGauss
@@ -7,7 +7,7 @@ from tsgaussp4 import TSLearnerGauss
 # A --> B + C
 # C --> D + E
 
-confidence = 0.9
+confidence = 0.95
 
 T = 365
 
@@ -18,15 +18,14 @@ mu0 = 800
 tau = 10
 sigma0 = 5
 
-def splitting(p1, mu1, p2, mu2, mu0):
+def splitting(p1, mu1, p2, mu2, muzero):
     # return true if we need to split the context, false otherwise
-    return p1 * mu1 + p2 * mu2 > mu0
+    return p1 * mu1 + p2 * mu2 > muzero
 
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context a, false otherwise'
 
     day = len(rev_per_class) - 30
-    n_arms = max(d_arm_per_class)
 
     # Here we find the best arm for b and we compute some parameters
     reward_per_arm_b = [0] * n_arms
@@ -35,7 +34,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
         n_pulled_arm_b[d_arm_per_class[i][0]] += 1
         reward_per_arm_b[d_arm_per_class[i][0]] += rev_per_class[i][0]
 
-    mean_per_arm_b = [a / b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element wise division python
+    mean_per_arm_b = [a / b if b!=0 else b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element wise division python
     mean_best_arm_b = max(mean_per_arm_b)
     best_arm_b = mean_per_arm_b.index(mean_best_arm_b)
 
@@ -46,7 +45,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
         n_pulled_arm_c[d_arm_per_class[i][1]] += 1
         reward_per_arm_c[d_arm_per_class[i][1]] += rev_per_class[i][1] + rev_per_class[i][2]
 
-    mean_per_arm_c = [a / b for a, b in zip(reward_per_arm_c, n_pulled_arm_c)]  # element wise division python
+    mean_per_arm_c = [a / b if b!=0 else b for a, b in zip(reward_per_arm_c, n_pulled_arm_c)]  # element wise division python
     mean_best_arm_c = max(mean_per_arm_c)
     best_arm_c = mean_per_arm_c.index(mean_best_arm_c)
 
@@ -57,7 +56,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
         n_pulled_arm_tot[d_arm_per_class[i][0]] += 1
         reward_per_arm_tot[d_arm_per_class[i][0]] += sum(rev_per_class[i])
 
-    mean_per_arm_tot = [a / b for a, b in zip(reward_per_arm_tot, n_pulled_arm_tot)]  # element wise division python
+    mean_per_arm_tot = [a / b if b!=0 else b for a, b in zip(reward_per_arm_tot, n_pulled_arm_tot)]  # element wise division python
     mean_best_arm_tot = max(mean_per_arm_tot)
     best_arm_tot = mean_per_arm_tot.index(mean_best_arm_tot)
 
@@ -77,41 +76,45 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     pc = pc - np.sqrt( - np.log (confidence) / (2 * (b_users + c_users)) )
 
     # compute variance revenue for best arm b, c, and tot
-    rewards_best_arm_b = np.array()
-    rewards_best_arm_c = np.array()
-    rewards_best_arm_tot = np.array()
+    rewards_best_arm_b = np.empty(0)
+    rewards_best_arm_c = np.empty(0)
+    rewards_best_arm_tot = np.empty(0)
 
     for j in range(day):
 
         if d_arm_per_class[j][0] == best_arm_b:
-            np.append(rewards_best_arm_b, rev_per_class[j][0])
+            rewards_best_arm_b = np.append(rewards_best_arm_b, rev_per_class[j][0])
 
         if d_arm_per_class[j][1] == best_arm_c:
-            np.append(rewards_best_arm_c, (rev_per_class[j][1] + rev_per_class[j][2]))
+            rewards_best_arm_c = np.append(rewards_best_arm_c, (rev_per_class[j][1] + rev_per_class[j][2]))
 
         if d_arm_per_class[j][0] == best_arm_tot:
-            np.append(rewards_best_arm_tot, (sum(rev_per_class[j])))
+            rewards_best_arm_tot = np.append(rewards_best_arm_tot, (sum(rev_per_class[j])))
 
-    var_b = np.var(rewards_best_arm_b, ddof=1)
-    var_c = np.var(rewards_best_arm_c, ddof=1)
-    var_tot = np.var(rewards_best_arm_tot, ddof=1)
+    var_b = np.var(rewards_best_arm_b, ddof = 1)
+    var_c = np.var(rewards_best_arm_c, ddof = 1)
+    var_tot = np.var(rewards_best_arm_tot, ddof = 1)
 
     # find lower bound mub, muc mu0
-    mub = mean_best_arm_b - t.ppf(confidence, (n_pulled_arm_b[best_arm_b] - 1), loc=0, scale=1) * np.sqrt(
+    mub = mean_best_arm_b - tstudent.ppf(confidence, (n_pulled_arm_b[best_arm_b] - 1), loc=0, scale=1) * np.sqrt(
         var_b / n_pulled_arm_b[best_arm_b])
-    muc = mean_best_arm_c - t.ppf(confidence, (n_pulled_arm_c[best_arm_c] - 1), loc=0, scale=1) * np.sqrt(
+    muc = mean_best_arm_c - tstudent.ppf(confidence, (n_pulled_arm_c[best_arm_c] - 1), loc=0, scale=1) * np.sqrt(
         var_c / n_pulled_arm_c[best_arm_c])
-    mu0 = mean_best_arm_tot - t.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
+    muzero = mean_best_arm_tot - tstudent.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
-    return splitting(pb, mub, pc, muc, mu0)
+    print(best_arm_b)
+    print(best_arm_c)
+    print(best_arm_tot)
+    ## TODO: modificare i dati affinchè ci venga qualcosa lol
+
+    return splitting(pb, mub, pc, muc, muzero)
 
 
 def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context c, false otherwise'
 
     day = len(rev_per_class) - 30
-    n_arms = max(d_arm_per_class)
 
     # Here we find the best arm for d and we compute some parameters
     reward_per_arm_d = [0] * n_arms
@@ -120,7 +123,7 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
         n_pulled_arm_d[d_arm_per_class[i][1]] += 1
         reward_per_arm_d[d_arm_per_class[i][1]] += rev_per_class[i][1]
 
-    mean_per_arm_d = [a / b for a, b in zip(reward_per_arm_d, n_pulled_arm_d)]  # element wise division python
+    mean_per_arm_d = [a / b if b!=0 else b for a, b in zip(reward_per_arm_d, n_pulled_arm_d)]  # element wise division python
     mean_best_arm_d = max(mean_per_arm_d)
     best_arm_d = mean_per_arm_d.index(mean_best_arm_d)
 
@@ -131,7 +134,7 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
         n_pulled_arm_e[d_arm_per_class[i][2]] += 1
         reward_per_arm_e[d_arm_per_class[i][2]] += rev_per_class[i][2]
 
-    mean_per_arm_e = [a / b for a, b in zip(reward_per_arm_e, n_pulled_arm_e)]  # element wise division python
+    mean_per_arm_e = [a / b if b!=0 else b for a, b in zip(reward_per_arm_e, n_pulled_arm_e)]  # element wise division python
     mean_best_arm_e = max(mean_per_arm_e)
     best_arm_e = mean_per_arm_e.index(mean_best_arm_e)
 
@@ -142,7 +145,7 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
         n_pulled_arm_tot[d_arm_per_class[i][1]] += 1
         reward_per_arm_tot[d_arm_per_class[i][1]] += sum(rev_per_class[i][1]) + sum(rev_per_class[i][2])
 
-    mean_per_arm_tot = [a / b for a, b in zip(reward_per_arm_tot, n_pulled_arm_tot)]  # element wise division python
+    mean_per_arm_tot = [a / b if b!=0 else b for a, b in zip(reward_per_arm_tot, n_pulled_arm_tot)]  # element wise division python
     mean_best_arm_tot = max(mean_per_arm_tot)
     best_arm_tot = mean_per_arm_tot.index(mean_best_arm_tot)
 
@@ -162,34 +165,34 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     pe = pe - np.sqrt( - np.log (confidence) / (2 * (d_users + e_users)) )
 
     # compute variance revenue for best arm b, c, and tot
-    rewards_best_arm_d = np.array()
-    rewards_best_arm_e = np.array()
-    rewards_best_arm_tot = np.array()
+    rewards_best_arm_d = np.empty(0)
+    rewards_best_arm_e = np.empty(0)
+    rewards_best_arm_tot = np.empty(0)
 
     for j in range(day):
 
         if d_arm_per_class[j][1] == best_arm_d:
-            np.append(rewards_best_arm_d, rev_per_class[j][1])
+            rewards_best_arm_d = np.append(rewards_best_arm_d, rev_per_class[j][1])
 
         if d_arm_per_class[j][2] == best_arm_e:
-            np.append(rewards_best_arm_e, (rev_per_class[j][2]))
+            rewards_best_arm_e = np.append(rewards_best_arm_e, (rev_per_class[j][2]))
 
         if d_arm_per_class[j][1] == best_arm_tot:
-            np.append(rewards_best_arm_tot, (sum(rev_per_class[j][1]) + sum(rev_per_class[j][2]) ) )
+            rewards_best_arm_tot = np.append(rewards_best_arm_tot, (sum(rev_per_class[j][1]) + sum(rev_per_class[j][2]) ) )
 
-    var_d = np.var(rewards_best_arm_d, ddof=1)
-    var_e = np.var(rewards_best_arm_e, ddof=1)
-    var_tot = np.var(rewards_best_arm_tot, ddof=1)
+    var_d = np.var(rewards_best_arm_d, ddof = 1)
+    var_e = np.var(rewards_best_arm_e, ddof = 1)
+    var_tot = np.var(rewards_best_arm_tot, ddof = 1)
 
     # find lower bound mub, muc mu0
-    mud = mean_best_arm_d - t.ppf(confidence, (n_pulled_arm_d[best_arm_d] - 1), loc=0, scale=1) * np.sqrt(
+    mud = mean_best_arm_d - tstudent.ppf(confidence, (n_pulled_arm_d[best_arm_d] - 1), loc=0, scale=1) * np.sqrt(
         var_d / n_pulled_arm_d[best_arm_d])
-    mue = mean_best_arm_e - t.ppf(confidence, (n_pulled_arm_e[best_arm_e] - 1), loc=0, scale=1) * np.sqrt(
+    mue = mean_best_arm_e - tstudent.ppf(confidence, (n_pulled_arm_e[best_arm_e] - 1), loc=0, scale=1) * np.sqrt(
         var_e / n_pulled_arm_e[best_arm_e])
-    mu0 = mean_best_arm_tot - t.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
+    muzero = mean_best_arm_tot - tstudent.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
-    return splitting(pd, mud, pe, mue, mu0)
+    return splitting(pd, mud, pe, mue, muzero)
 
 def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
     'decide if a split is needed and return the best context'
@@ -315,25 +318,25 @@ if __name__ == '__main__':
                 buy = env.buy(daily_price[i], i + 1)
                 daily_bought_items_perclass[i] += buy
 
-        margin = [env.get_margin(i) for i in daily_price]
+        margin = [env.get_margin(int(price)) for price in daily_price]
 
         revenue_per_class_today = []
-        for i in range(margin):
-            revenue_per_class_today.append(margin * daily_bought_items_perclass[i] - cost[i] * new_users[i])
+        for i in range(len(margin)):
+            revenue_per_class_today.append(margin[i] * daily_bought_items_perclass[i] - cost[i] * new_users[i])
 
-        next_30_days = [env.get_next_30_days(new_user_1, daily_price, 1), env.get_next_30_days(new_user_2, daily_price, 2), env.get_next_30_days(new_user_3, daily_price, 3)]
-        sum_next_30_days = [sum(next_30_days[i]) for i in range(next_30_days)]
+        next_30_days = [env.get_next_30_days(new_user_1, daily_price[0], 1), env.get_next_30_days(new_user_2, daily_price[1], 2), env.get_next_30_days(new_user_3, daily_price[2], 3)]
+        sum_next_30_days = [sum(next_30_days[i]) for i in range(len(next_30_days))]
 
         if context == 1:
-            tsgauss_learner.update_observations(daily_arm, sum(revenue_per_class_today), [next_30_days[0][i] + next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0])])
+            tsgauss_learner.update_observations(daily_arm, sum(revenue_per_class_today), [next_30_days[0][i] + next_30_days[1][i] + next_30_days[2][i] for i in range(len(next_30_days[0]))])
 
         if context == 2:
             tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
-            tsgauss_learner_c.update_observations(daily_arm_c, revenue_per_class_today[1] + revenue_per_class_today[2], [next_30_days[1][i] + next_30_days[2][i] for i in range(next_30_days[0])])
+            tsgauss_learner_c.update_observations(daily_arm_c, revenue_per_class_today[1] + revenue_per_class_today[2], [next_30_days[1][i] + next_30_days[2][i] for i in range(len(next_30_days[0]))])
 
         if context == 3:
             tsgauss_learner_b.update_observations(daily_arm_b, revenue_per_class_today[0], next_30_days[0])
             tsgauss_learner_d.update_observations(daily_arm_b, revenue_per_class_today[1], next_30_days[1])
             tsgauss_learner_e.update_observations(daily_arm_b, revenue_per_class_today[2], next_30_days[2])
 
-        revenue_per_class = revenue_per_class.append([revenue_per_class_today[i] + sum_next_30_days[i] for i in range(revenue_per_class_today)])
+        revenue_per_class.append([revenue_per_class_today[i] + sum_next_30_days[i] for i in range(len(revenue_per_class_today))])
