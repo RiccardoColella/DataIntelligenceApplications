@@ -261,12 +261,12 @@ if __name__ == '__main__':
                         reward_per_arm_b = [0] * n_arms
                         n_pulled_arm_b = [0] * n_arms
                         for i in range(t-30):
-                              n_pulled_arm_b[d_arm_per_class[i][0]] += 1
-                              reward_per_arm_b[d_arm_per_class[i][0]] += rev_per_class[i][0]
+                              n_pulled_arm_b[daily_arm_per_class[i][0]] += 1
+                              reward_per_arm_b[daily_arm_per_class[i][0]] += revenue_per_class[i][0]
 
                         mean_per_arm_b = [a / b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element wise division python
 
-                        mu_b = n_pulled_arm_b * tau^2 * mean_best_arm_b / (n_pulled_arm_b * tau^2 + sigma0^2) + sigma0^2 * mu0 / (n_pulled_arm_b * tau^2 + sigma0^2)
+                        mu_b = n_pulled_arm_b * tau^2 * mean_per_arm_b / (n_pulled_arm_b * tau^2 + sigma0^2) + sigma0^2 * mu0 / (n_pulled_arm_b * tau^2 + sigma0^2)
 
                         tau_b = (sigma0 * tau)^2 / (n_pulled_arm_b * tau^2 + sigma0^2)
                         k = 29 #magic parameter
@@ -276,13 +276,13 @@ if __name__ == '__main__':
                         #compute tau_c and mu_c then create the new tsgauss_learner_c
                         reward_per_arm_c = [0] * n_arms
                         n_pulled_arm_c = [0] * n_arms
-                        for i in range(day):
-                            n_pulled_arm_c[d_arm_per_class[i][1]] += 1
-                            reward_per_arm_c[d_arm_per_class[i][1]] += rev_per_class[i][1] + rev_per_class[i][2]
+                        for i in range(t-30):
+                            n_pulled_arm_c[daily_arm_per_class[i][1]] += 1
+                            reward_per_arm_c[daily_arm_per_class[i][1]] += revenue_per_class[i][1] + revenue_per_class[i][2]
 
                         mean_per_arm_c = [a / b for a, b in zip(reward_per_arm_c, n_pulled_arm_c)]  # element wise division python
 
-                        mu_c = n_pulled_arm_c * tau^2 * mean_best_arm_c / (n_pulled_arm_c * tau^2 + sigma0^2) + sigma0^2 * mu0 / (n_pulled_arm_c * tau^2 + sigma0^2)
+                        mu_c = n_pulled_arm_c * tau^2 * mean_per_arm_c / (n_pulled_arm_c * tau^2 + sigma0^2) + sigma0^2 * mu0 / (n_pulled_arm_c * tau^2 + sigma0^2)
                         tau_c = (sigma0 * tau)^2 / (n_pulled_arm_c * tau^2 + sigma0^2)
                         k = 29 #magic parameter
 
