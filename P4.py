@@ -4,6 +4,9 @@ from scipy.stats import t
 from environment import Environment
 from tsgaussp4 import TSLearnerGauss
 
+# A --> B + C
+# C --> D + E
+
 confidence = 0.9
 
 T = 365
@@ -19,6 +22,7 @@ context = 1
 
 
 def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
+    ## TODO: mi sa che sti if else sono da sistemare lol
     if split_context == 1 and context_a_split(rev_per_class, d_arm_per_class, us_per_class) is False:
         return 1
 
@@ -73,8 +77,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     mean_best_arm_tot = max(mean_per_arm_tot)
     best_arm_tot = mean_per_arm_tot.index(mean_best_arm_tot)
 
-    # trovo probabilità context b e c
-    # TODO: find lower bound on probabilities
+    # find probability of context b and c, then compute the lower bounds
     b_users = 0
     c_users = 0
 
@@ -84,6 +87,10 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
 
     pb = b_users / (b_users + c_users)
     pc = c_users / (b_users + c_users)
+
+    # pb and pc are lower bounds
+    pb = pb - np.sqrt( - np.log (confidence) / (2 * (b_users + c_users)) )
+    pc = pc - np.sqrt( - np.log (confidence) / (2 * (b_users + c_users)) )
 
     # compute variance revenue for best arm b, c, and tot
     rewards_best_arm_b = np.array()
@@ -105,7 +112,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     var_c = np.var(rewards_best_arm_c, ddof=1)
     var_tot = np.var(rewards_best_arm_tot, ddof=1)
 
-    # trovo i lower bound mub, muc mu0
+    # find lower bound mub, muc mu0
     mub = mean_best_arm_b - t.ppf(confidence, (n_pulled_arm_b[best_arm_b] - 1), loc=0, scale=1) * np.sqrt(
         var_b / n_pulled_arm_b[best_arm_b])
     muc = mean_best_arm_c - t.ppf(confidence, (n_pulled_arm_c[best_arm_c] - 1), loc=0, scale=1) * np.sqrt(
