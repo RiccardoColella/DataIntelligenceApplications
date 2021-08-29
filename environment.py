@@ -224,13 +224,16 @@ class Customer:
         n_comebacks = self.n_times_comeback()
 
         comebacks = []
-        period = 30 / float(n_comebacks)
-        for i in range(1, n_comebacks + 1):
-            mean = i*period
-            return_day = np.around(np.random.normal(loc=mean, scale=2, size=1))
-            comebacks.append(int((max(min(return_day, 30), 1))))
+        if n_comebacks == 0:
+            return comebacks
+        else:
+            period = 30 / float(n_comebacks)
+            for i in range(1, n_comebacks + 1):
+                mean = i*period
+                return_day = np.around(np.random.normal(loc=mean, scale=2, size=1))
+                comebacks.append(int((max(min(return_day, 30), 1))))
 
-        return comebacks
+            return comebacks
 
     def get_mean_n_times_comeback(self):
         return self.mean_n_times_comeback

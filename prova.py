@@ -1,3 +1,3 @@
-import numpy
+from scipy.stats import t as tstudent
 
-numpy.add(numpy.array([2, 1]), numpy.array([2, 1]))
+print(tstudent.ppf(0.99,1))
