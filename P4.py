@@ -312,12 +312,21 @@ for iter in range(20):
                             n_pulled_arm_b[daily_arm_per_class[i][0]] += 1
                             reward_per_arm_b[daily_arm_per_class[i][0]] += revenue_per_class[i][0]
 
-                        mean_per_arm_b = [a / b if b!=0 else b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element wise division python
+                        mean_per_arm_b = [a / b if b!=0 else b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element
+                        
+                        #convert list to array
+                        n_pulled_arm_b = np.array([n_pulled_arm_b])
+                        mean_per_arm_b = np.array([mean_per_arm_b])
 
                         mu_b = n_pulled_arm_b * tau**2 * mean_per_arm_b / (n_pulled_arm_b * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_b * tau**2 + sigma0**2)
 
                         tau_b = (sigma0 * tau)**2 / (n_pulled_arm_b * tau**2 + sigma0**2)
                         k = 30 #magic parameter
+                        
+                        #convert array to list
+                        n_pulled_arm_b=n_pulled_arm_b.tolist()
+                        mean_per_arm_b=mean_per_arm_b.tolist()
+                        
 
                         tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[0][i] for i in range(t-k,t)], [revenue_per_class[0][i] for i in range(t-k,t)], reward_per_arm_b, t)
 
