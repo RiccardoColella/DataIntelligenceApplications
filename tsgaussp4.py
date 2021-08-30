@@ -64,5 +64,3 @@ class TSLearnerGauss(Learner):
             self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
 
         self.t += 1
-
-        '''print(self.mu)'''

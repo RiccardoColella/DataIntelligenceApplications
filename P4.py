@@ -32,13 +32,6 @@ def splitting(p1, mu1, p2, mu2, muzero):
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context a, false otherwise'
 
-    '''print('rev_per_class')
-    print(rev_per_class)
-    print('d_arm_per_class')
-    print(d_arm_per_class)
-    print('us_per_class')
-    print(us_per_class)'''
-
     day = len(rev_per_class)
 
     # Here we find the best arm for b and we compute some parameters
@@ -150,7 +143,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
 def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context c, false otherwise'
 
-    day = len(rev_per_class) - 30
+    day = len(rev_per_class)
 
     # Here we find the best arm for d and we compute some parameters
     reward_per_arm_d = [0] * n_arms
@@ -177,9 +170,10 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     # here we find the best arm in total
     reward_per_arm_tot = [0] * n_arms
     n_pulled_arm_tot = [0] * n_arms
+
     for i in range(day):
         n_pulled_arm_tot[d_arm_per_class[i][1]] += 1
-        reward_per_arm_tot[d_arm_per_class[i][1]] += sum(rev_per_class[i][1]) + sum(rev_per_class[i][2])
+        reward_per_arm_tot[d_arm_per_class[i][1]] += rev_per_class[i][1] + rev_per_class[i][2]
 
     mean_per_arm_tot = [a / b if b!=0 else b for a, b in zip(reward_per_arm_tot, n_pulled_arm_tot)]  # element wise division python
     mean_best_arm_tot = max(mean_per_arm_tot)
@@ -214,7 +208,7 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
             rewards_best_arm_e = np.append(rewards_best_arm_e, (rev_per_class[j][2]))
 
         if d_arm_per_class[j][1] == best_arm_tot:
-            rewards_best_arm_tot = np.append(rewards_best_arm_tot, (sum(rev_per_class[j][1]) + sum(rev_per_class[j][2]) ) )
+            rewards_best_arm_tot = np.append(rewards_best_arm_tot, rev_per_class[j][1] + rev_per_class[j][2] )
 
     var_d = np.var(rewards_best_arm_d, ddof = 1)
     var_e = np.var(rewards_best_arm_e, ddof = 1)
@@ -301,7 +295,7 @@ for iter in range(20):
                 print(context)'''
 
                 if context > context_old:
-                    ## TODO: all
+                    
                     if context == 2:
                         print('A -- > B + C at day: ' + str (t) + '--------------------------------------------------------------------------------------------------------------------------------' + str(iter))
 
@@ -313,7 +307,7 @@ for iter in range(20):
                             reward_per_arm_b[daily_arm_per_class[i][0]] += revenue_per_class[i][0]
 
                         mean_per_arm_b = [a / b if b!=0 else b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element
-                        
+
                         #convert list to array
                         n_pulled_arm_b = np.array([n_pulled_arm_b])
                         mean_per_arm_b = np.array([mean_per_arm_b])
@@ -322,13 +316,19 @@ for iter in range(20):
 
                         tau_b = (sigma0 * tau)**2 / (n_pulled_arm_b * tau**2 + sigma0**2)
                         k = 30 #magic parameter
-                        
+
                         #convert array to list
                         n_pulled_arm_b=n_pulled_arm_b.tolist()
                         mean_per_arm_b=mean_per_arm_b.tolist()
-                        
+                        mu_b=mu_b.tolist()
+                        mu_b = mu_b[0]
+                        tau_b=tau_b.tolist()
+                        tau_b = tau_b[0]
 
-                        tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[0][i] for i in range(t-k,t)], [revenue_per_class[0][i] for i in range(t-k,t)], reward_per_arm_b, t)
+
+                        tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][0] for i in range(t-k,t)], np.array(reward_per_arm_b), t)
+
+
 
                         #compute tau_c and mu_c then create the new tsgauss_learner_c
                         reward_per_arm_c = [0] * n_arms
@@ -339,10 +339,22 @@ for iter in range(20):
 
                         mean_per_arm_c = [a / b if b!=0 else b for a, b in zip(reward_per_arm_c, n_pulled_arm_c)]  # element wise division python
 
+                        #convert list to array
+                        n_pulled_arm_c = np.array([n_pulled_arm_c])
+                        mean_per_arm_c = np.array([mean_per_arm_c])
+
                         mu_c = n_pulled_arm_c * tau**2 * mean_per_arm_c / (n_pulled_arm_c * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_c * tau**2 + sigma0**2)
                         tau_c = (sigma0 * tau)**2 / (n_pulled_arm_c * tau**2 + sigma0**2)
 
-                        tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[0][i] for i in range(t-k,t)], [revenue_per_class[1][i] + revenue_per_class[2][i] for i in range(t-k,t)], reward_per_arm_c, t)
+                        #convert array to list
+                        n_pulled_arm_c=n_pulled_arm_c.tolist()
+                        mean_per_arm_c=mean_per_arm_c.tolist()
+                        mu_c=mu_c.tolist()
+                        tau_c=tau_c.tolist()
+                        mu_c = mu_c[0]
+                        tau_c = tau_c[0]
+
+                        tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_c, tau_c, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_c), t)
 
                     ## TODO: if context == 3
 
