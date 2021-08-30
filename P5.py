@@ -1,9 +1,37 @@
+# the following lines just add verbose option and others command line options
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
+
+# how many executions:
+parser.add_argument('-n', help="set number of iteration", default = 200)
+N = int(parser.parse_args().n)
+
+verbose = parser.parse_args().verbose
+
+if verbose:
+    def log(argument):
+        print(argument)
+else:
+    def log(argument):
+        return
+
+# now the real code begins
+
+import multiprocessing
+import os
+
 import numpy as np
 
 from environment import Environment
 from tsgaussp5 import TSLearnerGauss
 
-T = 365
+from operator import add
+
+env = Environment()
+
+T = 394 # day of algorithm execution
 
 prices = [8]
 bids = np.linspace(0.1, 1, num=10)
@@ -23,6 +51,8 @@ for t in range(T):
     # Get new users in the day t and their costs
     [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(bids[0])
     new_users = [new_user_1, new_user_2, new_user_3]
+    [cost1, cost2, cost3] = env.get_all_cost_per_click(bids[0])
+    cost = [cost1, cost2, cost3]
 
     # Get the total cost
     total_cost = 0
@@ -36,6 +66,9 @@ for t in range(T):
         for c in range(new_users[user]):
             daily_bought_items_per_class[user] += env.buy(prices[0], user + 1)
 
+    # Sum up the n. of bought items
+    daily_bought_items = sum(daily_bought_items_per_class)
+
     # Calculate the revenue
     daily_revenue = daily_bought_items * env.get_margin(prices[0]) - total_cost
 
@@ -43,7 +76,7 @@ for t in range(T):
     next_30_days = [0] * 30
     for user in range(1, 4):
         next_30_days = list(
-            map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class[user - 1], daily_price,user)))
+            map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class[user - 1], prices[0],user)))
 
     #update observations
     tsgauss_learner.update_observations(daily_arm, daily_revenue, next_30_days)

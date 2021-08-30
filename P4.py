@@ -1,3 +1,19 @@
+# the following lines just add verbose option and others command line options
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
+verbose = parser.parse_args().verbose
+
+if verbose:
+    def log(argument):
+        print(argument)
+else:
+    def log(argument):
+        return
+
+# now the real code begins
+
 import numpy as np
 from scipy.stats import t as tstudent
 
@@ -23,7 +39,13 @@ sigma0 = 5
 
 def splitting(p1, mu1, p2, mu2, muzero):
     'return true if we need to split the context, false otherwise'
+
+    log(f' {p1 = } {mu1 = } {p2 = } {mu2 = } {muzero = }')
+    log('splitting: ' + str(p1 * mu1 + p2 * mu2 > muzero))
+    
     return p1 * mu1 + p2 * mu2 > muzero
+
+## TODO: perchè escono dei nan???
 
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context a, false otherwise'
@@ -106,6 +128,10 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
         var_c / n_pulled_arm_c[best_arm_c])
     muzero = mean_best_arm_tot - tstudent.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
+
+    log('best_arm_b: ' + str(best_arm_b))
+    log('best_arm_c: ' + str(best_arm_c))
+    log('best_arm_tot: ' + str(best_arm_tot))
 
     if best_arm_b != best_arm_c:
         return splitting(pb, mub, pc, muc, muzero)
@@ -194,13 +220,17 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     muzero = mean_best_arm_tot - tstudent.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
+    log('best_arm_d: ' + str(best_arm_d))
+    log('best_arm_e: ' + str(best_arm_e))
+    log('best_arm_tot: ' + str(best_arm_tot))
+
     if best_arm_d!=best_arm_e:
         return splitting(pd, mud, pe, mue, muzero)
     else:
         return False
 
 def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
-    'decide if a split is needed and return the best context'
+    'decide if a split is needed by calling context_a_split or context_c_split and return the best context'
 
     if split_context == 1:
         if context_a_split(rev_per_class, d_arm_per_class, us_per_class):
@@ -263,10 +293,6 @@ if __name__ == '__main__':
                 if t % 7 == 0:
                     context_old = context
                     context = split(context_old, revenue_per_class[0:-30], daily_arm_per_class[0:-30], users_per_class[0:-30])
-
-                    '''print('context:')
-                    print(context_old)
-                    print(context)'''
 
                     # Create new learners if a split has happened
                     if context > context_old:

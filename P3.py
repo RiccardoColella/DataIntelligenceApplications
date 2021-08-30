@@ -1,8 +1,13 @@
-# the following 15 lines just add verbose option
+# the following lines just add verbose option and others command line options
 
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
+
+# how many executions:
+parser.add_argument('-n', help="set number of iteration", default = 200)
+N = int(parser.parse_args().n)
+
 verbose = parser.parse_args().verbose
 
 if verbose:
@@ -16,6 +21,7 @@ else:
 
 import multiprocessing
 import os
+
 from operator import add
 
 import numpy
@@ -33,9 +39,6 @@ prices = numpy.linspace(1, 10, num=10)
 bids = [0.9]
 # day of algorithm execution
 T = 394
-# How many computation exectute
-N = 200
-
 
 def iterate_days(results_queue, idx=0):
     """
@@ -52,10 +55,12 @@ def iterate_days(results_queue, idx=0):
     vector_daily_price_ts_loc = []
     vector_daily_revenue_ts_loc = []
 
+    print('Starting execution' + str(idx))
+
     # For every day:
     for t in range(T):
         if t % 20 == 0:
-            print("Iteration day: {:3d} - execution: {:3d}".format(t, idx))
+            log("Iteration day: {:3d} - execution: {:3d}".format(t, idx))
         # Get new users in the day t and their costs
         [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(bids[0])
         new_users = [new_user_1, new_user_2, new_user_3]
@@ -119,6 +124,8 @@ def iterate_days(results_queue, idx=0):
     results_queue.put((ucb1_learner.collected_rewards, tsgauss_learner.collected_rewards, vector_daily_price_ucb1_loc,
                        vector_daily_revenue_ucb1_loc, vector_daily_price_ts_loc, vector_daily_revenue_ts_loc))
 
+    print('Ending execution' + str(idx))
+
 
 def to_np_arr_and_then_mean(list_of_lists):
     """
@@ -132,6 +139,8 @@ def to_np_arr_and_then_mean(list_of_lists):
 
 
 if __name__ == '__main__':
+
+    log('N = ' + str(N))
 
     collected_rewards_ucb1 = [] * 10
     collected_rewards_ts = [] * N

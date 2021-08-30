@@ -33,9 +33,9 @@ class TSLearnerGauss(Learner):
         index=-2
         m = self.mu
         ta=self.tau
-        
+
         if self.t<10:
-            idx = np.random.uniform(0,len(m))
+            idx = np.random.randint(0,10)
         else:
             while idx != index:
                 mean = np.random.normal(m[:],ta[:])
@@ -45,7 +45,7 @@ class TSLearnerGauss(Learner):
                 else:
                     m=m.delete(index)
                     ta=ta.delete(index)
-                
+
         return idx
 
     def update_observations(self, pulled_arm, reward, delayedr):
