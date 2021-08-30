@@ -4,7 +4,8 @@ import numpy as np
 
 class TSLearnerGauss(Learner):
     """ Thomson Sampling Learner Class """
-    def __init__(self, n_arms, collected_rewards, mu, tau, sigma0, last30dayschoice, delayedreward, rewards_per_arm, t):
+
+    def __init__(self, n_arms):
         """
         Initialize the Thompson Sampling Learner class with number of arms, arms, sigma, expected mean.
         :param n_arms:
@@ -14,15 +15,13 @@ class TSLearnerGauss(Learner):
 
         # Assignments and Initializations
         self.n_arms = n_arms
-        self.sigma = sigma0
-        self.tau = tau
-        self.mu = mu
-        self.collected_rewards = collected_rewards
-        self.last30dayschoice = last30dayschoice
-        self.delayedreward = delayedreward
-        self.rewards_per_arm = rewards_per_arm
-        self.t = t
-        self.percentage = 0.2
+        self.sigma = 5
+        self.tau = [10] * n_arms
+        self.mu = [800] * n_arms
+        self.last30dayschoice = []
+        self.delayedreward = []
+        self.rewards_per_arm = np.zeros(n_arms)
+        self.percentage=0.2
 
     def pull_arm(self):
         """
@@ -33,17 +32,19 @@ class TSLearnerGauss(Learner):
         idx=-1
         index=-2
         m = self.mu
+        ta=self.tau
         
         if self.t<10:
-            idx = np.random.uniform(0,len(self.mu))
+            idx = np.random.uniform(0,len(m))
         else:
             while idx != index:
-                mean = np.random.normal(m[:],self.tau[:])
+                mean = np.random.normal(m[:],ta[:])
                 index = np.argmax(np.random.normal(mean[:], self.sigma))
                 if np.quantile(self.rewards_per_arm[index], self.percentage)>=0:
                     idx = index
                 else:
                     m=m.delete(index)
+                    ta=ta.delete(index)
                 
         return idx
 
@@ -55,6 +56,9 @@ class TSLearnerGauss(Learner):
         :param delayed_r: The reward from the next 30 days
         :return: NA
         """
+
+        #print('arm, reward: ' + str(pulled_arm) + ', ' + str(sum(delayedr)+reward))
+
         if self.t <= 30:
             self.last30dayschoice.append(pulled_arm)
             self.delayedreward.append(sum(delayedr)+reward)
@@ -64,10 +68,10 @@ class TSLearnerGauss(Learner):
             self.delayedreward.pop(0)
             self.delayedreward.append(sum(delayedr)+reward)
 
-        if self.t==1:
-            # just remove the empty list at the beginning
-            self.delayedreward.pop(0)
-        elif self.t >= 30:
+        #print('last30dayschoice: ' + str(self.last30dayschoice))
+        #print('delayedreward: ' + str(self.delayedreward))
+
+        if self.t >= 30:
             self.collected_rewards=np.append(self.collected_rewards,self.delayedreward[0])
             self.rewards_per_arm[self.last30dayschoice[0]] += self.collected_rewards[-1]
             self.n_pulled_arms[self.last30dayschoice[0]] += 1
@@ -77,3 +81,8 @@ class TSLearnerGauss(Learner):
             self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
 
         self.t += 1
+
+        #print("Collected rewards:")
+        #print(self.collected_rewards)
+
+        #print('------')
