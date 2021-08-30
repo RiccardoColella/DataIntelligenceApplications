@@ -61,11 +61,10 @@ def iterate_days(results_queue, idx=0):
         daily_price_ts = prices[daily_arm_ts]
         vector_daily_price_ts_loc.append(daily_price_ts)
 
-        # Get n bought items
+        # Calculate the number of bought items
         daily_bought_items_per_class_ucb1 = [0, 0, 0]
         daily_bought_items_per_class_ts = [0, 0, 0]
 
-        # Calculate the number of real bought items
         for user in range(len(new_users)):
             for c in range(new_users[user]):
                 daily_bought_items_per_class_ucb1[user] += env.buy(daily_price_ucb1, user + 1)
@@ -92,7 +91,7 @@ def iterate_days(results_queue, idx=0):
             next_30_days = list(
                 map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class_ucb1[user - 1], daily_price_ucb1,
                                                             user)))
-        # point-wise list sum
+                                                            
         ucb1_learner.update_observations(daily_arm_ucb1, daily_revenue_ucb1, next_30_days)
 
         # print("Daily revenue UCB1:               {:.5f}".format(daily_revenue_ucb1 + sum(next_30_days)))
