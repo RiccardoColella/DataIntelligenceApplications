@@ -1,3 +1,19 @@
+# the following 15 lines just add verbose option
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
+verbose = parser.parse_args().verbose
+
+if verbose:
+    def log(argument):
+        print(argument)
+else:
+    def log(argument):
+        return
+
+# now the real code begins
+
 import multiprocessing
 import os
 from operator import add
@@ -14,7 +30,7 @@ env = Environment()
 #prices range
 prices = numpy.linspace(1, 10, num=10)
 # bids range
-bids = [0.6]
+bids = [0.9]
 # day of algorithm execution
 T = 394
 # How many computation exectute
@@ -69,9 +85,6 @@ def iterate_days(results_queue, idx=0):
             for c in range(new_users[user]):
                 daily_bought_items_per_class_ucb1[user] += env.buy(daily_price_ucb1, user + 1)
                 daily_bought_items_per_class_ts[user] += env.buy(daily_price_ts, user + 1)
-            '''daily_bought_items_per_class_ucb1[user] = round(env.get_conversion_rate(daily_price_ucb1, user + 1) * new_users[user])
-            daily_bought_items_per_class_ts[user] = round(env.get_conversion_rate(daily_price_ts, user + 1) * new_users[user])'''
-
 
         # Sum up the n. of bought items
         daily_bought_items_ucb1 = sum(daily_bought_items_per_class_ucb1)
@@ -91,11 +104,8 @@ def iterate_days(results_queue, idx=0):
             next_30_days = list(
                 map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class_ucb1[user - 1], daily_price_ucb1,
                                                             user)))
-                                                            
-        ucb1_learner.update_observations(daily_arm_ucb1, daily_revenue_ucb1, next_30_days)
 
-        # print("Daily revenue UCB1:               {:.5f}".format(daily_revenue_ucb1 + sum(next_30_days)))
-        # print("Daily revenue Thomson Sampling:   {:.5f}".format(daily_revenue_ts + sum(next_30_days)))
+        ucb1_learner.update_observations(daily_arm_ucb1, daily_revenue_ucb1, next_30_days)
 
         # get earnings in the following 30 days
         next_30_days = [0] * 30
@@ -122,7 +132,6 @@ def to_np_arr_and_then_mean(list_of_lists):
 
 
 if __name__ == '__main__':
-    # mettere P1 come funzione per poter usare ottimo per calcolare il regret
 
     collected_rewards_ucb1 = [] * 10
     collected_rewards_ts = [] * N
@@ -168,17 +177,18 @@ if __name__ == '__main__':
     plots_folder = os.path.join(cwd, "plots")
     print("Plots folder: " + plots_folder)
 
-    value_line_to_plot = 904
-    plot_line = True
+    # Manual set this variable for plotting and regret
+    best_possible_reward = 3660
+    best_daily_price = 5
 
     # Plot collected rewards
+
     pyplot.figure()
     pyplot.plot(mean_collected_rewards_ucb1)
     pyplot.plot(mean_collected_rewards_ts)
     pyplot.xlim([0, T - 30])
     pyplot.legend(['UCB1', 'TS'])
-    if plot_line:
-        pyplot.plot([value_line_to_plot for i in range(T)])
+    pyplot.plot([best_possible_reward for i in range(T)])
     pyplot.title('Collected reward')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'Collected rewards.png'))
@@ -187,6 +197,7 @@ if __name__ == '__main__':
     pyplot.figure()
     pyplot.plot(mean_vector_daily_price_ucb1)
     pyplot.plot(mean_vector_daily_price_ts)
+    pyplot.plot([best_daily_price for i in range(T)])
     pyplot.xlim([0, T - 30])
     pyplot.legend(['UCB1', 'TS'])
     pyplot.title('daily prices')
@@ -199,8 +210,7 @@ if __name__ == '__main__':
     pyplot.plot([i * 100 for i in mean_vector_daily_price_ucb1])
     pyplot.xlim([0, T - 30])
     pyplot.legend(['collected reward', 'price * 100'])
-    if plot_line:
-        pyplot.plot([value_line_to_plot for i in range(T)])
+    pyplot.plot([best_possible_reward for i in range(T)])
     pyplot.title('UCB1 confronto prezzo revenue')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'UCB1 confronto prezzo-revenue.png'))
@@ -211,14 +221,12 @@ if __name__ == '__main__':
     pyplot.plot([i * 100 for i in mean_vector_daily_price_ts])
     pyplot.xlim([0, T - 30])
     pyplot.legend(['collected reward', 'price * 100'])
-    if plot_line:
-        pyplot.plot([value_line_to_plot for i in range(T)])
+    pyplot.plot([best_possible_reward for i in range(T)])
     pyplot.title('TS confronto prezzo revenue')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'TS confronto prezzo revenue.png'))
 
     #calculate and plot mean regret
-    best_possible_reward = 904
     mean_regret_ts = [best_possible_reward * x for x in range(1,T-29)]
     mean_regret_ts = numpy.array(mean_regret_ts)
 

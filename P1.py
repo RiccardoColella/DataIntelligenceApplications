@@ -1,3 +1,19 @@
+# the following 15 lines just add verbose option
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
+verbose = parser.parse_args().verbose
+
+if verbose:
+    def log(argument):
+        print(argument)
+else:
+    def log(argument):
+        return
+
+# now the real code begins
+
 from environment import Environment
 import numpy as np
 
@@ -25,7 +41,7 @@ def get_bid_and_price_revenue(bid, price, customer_class):
     purchases = new_users_daily * buy_percentage
     revenue = purchases * (1+mean_comebacks) * env.get_margin(price) - new_users_daily * cost_per_click
 
-    #print('bid, price, customer_class, revenue: ' + str(bid) +str(', ') + str(price) +str(', ')+ str(customer_class) +str(', ')+ str(revenue))
+    log('bid, price, customer_class, revenue: ' + str(bid) +str(', ') + str(price) +str(', ')+ str(customer_class) +str(', ')+ str(revenue))
 
     return revenue
 
@@ -53,7 +69,7 @@ prices = np.linspace(1, 10, num=10)
 
 # find the best joint bid and price strategy for all the customer classes
 for i in range(1, 4):
-    print(get_best_bid_and_price(bids, prices, i))
+    print('The best joint bid and price strategy for class ' + str(i) + ' is ' + str(get_best_bid_and_price(bids, prices, i)))
 
 # find the best joint bid and price strategy if it is not possible to discrimate between the classes
 
@@ -74,7 +90,11 @@ for i in range(bids.size):
 best_bid = bids[np.unravel_index(np.argmax(revenuesmatrix), revenuesmatrix.shape)[0]]
 best_price = prices[np.unravel_index(np.argmax(revenuesmatrix), revenuesmatrix.shape)[1]]
 
-print(revenuesmatrix_per_class)
-print("Revenue matrix:")
-print(revenuesmatrix)
-print("Best bid: " + str(best_bid) + " - Best price: " + str(best_price))
+log("Revenue matrix per class:")
+for i in range(0,3):
+    log('class' + str(i+1))
+    log(revenuesmatrix_per_class[i])
+log("Revenue matrix:")
+log(revenuesmatrix)
+
+print("The best joint bid and price strategy is (" + str(best_bid) + ', ' + str(best_price) + ')')
