@@ -1,5 +1,3 @@
 import numpy as np
 
-a = [1, 2, 3]
-
-print(a)
+print(np.linspace(0.1, 1, num=10))
