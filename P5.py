@@ -17,7 +17,8 @@ for t in range(T):
         print("Iteration day: " + str(t))
 
     ## TODO: call tsgaussp5 to choose the daily_bid
-    daily_bid =
+    daily_arm = tsgauss_learner.pull_arm()
+    daily_bid = bids[daily_arm]
 
     # Get new users in the day t and their costs
     [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(bids[0])
@@ -45,6 +46,4 @@ for t in range(T):
             map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class[user - 1], daily_price,user)))
 
     #update observations
-    tsgauss_learner.update_observations()
-
-    
+    tsgauss_learner.update_observations(daily_arm, daily_revenue, next_30_days)
