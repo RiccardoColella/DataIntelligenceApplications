@@ -309,8 +309,8 @@ for iter in range(20):
                         mean_per_arm_b = [a / b if b!=0 else b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element
 
                         #convert list to array
-                        n_pulled_arm_b = np.array([n_pulled_arm_b])
-                        mean_per_arm_b = np.array([mean_per_arm_b])
+                        n_pulled_arm_b = np.array(n_pulled_arm_b)
+                        mean_per_arm_b = np.array(mean_per_arm_b)
 
                         mu_b = n_pulled_arm_b * tau**2 * mean_per_arm_b / (n_pulled_arm_b * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_b * tau**2 + sigma0**2)
 
@@ -321,9 +321,7 @@ for iter in range(20):
                         n_pulled_arm_b=n_pulled_arm_b.tolist()
                         mean_per_arm_b=mean_per_arm_b.tolist()
                         mu_b=mu_b.tolist()
-                        mu_b = mu_b[0]
                         tau_b=tau_b.tolist()
-                        tau_b = tau_b[0]
 
 
                         tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][0] for i in range(t-k,t)], np.array(reward_per_arm_b), t)
@@ -340,8 +338,8 @@ for iter in range(20):
                         mean_per_arm_c = [a / b if b!=0 else b for a, b in zip(reward_per_arm_c, n_pulled_arm_c)]  # element wise division python
 
                         #convert list to array
-                        n_pulled_arm_c = np.array([n_pulled_arm_c])
-                        mean_per_arm_c = np.array([mean_per_arm_c])
+                        n_pulled_arm_c = np.array(n_pulled_arm_c)
+                        mean_per_arm_c = np.array(mean_per_arm_c)
 
                         mu_c = n_pulled_arm_c * tau**2 * mean_per_arm_c / (n_pulled_arm_c * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_c * tau**2 + sigma0**2)
                         tau_c = (sigma0 * tau)**2 / (n_pulled_arm_c * tau**2 + sigma0**2)
@@ -351,8 +349,6 @@ for iter in range(20):
                         mean_per_arm_c=mean_per_arm_c.tolist()
                         mu_c=mu_c.tolist()
                         tau_c=tau_c.tolist()
-                        mu_c = mu_c[0]
-                        tau_c = tau_c[0]
 
                         tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_c, tau_c, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_c), t)
 
@@ -369,8 +365,8 @@ for iter in range(20):
                         mean_per_arm_d = [a / b if b!=0 else b for a, b in zip(reward_per_arm_d, n_pulled_arm_d)]  # element
 
                         #convert list to array
-                        n_pulled_arm_d = np.array([n_pulled_arm_d])
-                        mean_per_arm_d = np.array([mean_per_arm_d])
+                        n_pulled_arm_d = np.array(n_pulled_arm_d)
+                        mean_per_arm_d = np.array(mean_per_arm_d)
 
                         mu_d = n_pulled_arm_d * tau**2 * mean_per_arm_d / (n_pulled_arm_d * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_d * tau**2 + sigma0**2)
 
@@ -381,9 +377,7 @@ for iter in range(20):
                         n_pulled_arm_d=n_pulled_arm_d.tolist()
                         mean_per_arm_d=mean_per_arm_d.tolist()
                         mu_d=mu_d.tolist()
-                        mu_d = mu_d[0]
                         tau_d=tau_d.tolist()
-                        tau_d = tau_d[0]
 
 
                         tsgauss_learner_d = TSLearnerGauss(n_arms, [revenue_per_class[i][1] for i in range(len(revenue_per_class)-k)], mu_d, tau_d, sigma0, [daily_arm_per_class[i][1] for i in range(t-k,t)], [revenue_per_class[i][1] for i in range(t-k,t)], np.array(reward_per_arm_d), t)
@@ -400,8 +394,8 @@ for iter in range(20):
                         mean_per_arm_e = [a / b if b!=0 else b for a, b in zip(reward_per_arm_e, n_pulled_arm_e)]  # element wise division python
 
                         #convert list to array
-                        n_pulled_arm_e = np.array([n_pulled_arm_e])
-                        mean_per_arm_e = np.array([mean_per_arm_e])
+                        n_pulled_arm_e = np.array(n_pulled_arm_e)
+                        mean_per_arm_e = np.array(mean_per_arm_e)
 
                         mu_e = n_pulled_arm_e * tau**2 * mean_per_arm_e / (n_pulled_arm_e * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_e * tau**2 + sigma0**2)
                         tau_e = (sigma0 * tau)**2 / (n_pulled_arm_e * tau**2 + sigma0**2)
@@ -411,8 +405,6 @@ for iter in range(20):
                         mean_per_arm_e=mean_per_arm_e.tolist()
                         mu_e=mu_e.tolist()
                         tau_e=tau_e.tolist()
-                        mu_e = mu_e[0]
-                        tau_e = tau_e[0]
 
                         tsgauss_learner_e = TSLearnerGauss(n_arms, [revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_e, tau_e, sigma0, [daily_arm_per_class[i][2] for i in range(t-k,t)], [revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_e), t)
 
