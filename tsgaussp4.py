@@ -65,4 +65,4 @@ class TSLearnerGauss(Learner):
 
         self.t += 1
 
-        print(self.mu)
+        '''print(self.mu)'''

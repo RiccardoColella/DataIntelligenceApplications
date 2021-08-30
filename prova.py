@@ -1,3 +1,3 @@
-from scipy.stats import t as tstudent
+import numpy as np
 
-print(tstudent.ppf(0.99,1))
+print(np.linspace(1, 10, num=10))

@@ -20,13 +20,13 @@ sigma0 = 5
 
 def splitting(p1, mu1, p2, mu2, muzero):
     # return true if we need to split the context, false otherwise
-    print(p1)
+    '''print(p1)
     print(mu1)
     print(p2)
     print(mu2)
     print(muzero)
     print(str(p1 * mu1 + p2 * mu2) + '>' + str(muzero))
-    print(p1 * mu1 + p2 * mu2 > muzero)
+    print(p1 * mu1 + p2 * mu2 > muzero)'''
     return p1 * mu1 + p2 * mu2 > muzero
 
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
@@ -121,9 +121,9 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     var_c = np.var(rewards_best_arm_c)
     var_tot = np.var(rewards_best_arm_tot)
 
-    print('varianza:')
+    '''print('varianza:')
     print(rewards_best_arm_b)
-    print(var_b)
+    print(var_b)'''
 
     # find lower bound mub, muc mu0
     '''print('tstudent')
@@ -138,9 +138,9 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     muzero = mean_best_arm_tot - tstudent.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
-    print(best_arm_b)
+    '''print(best_arm_b)
     print(best_arm_c)
-    print(best_arm_tot)
+    print(best_arm_tot)'''
 
     if best_arm_b != best_arm_c:
         return splitting(pb, mub, pc, muc, muzero)
@@ -275,7 +275,7 @@ for iter in range(20):
         new_users = [new_user_1, new_user_2, new_user_3]
 
         users_per_class.append(new_users)
-        print(new_users)
+        '''print(new_users)'''
 
         [cost1, cost2, cost3] = env.get_all_cost_per_click(bids[0])
         cost = [cost1, cost2, cost3]
@@ -296,9 +296,9 @@ for iter in range(20):
                 context_old = context
                 context = split(context_old, revenue_per_class[0:-30], daily_arm_per_class[0:-30], users_per_class[0:-30])
 
-                print('context:')
+                '''print('context:')
                 print(context_old)
-                print(context)
+                print(context)'''
 
                 if context > context_old:
                     ## TODO: all
@@ -309,8 +309,8 @@ for iter in range(20):
                         reward_per_arm_b = [0] * n_arms
                         n_pulled_arm_b = [0] * n_arms
                         for i in range(t-30):
-                              n_pulled_arm_b[daily_arm_per_class[i][0]] += 1
-                              reward_per_arm_b[daily_arm_per_class[i][0]] += revenue_per_class[i][0]
+                            n_pulled_arm_b[daily_arm_per_class[i][0]] += 1
+                            reward_per_arm_b[daily_arm_per_class[i][0]] += revenue_per_class[i][0]
 
                         mean_per_arm_b = [a / b if b!=0 else b for a, b in zip(reward_per_arm_b, n_pulled_arm_b)]  # element wise division python
 

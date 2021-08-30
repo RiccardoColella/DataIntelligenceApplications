@@ -25,13 +25,13 @@ def get_bid_and_price_revenue(bid, price, customer_class):
     purchases = new_users_daily * buy_percentage
     revenue = purchases * (1+mean_comebacks) * env.get_margin(price) - new_users_daily * cost_per_click
 
-    print('bid, price, customer_class, revenue: ' + str(bid) +str(', ') + str(price) +str(', ')+ str(customer_class) +str(', ')+ str(revenue))
+    #print('bid, price, customer_class, revenue: ' + str(bid) +str(', ') + str(price) +str(', ')+ str(customer_class) +str(', ')+ str(revenue))
 
     return revenue
 
 
 def get_best_bid(bids, price, customer_class):
-    '''return the bid associated to the best revenue given a price snd a customer class'''
+    '''return the bid associated to the best revenue given a price and a customer class'''
     revenues = []
     for bid in bids:
         revenues.append(get_bid_and_price_revenue(bid, price, customer_class))
@@ -60,14 +60,21 @@ for i in range(1, 4):
 revenuesmatrix = np.arange(bids.size * prices.size)
 revenuesmatrix = revenuesmatrix.reshape(bids.size, prices.size)
 
+revenuesmatrix_per_class = []
+for i in range(1, 4):
+    revenuesmatrix_per_class.append(np.arange(bids.size * prices.size))
+    revenuesmatrix_per_class[-1] = revenuesmatrix_per_class[-1].reshape(bids.size, prices.size)
+
 for i in range(bids.size):
     for j in range(prices.size):
         revenuesmatrix[i][j] = get_bid_and_price_revenue(bids[i], prices[j], 1) + get_bid_and_price_revenue(bids[i], prices[j], 2) +  get_bid_and_price_revenue(bids[i], prices[j], 3)
-
+        for k in range(1, 4):
+            revenuesmatrix_per_class[k-1][i][j] = get_bid_and_price_revenue(bids[i], prices[j], k)
 
 best_bid = bids[np.unravel_index(np.argmax(revenuesmatrix), revenuesmatrix.shape)[0]]
 best_price = prices[np.unravel_index(np.argmax(revenuesmatrix), revenuesmatrix.shape)[1]]
 
+print(revenuesmatrix_per_class)
 print("Revenue matrix:")
 print(revenuesmatrix)
 print("Best bid: " + str(best_bid) + " - Best price: " + str(best_price))
