@@ -210,9 +210,9 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
         if d_arm_per_class[j][1] == best_arm_tot:
             rewards_best_arm_tot = np.append(rewards_best_arm_tot, rev_per_class[j][1] + rev_per_class[j][2] )
 
-    var_d = np.var(rewards_best_arm_d, ddof = 1)
-    var_e = np.var(rewards_best_arm_e, ddof = 1)
-    var_tot = np.var(rewards_best_arm_tot, ddof = 1)
+    var_d = np.var(rewards_best_arm_d)
+    var_e = np.var(rewards_best_arm_e)
+    var_tot = np.var(rewards_best_arm_tot)
 
     # find lower bound mub, muc mu0
     mud = mean_best_arm_d - tstudent.ppf(confidence, (n_pulled_arm_d[best_arm_d] - 1), loc=0, scale=1) * np.sqrt(
@@ -295,7 +295,7 @@ for iter in range(20):
                 print(context)'''
 
                 if context > context_old:
-                    
+
                     if context == 2:
                         print('A -- > B + C at day: ' + str (t) + '--------------------------------------------------------------------------------------------------------------------------------' + str(iter))
 
@@ -357,7 +357,7 @@ for iter in range(20):
                         tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_c, tau_c, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_c), t)
 
                     if context == 3:
-                        print('C -- > D + E at day: ' + str (t) + '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++' + str(iter))
+                        print('C -- > D + E at day: ' + str (t) + '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++' + str(iter))
 
                         #compute tau_d and mu_d then create the new tsgauss_learner_d
                         reward_per_arm_d = [0] * n_arms
@@ -415,7 +415,7 @@ for iter in range(20):
                         tau_e = tau_e[0]
 
                         tsgauss_learner_e = TSLearnerGauss(n_arms, [revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_e, tau_e, sigma0, [daily_arm_per_class[i][2] for i in range(t-k,t)], [revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_e), t)
-                        
+
 
             if context == 1:
                 daily_arm = tsgauss_learner.pull_arm()
@@ -435,6 +435,7 @@ for iter in range(20):
                 daily_price = [prices[daily_arm_b], prices[daily_arm_d], prices[daily_arm_e]]
                 daily_arm_per_class.append([daily_arm_b, daily_arm_d, daily_arm_e])
 
+        print(context, daily_price)
         daily_bought_items_perclass = [0, 0, 0]
         # Calculate the number of real bought items
         for i in range(len(new_users)):
