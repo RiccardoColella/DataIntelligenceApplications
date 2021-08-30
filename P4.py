@@ -315,7 +315,7 @@ for iter in range(20):
                         mu_b = n_pulled_arm_b * tau**2 * mean_per_arm_b / (n_pulled_arm_b * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_b * tau**2 + sigma0**2)
 
                         tau_b = (sigma0 * tau)**2 / (n_pulled_arm_b * tau**2 + sigma0**2)
-                        k = 30 #magic parameter
+                        k = 31 #magic parameter
 
                         #convert array to list
                         n_pulled_arm_b=n_pulled_arm_b.tolist()
@@ -356,7 +356,66 @@ for iter in range(20):
 
                         tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_c, tau_c, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_c), t)
 
-                    ## TODO: if context == 3
+                    if context == 3:
+                        print('C -- > D + E at day: ' + str (t) + '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++' + str(iter))
+
+                        #compute tau_d and mu_d then create the new tsgauss_learner_d
+                        reward_per_arm_d = [0] * n_arms
+                        n_pulled_arm_d = [0] * n_arms
+                        for i in range(t-30):
+                            n_pulled_arm_d[daily_arm_per_class[i][1]] += 1
+                            reward_per_arm_d[daily_arm_per_class[i][1]] += revenue_per_class[i][1]
+
+                        mean_per_arm_d = [a / b if b!=0 else b for a, b in zip(reward_per_arm_d, n_pulled_arm_d)]  # element
+
+                        #convert list to array
+                        n_pulled_arm_d = np.array([n_pulled_arm_d])
+                        mean_per_arm_d = np.array([mean_per_arm_d])
+
+                        mu_d = n_pulled_arm_d * tau**2 * mean_per_arm_d / (n_pulled_arm_d * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_d * tau**2 + sigma0**2)
+
+                        tau_d = (sigma0 * tau)**2 / (n_pulled_arm_d * tau**2 + sigma0**2)
+                        k = 31 #magic parameter
+
+                        #convert array to list
+                        n_pulled_arm_d=n_pulled_arm_d.tolist()
+                        mean_per_arm_d=mean_per_arm_d.tolist()
+                        mu_d=mu_d.tolist()
+                        mu_d = mu_d[0]
+                        tau_d=tau_d.tolist()
+                        tau_d = tau_d[0]
+
+
+                        tsgauss_learner_d = TSLearnerGauss(n_arms, [revenue_per_class[i][1] for i in range(len(revenue_per_class)-k)], mu_d, tau_d, sigma0, [daily_arm_per_class[i][1] for i in range(t-k,t)], [revenue_per_class[i][1] for i in range(t-k,t)], np.array(reward_per_arm_d), t)
+
+
+
+                        #compute tau_e and mu_e then create the new tsgauss_learner_e
+                        reward_per_arm_e = [0] * n_arms
+                        n_pulled_arm_e = [0] * n_arms
+                        for i in range(t-30):
+                            n_pulled_arm_e[daily_arm_per_class[i][2]] += 1
+                            reward_per_arm_e[daily_arm_per_class[i][2]] += revenue_per_class[i][2]
+
+                        mean_per_arm_e = [a / b if b!=0 else b for a, b in zip(reward_per_arm_e, n_pulled_arm_e)]  # element wise division python
+
+                        #convert list to array
+                        n_pulled_arm_e = np.array([n_pulled_arm_e])
+                        mean_per_arm_e = np.array([mean_per_arm_e])
+
+                        mu_e = n_pulled_arm_e * tau**2 * mean_per_arm_e / (n_pulled_arm_e * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_e * tau**2 + sigma0**2)
+                        tau_e = (sigma0 * tau)**2 / (n_pulled_arm_e * tau**2 + sigma0**2)
+
+                        #convert array to list
+                        n_pulled_arm_e=n_pulled_arm_e.tolist()
+                        mean_per_arm_e=mean_per_arm_e.tolist()
+                        mu_e=mu_e.tolist()
+                        tau_e=tau_e.tolist()
+                        mu_e = mu_e[0]
+                        tau_e = tau_e[0]
+
+                        tsgauss_learner_e = TSLearnerGauss(n_arms, [revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_e, tau_e, sigma0, [daily_arm_per_class[i][2] for i in range(t-k,t)], [revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_e), t)
+                        
 
             if context == 1:
                 daily_arm = tsgauss_learner.pull_arm()
