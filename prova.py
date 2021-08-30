@@ -1,3 +1,5 @@
 import numpy as np
 
-print(np.linspace(1, 10, num=10))
+a = [1, 2, 3]
+
+print(a)

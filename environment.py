@@ -7,17 +7,17 @@ class Environment:
         self.product_price = product_price
         self.customer_class_1 = Customer(a_new_users=-5, b_new_users=1, c_new_users=1, d_new_users=100, var_new_users=2,
                                          a_cost_per_click=0.9,
-                                         a_conversion_rate=-1, b_conversion_rate=1, c_conversion_rate=0.7,
+                                         a_conversion_rate=-1, b_conversion_rate=1, c_conversion_rate=0.7, d_conversion_rate=,
                                          price_min=product_price,
                                          mean_n_times_comeback=5, dev_n_times_comeback=0.2)
         self.customer_class_2 = Customer(a_new_users=-5, b_new_users=0, c_new_users=2, d_new_users=75, var_new_users=2,
                                          a_cost_per_click=0.8,
-                                         a_conversion_rate=-1, b_conversion_rate=1.5, c_conversion_rate=0.9,
+                                         a_conversion_rate=-1, b_conversion_rate=1.5, c_conversion_rate=0.9, d_conversion_rate=,
                                          price_min=product_price,
                                          mean_n_times_comeback=10, dev_n_times_comeback=0.5)
         self.customer_class_3 = Customer(a_new_users=-4, b_new_users=0, c_new_users=1, d_new_users=100, var_new_users=2,
                                          a_cost_per_click=0.95,
-                                         a_conversion_rate=-1, b_conversion_rate=0.5, c_conversion_rate=0.5,
+                                         a_conversion_rate=-1, b_conversion_rate=0.5, c_conversion_rate=0.5, d_conversion_rate=,
                                          price_min=product_price,
                                          mean_n_times_comeback=15, dev_n_times_comeback=0.2)
 
@@ -148,6 +148,7 @@ class Customer:
         self.a_conversion_rate = a_conversion_rate
         self.b_conversion_rate = b_conversion_rate
         self.c_conversion_rate = c_conversion_rate
+        self.d_conversion_rate = d_conversion_rate
         self.price_min = price_min
 
         self.mean_n_times_comeback = mean_n_times_comeback
@@ -193,9 +194,10 @@ class Customer:
         a = self.a_conversion_rate
         b = self.b_conversion_rate
         c = self.c_conversion_rate
+        d = self.d_conversion_rate
         price_min = self.price_min
         # Probabilities of conversion given a price
-        return c * np.exp(a * (price - price_min) ** (1 / 2) / b)
+        return c * (price-price_min) ** (a) * (b*price - d) ** (3/2)
 
     def buy(self, price):
         """
