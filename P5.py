@@ -26,7 +26,7 @@ import numpy as np
 from matplotlib import pyplot
 
 from environment import Environment
-from tsgaussp5 import TSLearnerGauss
+from tsgaussbid import TSLearnerGauss
 
 from operator import add
 

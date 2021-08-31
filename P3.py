@@ -29,7 +29,7 @@ from matplotlib import pyplot
 
 from ucb1 import UCB1Learner
 from environment import Environment
-from tsgauss import TSLearnerGauss
+from tsgaussprice import TSLearnerGauss
 
 env = Environment()
 

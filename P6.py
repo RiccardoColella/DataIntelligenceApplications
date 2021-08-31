@@ -28,8 +28,8 @@ from matplotlib import pyplot
 from operator import add
 
 from environment import Environment
-from tsgaussp5 import TSLearnerGauss as TSLearnerGaussBids
-from tsgauss import TSLearnerGauss as TSLearnerGaussPrices
+from tsgaussprice import TSLearnerGauss as TSLearnerGaussPrices
+from tsgaussbid import TSLearnerGauss as TSLearnerGaussBids
 
 env = Environment()
 

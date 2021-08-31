@@ -18,7 +18,7 @@ import numpy as np
 from scipy.stats import t as tstudent
 
 from environment import Environment
-from tsgaussp4 import TSLearnerGauss
+from tsgausspricecontextgeneration import TSLearnerGauss
 
 # A --> B + C
 # C --> D + E
@@ -42,7 +42,7 @@ def splitting(p1, mu1, p2, mu2, muzero):
 
     log(f' {p1 = } {mu1 = } {p2 = } {mu2 = } {muzero = }')
     log('splitting: ' + str(p1 * mu1 + p2 * mu2 > muzero))
-    
+
     return p1 * mu1 + p2 * mu2 > muzero
 
 ## TODO: perchè escono dei nan???
