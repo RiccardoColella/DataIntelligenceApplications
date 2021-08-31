@@ -59,18 +59,18 @@ def iterate_days(results_queue, idx=0):
         if t % 20 == 0:
             log("Iteration day: {:3d} - execution: {:3d}".format(t, idx))
 
-        ## TODO: call tsgaussp5 to choose the daily_bid
+        #choose daily arm
         daily_arm = tsgauss_learner.pull_arm()
         daily_bid = bids[daily_arm]
         vector_daily_bids_loc.append(daily_bid)
 
         # Get new users in the day t and their costs
-        [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(bids[0])
+        [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(daily_bid)
         new_users = [new_user_1, new_user_2, new_user_3]
 
         vector_daily_user_per_class_loc.append(new_users)
 
-        [cost1, cost2, cost3] = env.get_all_cost_per_click(bids[0])
+        [cost1, cost2, cost3] = env.get_all_cost_per_click(daily_bid)
         cost = [cost1, cost2, cost3]
 
         # Get the total cost
@@ -177,7 +177,7 @@ if __name__ == '__main__':
     print("Plots folder: " + plots_folder)
 
     # Manual set this variable for plotting and regret
-    # TODO:
+    # TODO: regret? and line plotting
 
     # Plot mean bids
     pyplot.figure()
