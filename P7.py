@@ -48,8 +48,11 @@ def iterate_days(results_queue, idx=0):
     :return: nothing. The results are pushed into the queue
     """
     # Declaration of learners and results' vectors
-    tsgauss_learner_prices = TSLearnerGaussPrices(len(prices))
-    tsgauss_learner_bids = TSLearnerGaussBids(len(bids))
+    tsgauss_learner_prices = []
+    tsgauss_learner_bids = []
+    for i in range(3):
+        tsgauss_learner_prices.append(TSLearnerGaussPrices(len(prices)))
+        tsgauss_learner_bids.append(TSLearnerGaussBids(len(bids)))
 
     vector_daily_prices_loc = []
     vector_daily_bids_loc = []
@@ -64,23 +67,25 @@ def iterate_days(results_queue, idx=0):
 
         #choose daily arm
         #price:
-        daily_arm_price = tsgauss_learner_prices.pull_arm()
-        daily_price = prices[daily_arm_price]
+        daily_arm_price = [tsgauss_learner_prices[i].pull_arm() for i in range(3)]
+        daily_price = [prices[daily_arm_price[i]] for i in range(3)]
         vector_daily_prices_loc.append(daily_price)
 
         #bid:
-        daily_arm_bid = tsgauss_learner_bids.pull_arm()
-        daily_bid = bids[daily_arm_bid]
+        daily_arm_bid = [tsgauss_learner_bids[i].pull_arm() for i in range(3)]
+        daily_bid = [bids[daily_arm_bid[i]] for i in range(3)]
         vector_daily_bids_loc.append(daily_bid)
 
         # Get new users in the day t and their costs
-        [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(daily_bid)
-        new_users = [new_user_1, new_user_2, new_user_3]
+        new_users = []
+        for i in range(1,4):
+            new_users.append(env.get_new_users_daily(daily_bid[i-1],i))
 
         vector_daily_user_per_class_loc.append(new_users)
 
-        [cost1, cost2, cost3] = env.get_all_cost_per_click(daily_bid)
-        cost = [cost1, cost2, cost3]
+        cost = []
+        for i in range(1,4):
+            cost.append(env.get_cost_per_click(daily_bid[i-1],i))
 
         # Get the total cost
         total_cost = 0
@@ -92,26 +97,33 @@ def iterate_days(results_queue, idx=0):
 
         for user in range(len(new_users)):
             for c in range(new_users[user]):
-                daily_bought_items_per_class[user] += env.buy(daily_price, user + 1)
-
-        # Sum up the n. of bought items
-        daily_bought_items = sum(daily_bought_items_per_class)
+                daily_bought_items_per_class[user] += env.buy(daily_price[user], user + 1)
 
         # Calculate the revenue
-        daily_revenue = daily_bought_items * env.get_margin(daily_price) - total_cost
+        daily_revenue = [0, 0, 0]
+        for i in range(3):
+            daily_revenue[i] = daily_bought_items_per_class[i] * env.get_margin(daily_price[i]) - cost[i]
 
         # Get delayed rewards
-        next_30_days = [0] * 30
+        next_30_days = []
+
         for user in range(1, 4):
-            next_30_days = list(
-                map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class[user - 1], daily_price,user)))
+            next_30_days.append(env.get_next_30_days(daily_bought_items_per_class[user - 1], daily_price[user-1],user))
 
         #update observations
-        tsgauss_learner_prices.update_observations(daily_arm_price, daily_revenue, next_30_days)
-        tsgauss_learner_bids.update_observations(daily_arm_bid, daily_revenue, next_30_days)
+        for i in range(3):
+            tsgauss_learner_prices[i].update_observations(daily_arm_price[i], daily_revenue[i], next_30_days[i])
+            tsgauss_learner_bids[i].update_observations(daily_arm_bid[i], daily_revenue[i], next_30_days[i])
 
     # put results in the given queue
-    results_queue.put((vector_daily_prices_loc, vector_daily_bids_loc, tsgauss_learner_prices.collected_rewards))
+
+    revenue_loc=[]
+    for k in range(T-30):
+        revenue_loc.append([])
+        for i in range(3):
+            revenue_loc[k].append(tsgauss_learner_prices[i].collected_rewards[k])
+
+    results_queue.put((vector_daily_prices_loc, vector_daily_bids_loc, revenue_loc, vector_daily_user_per_class_loc))
 
     print('Ending execution ' + str(idx))
 
@@ -132,7 +144,7 @@ def to_np_arr_and_then_mean_per_class(list_of_lists_of_lists):
 
     #from N*T*3 to 3*N*T
     for i in range(N):
-        for j in range(T):
+        for j in range(len(list_of_lists_of_lists[0])):
             for k in range(3):
                 final[k][i][j] = list_of_lists_of_lists[i][j][k]
 
@@ -143,6 +155,16 @@ def to_np_arr_and_then_mean_per_class(list_of_lists_of_lists):
 
     return mean
 
+def multi_plot(list_of_mean, name):
+    pyplot.figure()
+    for i in range(len(list_of_mean)):
+        pyplot.plot(list_of_mean[i])
+    pyplot.xlim([0, T - 30])
+    pyplot.legend(['Mean ' + str(name) + ' class 1', 'Mean ' + str(name) + ' of class 2', 'Mean ' + str(name) + ' of class 3'])
+    pyplot.title('Mean' + str(name) + ' per class')
+    pyplot.xlabel('Days')
+    pyplot.savefig(os.path.join(plots_folder, 'Mean' + str(name) + ' per class.png'))
+
 if __name__ == '__main__':
     log('N = ' + str(N))
 
@@ -150,6 +172,7 @@ if __name__ == '__main__':
     prices = [] * N
     bids = [] * N
     revenue = [] * N
+    user = [] * N
 
     # Multiprocessing initializations
     processes = []
@@ -173,43 +196,23 @@ if __name__ == '__main__':
         prices.insert(i, results[i][0])
         bids.insert(i, results[i][1])
         revenue.insert(i, results[i][2])
+        user.insert(i, results[i][3])
 
     # calculate the mean values
-    mean_price = to_np_arr_and_then_mean(prices)
-    mean_bid = to_np_arr_and_then_mean(bids)
-    mean_revenue = to_np_arr_and_then_mean(revenue)
+    mean_price = to_np_arr_and_then_mean_per_class(prices)
+    mean_bids = to_np_arr_and_then_mean_per_class(bids)
+    mean_revenue = to_np_arr_and_then_mean_per_class(revenue)
+    mean_user = to_np_arr_and_then_mean_per_class(user)
 
     cwd = os.getcwd()
     print("Current working directory: " + cwd)
-    plots_folder = os.path.join(cwd, "plotsp6")
+    plots_folder = os.path.join(cwd, "plotsp7")
     print("Plots folder: " + plots_folder)
 
     # Manual set this variable for plotting and regret
     # TODO: regret? and line plotting
 
-    # Plot mean prices
-    pyplot.figure()
-    pyplot.plot(mean_price)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean prices'])
-    pyplot.title('Mean prices')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean prices.png'))
-
-    # Plot mean bids
-    pyplot.figure()
-    pyplot.plot(mean_bid)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean bids'])
-    pyplot.title('Mean bids')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean bids.png'))
-
-    # Plot mean revenue
-    pyplot.figure()
-    pyplot.plot(mean_revenue)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean revenue'])
-    pyplot.title('Mean revenue')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean revenue.png'))
+    multi_plot(mean_price,'price')
+    multi_plot(mean_bids,'bid')
+    multi_plot(mean_revenue,'revenue')
+    multi_plot(mean_user,'user')
