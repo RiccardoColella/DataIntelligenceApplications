@@ -115,12 +115,30 @@ def to_np_arr_and_then_mean(list_of_lists):
     np_arr = np.array(list_of_lists)
     return np_arr.mean(axis=0)
 
+def to_np_arr_and_then_mean_per_class(list_of_lists_of_lists):
+    '''like to_np_arr_and_then_mean, but divided per class'''
+
+    final = [ [ [ 0 for i in range(T) ] for j in range(N) ] for k in range(3)]
+
+    #from N*T*3 to 3*N*T
+    for i in range(N):
+        for j in range(T):
+            for k in range(3):
+                final[k][i][j] = list_of_lists_of_lists[i][j][k]
+
+    mean = []
+
+    for i in range(3):
+        mean.append(to_np_arr_and_then_mean(final[i]))
+
+    return mean
+
+
 if __name__ == '__main__':
     log('N = ' + str(N))
 
     bids = [] * N
     user_per_class = [] * N
-    user_per_class_final = [ [ [ 0 for i in range(T) ] for j in range(N) ] for k in range(3)]
     revenue = [] * N
 
     # Multiprocessing initializations
@@ -148,15 +166,8 @@ if __name__ == '__main__':
 
     # calculate the mean values
     mean_bids = to_np_arr_and_then_mean(bids)
-    for i in range(N):
-        for j in range(T):
-            for k in range(3):
-                user_per_class_final[k][i][j] = user_per_class[i][j][k]
 
-    mean_user_per_class = []
-
-    for i in range(3):
-        mean_user_per_class.append(to_np_arr_and_then_mean(user_per_class_final[i]))
+    mean_user_per_class = to_np_arr_and_then_mean_per_class(user_per_class)
 
     mean_revenue = to_np_arr_and_then_mean(revenue)
 
