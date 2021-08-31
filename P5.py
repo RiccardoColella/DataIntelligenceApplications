@@ -23,7 +23,9 @@ import multiprocessing
 import os
 
 import numpy as np
+
 from matplotlib import pyplot
+from plotutilities import plot
 
 from environment import Environment
 from tsgaussbid import TSLearnerGauss
@@ -33,7 +35,7 @@ from operator import add
 env = Environment()
 
 # day of algorithm execution
-T = 365
+T = 395
 #prices range
 prices = [8]
 # bids range
@@ -181,29 +183,16 @@ if __name__ == '__main__':
     # TODO: regret? and line plotting
 
     # Plot mean bids
-    pyplot.figure()
-    pyplot.plot(mean_bids)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean bids'])
-    pyplot.title('Mean bids')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean bids.png'))
+
+    plot([mean_bids],
+            ['Bids'], 'Bids', plots_folder)
 
     # Plot mean user per class
-    pyplot.figure()
-    for i in range(len(mean_user_per_class)):
-        pyplot.plot(mean_user_per_class[i])
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean user of class 1', 'Mean user of class 2', 'Mean user of class 3'])
-    pyplot.title('Mean user per class')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean user per class.png'))
+
+    plot(mean_user_per_class,
+            ['User of class 1', 'User of class 2', 'User of class 3'], 'User per class', plots_folder)
 
     # Plot mean revenue
-    pyplot.figure()
-    pyplot.plot(mean_revenue)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean revenue'])
-    pyplot.title('Mean revenue')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean revenue.png'))
+
+    plot([mean_revenue],
+            ['Revenue'], 'Revenue', plots_folder)

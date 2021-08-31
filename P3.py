@@ -25,7 +25,9 @@ import os
 from operator import add
 
 import numpy as np
+
 from matplotlib import pyplot
+from plotutilities import plot
 
 from ucb1 import UCB1Learner
 from environment import Environment
@@ -192,48 +194,23 @@ if __name__ == '__main__':
 
     # Plot collected rewards
 
-    pyplot.figure()
-    pyplot.plot(mean_collected_rewards_ucb1)
-    pyplot.plot(mean_collected_rewards_ts)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['UCB1', 'TS'])
-    pyplot.plot([best_possible_reward for i in range(T)])
-    pyplot.title('Collected reward')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Collected rewards.png'))
+    plot([mean_collected_rewards_ucb1, mean_collected_rewards_ts, [best_possible_reward for i in range(T)]],
+            ['UCB1', 'TS', 'Best'], 'Collected reward', plots_folder)
 
     # Plot daily prices
-    pyplot.figure()
-    pyplot.plot(mean_vector_daily_price_ucb1)
-    pyplot.plot(mean_vector_daily_price_ts)
-    pyplot.plot([best_daily_price for i in range(T)])
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['UCB1', 'TS'])
-    pyplot.title('daily prices')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Daily prices.png'))
+
+    plot([mean_vector_daily_price_ucb1, mean_vector_daily_price_ts, [best_daily_price for i in range(T)]],
+            ['UCB1', 'TS', 'Best'], 'Daily prices', plots_folder)
 
     # Plot UCB1 price and revenue comparison
-    pyplot.figure()
-    pyplot.plot(mean_collected_rewards_ucb1)
-    pyplot.plot([i * 100 for i in mean_vector_daily_price_ucb1])
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['collected reward', 'price * 100'])
-    pyplot.plot([best_possible_reward for i in range(T)])
-    pyplot.title('UCB1 confronto prezzo revenue')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'UCB1 confronto prezzo-revenue.png'))
+
+    plot([mean_collected_rewards_ucb1, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ucb1]],
+            ['Collected reward', 'Best', 'Price * 100'], 'UCB1 price and revenue comparison', plots_folder)
 
     # Plot TS price and revenue comparison
-    pyplot.figure()
-    pyplot.plot(mean_collected_rewards_ts)
-    pyplot.plot([i * 100 for i in mean_vector_daily_price_ts])
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['collected reward', 'price * 100'])
-    pyplot.plot([best_possible_reward for i in range(T)])
-    pyplot.title('TS confronto prezzo revenue')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'TS confronto prezzo revenue.png'))
+
+    plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ts]],
+            ['Collected reward', 'Best', 'Price * 100'], 'TS price and revenue comparison', plots_folder)
 
     #calculate and plot mean regret
     mean_regret_ts = [best_possible_reward * x for x in range(1,T-29)]
@@ -245,12 +222,5 @@ if __name__ == '__main__':
 
     mean_regret_ucb1 = mean_regret_ucb1 - np.cumsum(mean_collected_rewards_ucb1)
 
-    pyplot.figure()
-    pyplot.plot(mean_regret_ts)
-    pyplot.plot(mean_regret_ucb1)
-
-    pyplot.legend(['mean_regret_ts', 'mean_regret_ucb1'])
-    pyplot.xlim([0, T - 30])
-    pyplot.title('confronto regret')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'confronto regret.png'))
+    plot([mean_regret_ucb1, mean_regret_ts],
+            ['mean_regret_ucb1', 'mean_regret_ts'], 'Regret comparison', plots_folder)
