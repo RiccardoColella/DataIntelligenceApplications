@@ -24,7 +24,7 @@ import os
 
 from operator import add
 
-import numpy
+import numpy as np
 from matplotlib import pyplot
 
 from ucb1 import UCB1Learner
@@ -34,7 +34,7 @@ from tsgauss import TSLearnerGauss
 env = Environment()
 
 #prices range
-prices = numpy.linspace(1, 10, num=10)
+prices = np.linspace(1, 10, num=10)
 # bids range
 bids = [0.9]
 # day of algorithm execution
@@ -55,7 +55,7 @@ def iterate_days(results_queue, idx=0):
     vector_daily_price_ts_loc = []
     vector_daily_revenue_ts_loc = []
 
-    print('Starting execution' + str(idx))
+    print('Starting execution ' + str(idx))
 
     # For every day:
     for t in range(T):
@@ -124,7 +124,7 @@ def iterate_days(results_queue, idx=0):
     results_queue.put((ucb1_learner.collected_rewards, tsgauss_learner.collected_rewards, vector_daily_price_ucb1_loc,
                        vector_daily_revenue_ucb1_loc, vector_daily_price_ts_loc, vector_daily_revenue_ts_loc))
 
-    print('Ending execution' + str(idx))
+    print('Ending execution ' + str(idx))
 
 
 def to_np_arr_and_then_mean(list_of_lists):
@@ -134,7 +134,7 @@ def to_np_arr_and_then_mean(list_of_lists):
     :return: an array of the mean based on values' index
     """
     # print(list_of_lists)
-    np_arr = numpy.array(list_of_lists)
+    np_arr = np.array(list_of_lists)
     return np_arr.mean(axis=0)
 
 
@@ -183,7 +183,7 @@ if __name__ == '__main__':
 
     cwd = os.getcwd()
     print("Current working directory: " + cwd)
-    plots_folder = os.path.join(cwd, "plots")
+    plots_folder = os.path.join(cwd, "plotsp3")
     print("Plots folder: " + plots_folder)
 
     # Manual set this variable for plotting and regret
@@ -237,13 +237,13 @@ if __name__ == '__main__':
 
     #calculate and plot mean regret
     mean_regret_ts = [best_possible_reward * x for x in range(1,T-29)]
-    mean_regret_ts = numpy.array(mean_regret_ts)
+    mean_regret_ts = np.array(mean_regret_ts)
 
-    mean_regret_ts = numpy.add( mean_regret_ts , -1 * numpy.cumsum(mean_collected_rewards_ts))
+    mean_regret_ts = np.add( mean_regret_ts , -1 * np.cumsum(mean_collected_rewards_ts))
 
     mean_regret_ucb1 = [best_possible_reward * x for x in range(1,T-29)]
 
-    mean_regret_ucb1 = mean_regret_ucb1 - numpy.cumsum(mean_collected_rewards_ucb1)
+    mean_regret_ucb1 = mean_regret_ucb1 - np.cumsum(mean_collected_rewards_ucb1)
 
     pyplot.figure()
     pyplot.plot(mean_regret_ts)

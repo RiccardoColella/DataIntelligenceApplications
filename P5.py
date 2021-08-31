@@ -23,6 +23,7 @@ import multiprocessing
 import os
 
 import numpy as np
+from matplotlib import pyplot
 
 from environment import Environment
 from tsgaussp5 import TSLearnerGauss
@@ -31,52 +32,166 @@ from operator import add
 
 env = Environment()
 
-T = 394 # day of algorithm execution
-
+# day of algorithm execution
+T = 365
+#prices range
 prices = [8]
+# bids range
 bids = np.linspace(0.1, 1, num=10)
 
-## TODO: parallelization like P3
+def iterate_days(results_queue, idx=0):
+    """
+    Execute the algorithm at the given day. Function required for parallel programming
+    :param results_queue: queue of previous results
+    :param idx: execution identifier, allows to recognize the iteration number
+    :return: nothing. The results are pushed into the queue
+    """
+    # Declaration of learners and results' vectors
+    tsgauss_learner = TSLearnerGauss(len(bids))
 
-tsgauss_learner = TSLearnerGauss(len(bids))
+    vector_daily_bids_loc = []
+    vector_daily_user_per_class_loc = []
 
-for t in range(T):
-    if t % 20 == 0:
-        print("Iteration day: " + str(t))
+    print('Starting execution ' + str(idx))
 
-    ## TODO: call tsgaussp5 to choose the daily_bid
-    daily_arm = tsgauss_learner.pull_arm()
-    daily_bid = bids[daily_arm]
+    # For every day:
+    for t in range(T):
+        if t % 20 == 0:
+            log("Iteration day: {:3d} - execution: {:3d}".format(t, idx))
 
-    # Get new users in the day t and their costs
-    [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(bids[0])
-    new_users = [new_user_1, new_user_2, new_user_3]
-    [cost1, cost2, cost3] = env.get_all_cost_per_click(bids[0])
-    cost = [cost1, cost2, cost3]
+        ## TODO: call tsgaussp5 to choose the daily_bid
+        daily_arm = tsgauss_learner.pull_arm()
+        daily_bid = bids[daily_arm]
+        vector_daily_bids_loc.append(daily_bid)
 
-    # Get the total cost
-    total_cost = 0
-    for user in range(len(new_users)):
-        total_cost += new_users[user] * cost[user]
+        # Get new users in the day t and their costs
+        [new_user_1, new_user_2, new_user_3] = env.get_all_new_users_daily(bids[0])
+        new_users = [new_user_1, new_user_2, new_user_3]
 
-    # Calculate the number of bought items
-    daily_bought_items_per_class = [0, 0, 0]
+        vector_daily_user_per_class_loc.append(new_users)
 
-    for user in range(len(new_users)):
-        for c in range(new_users[user]):
-            daily_bought_items_per_class[user] += env.buy(prices[0], user + 1)
+        [cost1, cost2, cost3] = env.get_all_cost_per_click(bids[0])
+        cost = [cost1, cost2, cost3]
 
-    # Sum up the n. of bought items
-    daily_bought_items = sum(daily_bought_items_per_class)
+        # Get the total cost
+        total_cost = 0
+        for user in range(len(new_users)):
+            total_cost += new_users[user] * cost[user]
 
-    # Calculate the revenue
-    daily_revenue = daily_bought_items * env.get_margin(prices[0]) - total_cost
+        # Calculate the number of bought items
+        daily_bought_items_per_class = [0, 0, 0]
 
-    # Get delayed rewards
-    next_30_days = [0] * 30
-    for user in range(1, 4):
-        next_30_days = list(
-            map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class[user - 1], prices[0],user)))
+        for user in range(len(new_users)):
+            for c in range(new_users[user]):
+                daily_bought_items_per_class[user] += env.buy(prices[0], user + 1)
 
-    #update observations
-    tsgauss_learner.update_observations(daily_arm, daily_revenue, next_30_days)
+        # Sum up the n. of bought items
+        daily_bought_items = sum(daily_bought_items_per_class)
+
+        # Calculate the revenue
+        daily_revenue = daily_bought_items * env.get_margin(prices[0]) - total_cost
+
+        # Get delayed rewards
+        next_30_days = [0] * 30
+        for user in range(1, 4):
+            next_30_days = list(
+                map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class[user - 1], prices[0],user)))
+
+        #update observations
+        tsgauss_learner.update_observations(daily_arm, daily_revenue, next_30_days)
+
+    # put results in the given queue
+    results_queue.put((vector_daily_bids_loc, vector_daily_user_per_class_loc, tsgauss_learner.collected_rewards))
+
+    print('Ending execution ' + str(idx))
+
+def to_np_arr_and_then_mean(list_of_lists):
+    """
+    Mean of every value of the list, based on the index
+    :param list_of_lists: list containing the results for every day in a list for every iteration
+    :return: an array of the mean based on values' index
+    """
+    # print(list_of_lists)
+    np_arr = np.array(list_of_lists)
+    return np_arr.mean(axis=0)
+
+if __name__ == '__main__':
+    log('N = ' + str(N))
+
+    bids = [] * N
+    user_per_class = [] * N
+    user_per_class_final = [ [ [ 0 for i in range(T) ] for j in range(N) ] for k in range(3)]
+    revenue = [] * N
+
+    # Multiprocessing initializations
+    processes = []
+    results = [] * N
+    m = multiprocessing.Manager()
+    q = m.Queue()
+    # Start the execution
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()*2)
+    multi_results = [pool.apply_async(iterate_days, args=(q, i,)) for i in range(N)]
+
+    # collect the results
+    for p in multi_results:
+        ret = q.get()
+        results.append(ret)
+    # wait for the processes to end
+    for i in range(len(processes)):
+        processes[i].join()
+
+    # merge the results in a list of lists
+    for i in range(len(results)):
+        bids.insert(i, results[i][0])
+        user_per_class.insert(i, results[i][1])
+        revenue.insert(i, results[i][2])
+
+    # calculate the mean values
+    mean_bids = to_np_arr_and_then_mean(bids)
+    for i in range(N):
+        for j in range(T):
+            for k in range(3):
+                user_per_class_final[k][i][j] = user_per_class[i][j][k]
+
+    mean_user_per_class = []
+
+    for i in range(3):
+        mean_user_per_class.append(to_np_arr_and_then_mean(user_per_class_final[i]))
+
+    mean_revenue = to_np_arr_and_then_mean(revenue)
+
+    cwd = os.getcwd()
+    print("Current working directory: " + cwd)
+    plots_folder = os.path.join(cwd, "plotsp5")
+    print("Plots folder: " + plots_folder)
+
+    # Manual set this variable for plotting and regret
+    # TODO:
+
+    # Plot mean bids
+    pyplot.figure()
+    pyplot.plot(mean_bids)
+    pyplot.xlim([0, T - 30])
+    pyplot.legend(['Mean bids'])
+    pyplot.title('Mean bids')
+    pyplot.xlabel('Days')
+    pyplot.savefig(os.path.join(plots_folder, 'Mean bids.png'))
+
+    # Plot mean user per class
+    pyplot.figure()
+    for i in range(len(mean_user_per_class)):
+        pyplot.plot(mean_user_per_class[i])
+    pyplot.xlim([0, T - 30])
+    pyplot.legend(['Mean user of class 1', 'Mean user of class 2', 'Mean user of class 3'])
+    pyplot.title('Mean user per class')
+    pyplot.xlabel('Days')
+    pyplot.savefig(os.path.join(plots_folder, 'Mean user per class.png'))
+
+    # Plot mean revenue
+    pyplot.figure()
+    pyplot.plot(mean_revenue)
+    pyplot.xlim([0, T - 30])
+    pyplot.legend(['Mean revenue'])
+    pyplot.title('Mean revenue')
+    pyplot.xlabel('Days')
+    pyplot.savefig(os.path.join(plots_folder, 'Mean revenue.png'))
