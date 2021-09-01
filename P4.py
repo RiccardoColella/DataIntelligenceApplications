@@ -28,11 +28,11 @@ confidence = 0.99
 T = 365
 
 prices = np.linspace(1, 10, num=10)
-bids = [0.6]
+bids = [0.8]
 
-mu0 = 800
+mu0 = 1000
 tau = 10
-sigma0 = 5
+sigma0 = 10
 
 # split --> context_a_split --> splitting
 #       --> context_c_split --> splitting
@@ -42,10 +42,9 @@ def splitting(p1, mu1, p2, mu2, muzero):
 
     log(f' {p1 = } {mu1 = } {p2 = } {mu2 = } {muzero = }')
     log('splitting: ' + str(p1 * mu1 + p2 * mu2 > muzero))
-
+    
     return p1 * mu1 + p2 * mu2 > muzero
 
-## TODO: perchè escono dei nan???
 
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context a, false otherwise'
@@ -116,22 +115,40 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
         if d_arm_per_class[j][0] == best_arm_tot:
             rewards_best_arm_tot = np.append(rewards_best_arm_tot, (sum(rev_per_class[j])))
 
-    var_b = np.var(rewards_best_arm_b)
-    var_c = np.var(rewards_best_arm_c)
-    var_tot = np.var(rewards_best_arm_tot)
+    var_b = np.var(rewards_best_arm_b) 
+    var_c = np.var(rewards_best_arm_c) 
+    var_tot = np.var(rewards_best_arm_tot) 
 
     # find lower bound mub, muc mu0
 
-    mub = mean_best_arm_b - tstudent.ppf(confidence, (n_pulled_arm_b[best_arm_b] - 1), loc=0, scale=1) * np.sqrt(
+    mub = mean_best_arm_b - tstudent.ppf(confidence, 1 if n_pulled_arm_b[best_arm_b]==0 or n_pulled_arm_b[best_arm_b]==1 else n_pulled_arm_b[best_arm_b] - 1, loc=0, scale=1) * np.sqrt(
         var_b / n_pulled_arm_b[best_arm_b])
-    muc = mean_best_arm_c - tstudent.ppf(confidence, (n_pulled_arm_c[best_arm_c] - 1), loc=0, scale=1) * np.sqrt(
+    muc = mean_best_arm_c - tstudent.ppf(confidence, 1 if n_pulled_arm_c[best_arm_c]==0 or n_pulled_arm_c[best_arm_c]==1 else n_pulled_arm_c[best_arm_c] - 1, loc=0, scale=1) * np.sqrt(
         var_c / n_pulled_arm_c[best_arm_c])
-    muzero = mean_best_arm_tot - tstudent.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
+    muzero = mean_best_arm_tot - tstudent.ppf(confidence, 1 if n_pulled_arm_tot[best_arm_tot]==0 or n_pulled_arm_tot[best_arm_tot]==1 else n_pulled_arm_tot[best_arm_tot] - 1, loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
-
+    
+    
+    log('rewards_best_arm_b:' + str(rewards_best_arm_b))
+    log('var_b:' +str(var_b))
+    log('mean_per_arm_b:' +str(mean_per_arm_b))
     log('best_arm_b: ' + str(best_arm_b))
+    log('pulled arm times_b:' + str(n_pulled_arm_b[best_arm_b]))
+    
+    
+    log('rewards_best_arm_c:' + str(rewards_best_arm_c))
+    log('var_c:' +str(var_c))
+    log('mean_per_arm_c:' +str(mean_per_arm_c))
     log('best_arm_c: ' + str(best_arm_c))
+    log('pulled arm times_c:' + str(n_pulled_arm_c[best_arm_c]))
+    
+    log('rewards_best_arm_tot:' + str(rewards_best_arm_tot))
+    log('var_tot:' +str(var_tot))
+    log('mean_per_arm_tot:' +str(mean_per_arm_tot))
     log('best_arm_tot: ' + str(best_arm_tot))
+    log('pulled arm times_tot:' + str(n_pulled_arm_tot[best_arm_tot]))
+    
+
 
     if best_arm_b != best_arm_c:
         return splitting(pb, mub, pc, muc, muzero)
@@ -208,16 +225,16 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
         if d_arm_per_class[j][1] == best_arm_tot:
             rewards_best_arm_tot = np.append(rewards_best_arm_tot, rev_per_class[j][1] + rev_per_class[j][2] )
 
-    var_d = np.var(rewards_best_arm_d)
-    var_e = np.var(rewards_best_arm_e)
-    var_tot = np.var(rewards_best_arm_tot)
+    var_d = np.var(rewards_best_arm_d) 
+    var_e = np.var(rewards_best_arm_e) 
+    var_tot = np.var(rewards_best_arm_tot) 
 
     # find lower bound mud, mue, mu0
-    mud = mean_best_arm_d - tstudent.ppf(confidence, (n_pulled_arm_d[best_arm_d] - 1), loc=0, scale=1) * np.sqrt(
+    mud = mean_best_arm_d - tstudent.ppf(confidence, 1 if n_pulled_arm_d[best_arm_d]==0 or n_pulled_arm_d[best_arm_d]==1 else n_pulled_arm_d[best_arm_d] - 1, loc=0, scale=1) * np.sqrt(
         var_d / n_pulled_arm_d[best_arm_d])
-    mue = mean_best_arm_e - tstudent.ppf(confidence, (n_pulled_arm_e[best_arm_e] - 1), loc=0, scale=1) * np.sqrt(
+    mue = mean_best_arm_e - tstudent.ppf(confidence, 1 if n_pulled_arm_e[best_arm_e]==0 or n_pulled_arm_e[best_arm_e]==1 else n_pulled_arm_e[best_arm_e] - 1, loc=0, scale=1) * np.sqrt(
         var_e / n_pulled_arm_e[best_arm_e])
-    muzero = mean_best_arm_tot - tstudent.ppf(confidence, (n_pulled_arm_tot[best_arm_tot] - 1), loc=0, scale=1) * np.sqrt(
+    muzero = mean_best_arm_tot - tstudent.ppf(confidence, 1 if n_pulled_arm_tot[best_arm_tot]==0 or n_pulled_arm_tot[best_arm_tot]==1 else n_pulled_arm_tot[best_arm_tot] - 1, loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
     log('best_arm_d: ' + str(best_arm_d))
