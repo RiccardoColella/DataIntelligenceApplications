@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
 
 # how many executions:
-parser.add_argument('-n', help="set number of iteration", default = 1)
+parser.add_argument('-n', help="set number of iteration", default = 200)
 N = int(parser.parse_args().n)
 
 verbose = parser.parse_args().verbose
@@ -121,11 +121,6 @@ def iterate_days(results_queue, idx=0):
                 map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class_ts[user - 1], daily_price_ts,
                                                             user)))
         tsgauss_learner.update_observations(daily_arm_ts, daily_revenue_ts, next_30_days)
-
-    for i in range(10):
-        print(i)
-        print(tsgauss_learner.rewards_per_arm[i]/tsgauss_learner.n_pulled_arms[i])
-        print(tsgauss_learner.mu[i])
 
     print('Ending execution ' + str(idx))
 
