@@ -15,9 +15,15 @@ class TSLearnerGauss(Learner):
 
         # Assignments and Initializations
         self.n_arms = n_arms
+<<<<<<< HEAD
         self.sigma = 5
         self.tau = [10] * n_arms
         self.mu = [800] * n_arms
+=======
+        self.sigma = 13.5
+        self.tau = [13.5] * n_arms
+        self.mu = [1000] * n_arms
+>>>>>>> c4d78043368855636d426f022e0ce5cb9853885e
         self.last30dayschoice = []
         self.delayedreward = []
         self.rewards_per_arm = np.zeros(n_arms)
@@ -29,8 +35,9 @@ class TSLearnerGauss(Learner):
         """
 
         mean = np.random.normal(self.mu[:],self.tau[:])
-
+        
         idx = np.argmax(np.random.normal(mean[:], self.sigma))
+      
         return idx
 
     def update_observations(self, pulled_arm, reward, delayedr):
@@ -64,10 +71,7 @@ class TSLearnerGauss(Learner):
             arm = self.last30dayschoice[0]
             self.mu[arm] = (self.rewards_per_arm[arm] * self.tau[arm] ** 2 + self.sigma ** 2 * self.mu[arm]) / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
             self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
-
+        
         self.t += 1
 
-        #print("Collected rewards:")
-        #print(self.collected_rewards)
-
-        #print('------')
+    
