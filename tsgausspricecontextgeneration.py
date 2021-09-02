@@ -28,7 +28,9 @@ class TSLearnerGauss(Learner):
         Pulls the current arm with the given budget and returns it.
         :return: The index of the pulled arm
         """
-
+        if self.t <= 28:
+            return(self.t%10)
+        
         mean = np.random.normal(self.mu[:],self.tau[:])
 
         idx = np.argmax(np.random.normal(mean[:], self.sigma))
@@ -59,5 +61,5 @@ class TSLearnerGauss(Learner):
             arm = self.last30dayschoice[0]
             self.mu[arm] = (self.rewards_per_arm[arm] * self.tau[arm] ** 2 + self.sigma ** 2 * self.mu[arm]) / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
             self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
-
+            
         self.t += 1

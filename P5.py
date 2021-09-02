@@ -37,7 +37,7 @@ env = Environment()
 # day of algorithm execution
 T = 395
 #prices range
-prices = [8]
+prices = [6]
 # bids range
 bids = np.linspace(0.1, 1, num=10)
 
@@ -181,10 +181,13 @@ if __name__ == '__main__':
 
     # Manual set this variable for plotting and regret
     # TODO: regret? and line plotting
-
+    
+    best_possible_reward = 1731
+    best_daily_bid = 0.9
+    
     # Plot mean bids
 
-    plot([mean_bids],
+    plot([mean_bids,[best_daily_bid for i in range(T)]],
             ['Bids'], 'Bids', plots_folder)
 
     # Plot mean user per class
@@ -194,5 +197,5 @@ if __name__ == '__main__':
 
     # Plot mean revenue
 
-    plot([mean_revenue],
+    plot([mean_revenue, [best_possible_reward for i in range(T)]],
             ['Revenue'], 'Revenue', plots_folder)

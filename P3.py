@@ -38,9 +38,9 @@ env = Environment()
 #prices range
 prices = np.linspace(1, 10, num=10)
 # bids range
-bids = [0.8]
+bids = [0.9]
 # day of algorithm execution
-T = 394
+T = 395
 
 def iterate_days(results_queue, idx=0):
     """
@@ -189,8 +189,8 @@ if __name__ == '__main__':
     print("Plots folder: " + plots_folder)
 
     # Manual set this variable for plotting and regret
-    best_possible_reward = 1867
-    best_daily_price = 5
+    best_possible_reward = 1731
+    best_daily_price = 6
 
     # Plot collected rewards
 
