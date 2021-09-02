@@ -29,6 +29,8 @@ class TSLearnerGauss(Learner):
         :return: The index of the pulled arm
         """
 
+        if self.t <= 19:
+            return(self.t%10)
         mean = np.random.normal(self.mu[:],self.tau[:])
 
         idx = np.argmax(np.random.normal(mean[:], self.sigma))

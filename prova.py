@@ -1,3 +1,9 @@
-import numpy as np
+a=0
 
-print(np.argmax([1, 2, 3, 4, 5 ]))
+def functiontry():
+    a=1
+    print(a)
+
+print(a)
+functiontry()
+print(a)

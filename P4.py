@@ -31,8 +31,8 @@ prices = np.linspace(1, 10, num=10)
 bids = [0.8]
 
 mu0 = 1000
-tau = 10
-sigma0 = 10
+tau = 13.5
+sigma0 = 13.5
 
 # split --> context_a_split --> splitting
 #       --> context_c_split --> splitting
@@ -45,6 +45,14 @@ def splitting(p1, mu1, p2, mu2, muzero):
 
     return p1 * mu1 + p2 * mu2 > muzero
 
+def n_pulled_arm_and_reward_per_arm_counter(d_arm_per_class, rev_per_class):
+
+def context_split(rev_per_class, d_arm_per_class, us_per_class, context):
+    'return true if we need to split the context, false otherwise'
+
+    day = len(rev_per_class)
+
+    #here we find the best arm for the first new context
 
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context a, false otherwise'
@@ -83,6 +91,8 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     mean_per_arm_tot = [a / b if b!=0 else b for a, b in zip(reward_per_arm_tot, n_pulled_arm_tot)]
     mean_best_arm_tot = max(mean_per_arm_tot)
     best_arm_tot = mean_per_arm_tot.index(mean_best_arm_tot)
+
+    '''print(f'{best_arm_tot=}')'''
 
     # find probability of context b and c, then compute the lower bounds
     b_users = 0
@@ -128,7 +138,6 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     muzero = mean_best_arm_tot - tstudent.ppf(confidence, 1 if n_pulled_arm_tot[best_arm_tot]==0 or n_pulled_arm_tot[best_arm_tot]==1 else n_pulled_arm_tot[best_arm_tot] - 1, loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
-
     '''log('rewards_best_arm_b:' + str(rewards_best_arm_b))
     log('var_b:' +str(var_b))
     log('mean_per_arm_b:' +str(mean_per_arm_b))
@@ -147,6 +156,9 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     log('mean_per_arm_tot:' +str(mean_per_arm_tot))
     log('best_arm_tot: ' + str(best_arm_tot))
     log('pulled arm times_tot:' + str(n_pulled_arm_tot[best_arm_tot]))'''
+
+    print(f'{[mean_best_arm_b+mean_best_arm_c,mean_best_arm_tot]=}')
+    print(f'{[mub+muc,muzero]=}')
 
     if best_arm_b != best_arm_c:
         return splitting(pb, mub, pc, muc, muzero)
@@ -298,7 +310,7 @@ if __name__ == '__main__':
                 total_cost += new_users[i] * cost[i]
 
             # In the first days we won't split for sure
-            if t < 100:
+            if t < 40:
                 daily_arm = tsgauss_learner.pull_arm()
                 daily_price = [prices[daily_arm]] * 3
                 daily_arm_per_class.append([daily_arm] * 3)

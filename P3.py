@@ -205,12 +205,12 @@ if __name__ == '__main__':
     # Plot UCB1 price and revenue comparison
 
     plot([mean_collected_rewards_ucb1, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ucb1]],
-            ['Collected reward', 'Best', 'Price * 100'], 'UCB1 price and revenue comparison', plots_folder)
+            ['Collected reward', 'Best', 'Price * 100'], 'UCB1 price and revenue comparison', plots_folder, 1)
 
     # Plot TS price and revenue comparison
 
     plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ts]],
-            ['Collected reward', 'Best', 'Price * 100'], 'TS price and revenue comparison', plots_folder)
+            ['Collected reward', 'Best', 'Price * 100'], 'TS price and revenue comparison', plots_folder, 1)
 
     #calculate and plot mean regret
     mean_regret_ts = [best_possible_reward * x for x in range(1,T-29)]

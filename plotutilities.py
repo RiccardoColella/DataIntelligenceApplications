@@ -7,8 +7,15 @@ def plot(list_of_things_to_plot, legend, title, plots_folder, color=0):
 
     pyplot.figure()
 
-    for things_to_plot in list_of_things_to_plot:
-        pyplot.plot(things_to_plot)
+    palette_list=[['#9cc9dd','#ac1c1c', '#e8d9af', '#000000']]
+
+    if color == 0:
+        for things_to_plot in list_of_things_to_plot:
+            pyplot.plot(things_to_plot)
+    else:
+        col = palette_list[color-1]
+        for i in range(len(list_of_things_to_plot)):
+            pyplot.plot(list_of_things_to_plot[i],col[i])
 
     pyplot.xlim([0, 365])
     pyplot.legend(legend)
