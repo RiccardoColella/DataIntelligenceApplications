@@ -45,15 +45,122 @@ def splitting(p1, mu1, p2, mu2, muzero):
 
     return p1 * mu1 + p2 * mu2 > muzero
 
-def n_pulled_arm_and_reward_per_arm_counter(d_arm_per_class, rev_per_class):
+def daily_normalized_rev(rev_per_class_daily, us_per_class_daily):
+    'normalize the rev per class for the users'
+
+    return sum([a/b for a,b in zip(rev_per_class_daily,us_per_class_daily)])
+
+def n_pulled_arm_and_reward_per_arm_counter(rev_per_class, d_arm_per_class, classes):
+    '''return n_pulled_arm and reward_per_arm'''
+    '''classes is a list of class ex: [0,1,2]'''
+    reward_per_arm = [0] * n_arms
+    n_pulled_arm = [0] * n_arms
+
+    for i in range(len(rev_per_class)):
+        n_pulled_arm[d_arm_per_class[i][classes[0]]] += 1
+        for clas in classes:
+            reward_per_arm[d_arm_per_class[i][clas]] += rev_per_class[i][clas]
+
+    return n_pulled_arm, reward_per_arm
+
+def best_arm_and_mean_best_arm(n_pulled_arm, reward_per_arm):
+    '''return the best arm and the mean of this arm'''
+    mean_per_arm = [a / b if b!=0 else b for a, b in zip(reward_per_arm, n_pulled_arm)]
+    mean_best_arm = max(mean_per_arm)
+    best_arm = mean_per_arm.index(mean_best_arm)
+
+    return best_arm, mean_best_arm
+
+def find_context_probability(us_per_class, classes, classes_tot):
+    '''return the probability of a context'''
+
+    users = 0
+    users_tot = 0
+
+    for i in range(len(us_per_class)):
+
+        for clas in classes:
+            users += us_per_class[i][clas]
+
+        for clas in classes_tot:
+            users_tot += us_per_class[i][clas]
+
+    p = users / users_tot
+
+    p = p - np.sqrt( - np.log (confidence) / (2 * (users_tot)) )
+
+    return p
+
+def find_lower_bound(rev_per_class, d_arm_per_class, n_pulled_arm, best_arm, mean_best_arm, classes):
+    '''compute the lower bound of mu'''
+
+    rewards_best_arm = np.empty(0)
+
+    for j in range(len(d_arm_per_class)):
+        if d_arm_per_class[j][classes[0]] == best_arm:
+            rewards_best_arm = np.append( rewards_best_arm, sum([rev_per_class[j][i] for i in classes]))
+
+    var = np.var(rewards_best_arm)
+
+    print(mean_best_arm, tstudent.ppf(confidence, 1 if n_pulled_arm[best_arm]==0 or n_pulled_arm[best_arm]==1 else n_pulled_arm[best_arm] - 1, loc=0, scale=1) * np.sqrt(var / n_pulled_arm[best_arm]  ))
+
+    return mean_best_arm #- tstudent.ppf(confidence, 1 if n_pulled_arm[best_arm]==0 or n_pulled_arm[best_arm]==1 else n_pulled_arm[best_arm] - 1, loc=0, scale=1) * np.sqrt(var / n_pulled_arm[best_arm])
 
 def context_split(rev_per_class, d_arm_per_class, us_per_class, context):
     'return true if we need to split the context, false otherwise'
 
-    day = len(rev_per_class)
+    # based on the context set the classes of the two new context
 
-    #here we find the best arm for the first new context
+    if context == 1:
+        classes_1 = [0]
+        classes_2 = [1,2]
+    if context == 2:
+        classes_1 = [1]
+        classes_2 = [2]
 
+    classes_tot = classes_1 + classes_2
+
+    # find the best arm for the first new context
+
+    n_pulled_arm_1, reward_per_arm_1 = n_pulled_arm_and_reward_per_arm_counter(rev_per_class, d_arm_per_class, classes_1)
+
+    best_arm_1, mean_best_arm_1 = best_arm_and_mean_best_arm(n_pulled_arm_1, reward_per_arm_1)
+
+    # find the best arm for the second new context
+
+    n_pulled_arm_2, reward_per_arm_2 = n_pulled_arm_and_reward_per_arm_counter(rev_per_class, d_arm_per_class, classes_2)
+
+    best_arm_2, mean_best_arm_2 = best_arm_and_mean_best_arm(n_pulled_arm_2, reward_per_arm_2)
+
+    # find the best arm total
+
+    n_pulled_arm_tot, reward_per_arm_tot = n_pulled_arm_and_reward_per_arm_counter(rev_per_class, d_arm_per_class, classes_tot)
+
+    best_arm_tot, mean_best_arm_tot = best_arm_and_mean_best_arm(n_pulled_arm_tot, reward_per_arm_tot)
+
+    #find the lower bounds of the probabilities of the two new context
+
+    p_1 = find_context_probability(us_per_class, classes_1, classes_tot)
+
+    p_2 = find_context_probability(us_per_class, classes_2, classes_tot)
+
+    # find lower bound mu_1, mu_2 mu_0
+
+    mu_1 = find_lower_bound(rev_per_class, d_arm_per_class, n_pulled_arm_1, best_arm_1, mean_best_arm_1, classes_1)
+    mu_2 = find_lower_bound(rev_per_class, d_arm_per_class, n_pulled_arm_2, best_arm_2, mean_best_arm_2, classes_2)
+    mu_tot = find_lower_bound(rev_per_class, d_arm_per_class, n_pulled_arm_tot, best_arm_tot, mean_best_arm_tot, classes_tot)
+
+    print(f'{best_arm_1,best_arm_2,best_arm_tot=}')
+    print(f'{mu_1,mu_2,mu_tot=}')
+    print(f'{p_1,p_2=}')
+
+    if best_arm_1 != best_arm_2:
+        return splitting(p_1, mu_1, p_2, mu_2, mu_tot)
+    else:
+        return False
+
+#the following two functions are outdated and no longer necessary
+'''
 def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     'return true if we need to split the context a, false otherwise'
 
@@ -92,7 +199,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     mean_best_arm_tot = max(mean_per_arm_tot)
     best_arm_tot = mean_per_arm_tot.index(mean_best_arm_tot)
 
-    '''print(f'{best_arm_tot=}')'''
+    print(f'{best_arm_tot=}')
 
     # find probability of context b and c, then compute the lower bounds
     b_users = 0
@@ -138,7 +245,7 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     muzero = mean_best_arm_tot - tstudent.ppf(confidence, 1 if n_pulled_arm_tot[best_arm_tot]==0 or n_pulled_arm_tot[best_arm_tot]==1 else n_pulled_arm_tot[best_arm_tot] - 1, loc=0, scale=1) * np.sqrt(
         var_tot / n_pulled_arm_tot[best_arm_tot])
 
-    '''log('rewards_best_arm_b:' + str(rewards_best_arm_b))
+    ''''''log('rewards_best_arm_b:' + str(rewards_best_arm_b))
     log('var_b:' +str(var_b))
     log('mean_per_arm_b:' +str(mean_per_arm_b))
     log('best_arm_b: ' + str(best_arm_b))
@@ -155,10 +262,10 @@ def context_a_split(rev_per_class, d_arm_per_class, us_per_class):
     log('var_tot:' +str(var_tot))
     log('mean_per_arm_tot:' +str(mean_per_arm_tot))
     log('best_arm_tot: ' + str(best_arm_tot))
-    log('pulled arm times_tot:' + str(n_pulled_arm_tot[best_arm_tot]))'''
+    log('pulled arm times_tot:' + str(n_pulled_arm_tot[best_arm_tot]))
 
     print(f'{[mean_best_arm_b+mean_best_arm_c,mean_best_arm_tot]=}')
-    print(f'{[mub+muc,muzero]=}')
+    print(f'{[mub+muc,muzero]=}') ''''''
 
     if best_arm_b != best_arm_c:
         return splitting(pb, mub, pc, muc, muzero)
@@ -254,19 +361,19 @@ def context_c_split(rev_per_class, d_arm_per_class, us_per_class):
     if best_arm_d!=best_arm_e:
         return splitting(pd, mud, pe, mue, muzero)
     else:
-        return False
+        return False '''
 
 def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
     'decide if a split is needed by calling context_a_split or context_c_split and return the best context'
 
     if split_context == 1:
-        if context_a_split(rev_per_class, d_arm_per_class, us_per_class):
+        if context_split(rev_per_class, d_arm_per_class, us_per_class, split_context):
             return 2
         else:
             return 1
 
     elif split_context == 2:
-        if context_c_split(rev_per_class, d_arm_per_class, us_per_class):
+        if context_split(rev_per_class, d_arm_per_class, us_per_class, split_context):
             return 3
         else:
             return 2
@@ -310,7 +417,7 @@ if __name__ == '__main__':
                 total_cost += new_users[i] * cost[i]
 
             # In the first days we won't split for sure
-            if t < 40:
+            if t < 70:
                 daily_arm = tsgauss_learner.pull_arm()
                 daily_price = [prices[daily_arm]] * 3
                 daily_arm_per_class.append([daily_arm] * 3)
