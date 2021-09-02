@@ -1,7 +1,7 @@
 from matplotlib import pyplot
 import os
 
-def plot(list_of_things_to_plot, legend, title, plots_folder):
+def plot(list_of_things_to_plot, legend, title, plots_folder, color=0):
     '''plot the list of things to plot in a plot with the given legend, title and colors,
         then save the plot in the given folder as title.png'''
 
