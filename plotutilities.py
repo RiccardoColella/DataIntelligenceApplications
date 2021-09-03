@@ -7,7 +7,7 @@ def plot(list_of_things_to_plot, legend, title, plots_folder, color=0):
 
     pyplot.figure()
 
-    palette_list=[['#9cc9dd','#ac1c1c', '#e8d9af', '#000000']]
+    palette_list=[['#006A4E', '#FFF154','#FF00FF', '#87CEEB']]
 
     if color == 0:
         for things_to_plot in list_of_things_to_plot:

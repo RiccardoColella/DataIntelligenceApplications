@@ -223,4 +223,4 @@ if __name__ == '__main__':
     mean_regret_ucb1 = mean_regret_ucb1 - np.cumsum(mean_collected_rewards_ucb1)
 
     plot([mean_regret_ucb1, mean_regret_ts],
-            ['mean_regret_ucb1', 'mean_regret_ts'], 'Regret comparison', plots_folder)
+            ['cumulative_regret_ucb1', 'cumulative_regret_ts'], 'Regret comparison', plots_folder)

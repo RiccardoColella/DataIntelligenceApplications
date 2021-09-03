@@ -3,6 +3,11 @@
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
+
+# how many executions:
+parser.add_argument('-n', help="set number of iteration", default = 200)
+N = int(parser.parse_args().n)
+
 verbose = parser.parse_args().verbose
 
 if verbose:
@@ -392,7 +397,7 @@ def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
 
 if __name__ == '__main__':
 
-    for iter in range(20):
+    for iter in range(N):
 
         env = Environment()
 
