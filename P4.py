@@ -19,6 +19,7 @@ from scipy.stats import t as tstudent
 
 from environment import Environment
 from tsgausspricecontextgeneration import TSLearnerGauss
+from P1asutilities import get_best_bid_price_possible_reward
 
 # A --> B + C
 # C --> D + E
@@ -27,8 +28,12 @@ confidence = 0.99
 
 T = 365
 
+#bids and prices range
 prices = np.linspace(1, 10, num=10)
-bids = [0.8]
+bids = np.linspace(0.1, 1, num=10)
+
+bids, best_daily_price, best_possible_reward = get_best_bid_price_possible_reward(bids, prices)
+bids = [bids]
 
 mu0 = 1000
 tau = 13.5

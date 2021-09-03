@@ -31,6 +31,7 @@ from operator import add
 from environment import Environment
 from tsgaussprice import TSLearnerGauss as TSLearnerGaussPrices
 from tsgaussbid import TSLearnerGauss as TSLearnerGaussBids
+from P1asutilities import get_best_bid_price_possible_reward
 
 env = Environment()
 
@@ -40,6 +41,8 @@ T = 395
 prices = np.linspace(1, 10, num=10)
 # bids range
 bids = np.linspace(0.1, 1, num=10)
+
+best_daily_bid, best_daily_price, best_possible_reward = get_best_bid_price_possible_reward(bids, prices)
 
 def iterate_days(results_queue, idx=0):
     """
@@ -185,14 +188,6 @@ if __name__ == '__main__':
     plots_folder = os.path.join(cwd, "plotsp6")
     print("Plots folder: " + plots_folder)
 
-    # Manual set this variable for plotting and regret
-    # TODO: regret? and line plotting
-
-
-    best_possible_reward = 1765
-    best_daily_bid = 0.8
-    best_price = 6
-
     # Plot mean bids
 
     plot([mean_bid,[best_daily_bid for i in range(T-30)]],
@@ -200,7 +195,7 @@ if __name__ == '__main__':
 
     # Plot mean user per class
 
-    plot([mean_price, [best_price for i in range(T-30)]],
+    plot([mean_price, [best_daily_price for i in range(T-30)]],
             ['Mean prices'], 'Mean prices', plots_folder)
 
     # Plot mean revenue
