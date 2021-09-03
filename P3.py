@@ -32,13 +32,19 @@ from plotutilities import plot
 from ucb1 import UCB1Learner
 from environment import Environment
 from tsgaussprice import TSLearnerGauss
+from P1asutilities import get_best_bid_price_possible_reward
 
 env = Environment()
 
-#prices range
+#bids and prices range
 prices = np.linspace(1, 10, num=10)
-# bids range
-bids = [0.8]
+bids = np.linspace(0.1, 1, num=10)
+
+bids, best_daily_price, best_possible_reward = get_best_bid_price_possible_reward(bids, prices)
+bids = [bids]
+
+print(bids, best_daily_price, best_possible_reward)
+
 # day of algorithm execution
 T = 395
 
@@ -187,10 +193,6 @@ if __name__ == '__main__':
     print("Current working directory: " + cwd)
     plots_folder = os.path.join(cwd, "plotsp3")
     print("Plots folder: " + plots_folder)
-
-    # Manual set this variable for plotting and regret
-    best_possible_reward = 1765
-    best_daily_price = 6
 
     # Plot collected rewards
 

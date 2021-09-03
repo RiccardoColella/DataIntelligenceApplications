@@ -187,12 +187,12 @@ if __name__ == '__main__':
 
     # Manual set this variable for plotting and regret
     # TODO: regret? and line plotting
-    
-    
+
+
     best_possible_reward = 1765
     best_daily_bid = 0.8
     best_price = 6
-    
+
     # Plot mean bids
 
     plot([mean_bid,[best_daily_bid for i in range(T-30)]],
@@ -207,10 +207,10 @@ if __name__ == '__main__':
 
     plot([mean_revenue, [best_possible_reward for i in range(T-30)]],
             ['Mean revenue'], 'Mean revenue', plots_folder)
-    
-    
-    
-    
+
+
+
+
     # # Plot mean prices
     # pyplot.figure()
     # pyplot.plot(mean_price)
