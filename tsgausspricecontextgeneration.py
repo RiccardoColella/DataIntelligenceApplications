@@ -28,7 +28,7 @@ class TSLearnerGauss(Learner):
         Pulls the current arm with the given budget and returns it.
         :return: The index of the pulled arm
         """
-        if self.t <= 28:
+        if self.t <= 37:
             return(self.t%10)
 
         mean = np.random.normal(self.mu[:],self.tau[:])
