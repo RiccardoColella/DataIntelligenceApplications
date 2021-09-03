@@ -1,0 +1,11 @@
+terru:
+P1 as a function:
+  occorre calcolare il cost per click medio, perchè adesso è stocastico
+  sostituire le robe manuali nelle altre funzioni
+plot file for plotting:
+  multiplot and plot
+magari conviene avere un file con la lista di bid e price e importarli, anzichè ricrearli ogni volta
+
+ross:
+  prova tutti i parametri fino a che non vengono dei risultati decenti
+  capire che grafici aveva filo e il prof nelle lezioni e copiarli
