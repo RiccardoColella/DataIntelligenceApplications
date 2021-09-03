@@ -182,8 +182,8 @@ if __name__ == '__main__':
     # Manual set this variable for plotting and regret
     # TODO: regret? and line plotting
     
-    best_possible_reward = 1731
-    best_daily_bid = 0.9
+    best_possible_reward = 1765
+    best_daily_bid = 0.8
     
     # Plot mean bids
 

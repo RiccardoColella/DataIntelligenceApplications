@@ -24,6 +24,7 @@ import os
 
 import numpy as np
 from matplotlib import pyplot
+from plotutilities import plot
 
 from operator import add
 
@@ -186,30 +187,53 @@ if __name__ == '__main__':
 
     # Manual set this variable for plotting and regret
     # TODO: regret? and line plotting
-
-    # Plot mean prices
-    pyplot.figure()
-    pyplot.plot(mean_price)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean prices'])
-    pyplot.title('Mean prices')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean prices.png'))
-
+    
+    
+    best_possible_reward = 1765
+    best_daily_bid = 0.8
+    best_price = 6
+    
     # Plot mean bids
-    pyplot.figure()
-    pyplot.plot(mean_bid)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean bids'])
-    pyplot.title('Mean bids')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean bids.png'))
+
+    plot([mean_bid,[best_daily_bid for i in range(T-30)]],
+            ['Bids'], 'Bids', plots_folder)
+
+    # Plot mean user per class
+
+    plot([mean_price, [best_price for i in range(T-30)]],
+            ['Mean prices'], 'Mean prices', plots_folder)
 
     # Plot mean revenue
-    pyplot.figure()
-    pyplot.plot(mean_revenue)
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean revenue'])
-    pyplot.title('Mean revenue')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean revenue.png'))
+
+    plot([mean_revenue, [best_possible_reward for i in range(T-30)]],
+            ['Mean revenue'], 'Mean revenue', plots_folder)
+    
+    
+    
+    
+    # # Plot mean prices
+    # pyplot.figure()
+    # pyplot.plot(mean_price)
+    # pyplot.xlim([0, T - 30])
+    # pyplot.legend(['Mean prices'])
+    # pyplot.title('Mean prices')
+    # pyplot.xlabel('Days')
+    # pyplot.savefig(os.path.join(plots_folder, 'Mean prices.png'))
+
+    # # Plot mean bids
+    # pyplot.figure()
+    # pyplot.plot(mean_bid)
+    # pyplot.xlim([0, T - 30])
+    # pyplot.legend(['Mean bids'])
+    # pyplot.title('Mean bids')
+    # pyplot.xlabel('Days')
+    # pyplot.savefig(os.path.join(plots_folder, 'Mean bids.png'))
+
+    # # Plot mean revenue
+    # pyplot.figure()
+    # pyplot.plot(mean_revenue)
+    # pyplot.xlim([0, T - 30])
+    # pyplot.legend(['Mean revenue'])
+    # pyplot.title('Mean revenue')
+    # pyplot.xlabel('Days')
+    # pyplot.savefig(os.path.join(plots_folder, 'Mean revenue.png'))
