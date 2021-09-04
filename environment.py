@@ -6,17 +6,17 @@ class Environment:
         product_price=1
         self.product_price = product_price
         self.customer_class_1 = Customer(a_new_users=-4.9, b_new_users=-0.1, c_new_users=1.8, d_new_users=100, var_new_users=2,
-                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.5,
+                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.95,
                                          a_conversion_rate=-4.6, b_conversion_rate=-2.3, c_conversion_rate=0.1, d_conversion_rate=30.8, e_conversion_rate=-0.2,
                                          price_min=product_price,
                                          mean_n_times_comeback=5, dev_n_times_comeback=0.2)
         self.customer_class_2 = Customer(a_new_users=-0.8, b_new_users=-0.8, c_new_users=-9, d_new_users=71.2, var_new_users=2,
-                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.5,
+                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.95,
                                          a_conversion_rate=-4.8, b_conversion_rate=-3, c_conversion_rate=0.1, d_conversion_rate=21, e_conversion_rate=-19.5,
                                          price_min=product_price,
                                          mean_n_times_comeback=10, dev_n_times_comeback=0.5)
         self.customer_class_3 = Customer(a_new_users=-4, b_new_users=0, c_new_users=1.4, d_new_users=50, var_new_users=2,
-                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.5,
+                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.95s,
                                          a_conversion_rate=-3.05, b_conversion_rate=1.2, c_conversion_rate=84, d_conversion_rate=20.1, e_conversion_rate=-13,
                                          price_min=product_price,
                                          mean_n_times_comeback=15, dev_n_times_comeback=0.2)
@@ -50,6 +50,16 @@ class Environment:
         new_user_3 = self.get_new_users_daily(bid, 3)
 
         return new_user_1, new_user_2, new_user_3
+
+    def get_mean_cost_per_click(self, bid, chosen_class):
+        """
+        Given a bid, this function returns the mean cost of every click for the given customer class
+        :param bid: the proposed class
+        :param chosen_class: the requested customer class
+        :return: the cost of every click for the given customer class
+        """
+        return self.customer_classes[chosen_class - 1].mean_cost_per_click(bid)
+
 
     def get_cost_per_click(self, bid, chosen_class):
         """
@@ -121,7 +131,7 @@ class Customer:
 
     def __init__(self,
                  a_new_users, b_new_users, c_new_users, d_new_users, var_new_users,
-                 a_cost_per_click,
+                 a_cost_per_click, b_cost_per_click, min_cost_per_click,
                  a_conversion_rate, b_conversion_rate, c_conversion_rate, d_conversion_rate, e_conversion_rate,
                  price_min,
                  mean_n_times_comeback, dev_n_times_comeback):
@@ -145,6 +155,8 @@ class Customer:
         self.var_new_users = var_new_users
 
         self.a_cost_per_click = a_cost_per_click
+        self.b_cost_per_click = b_cost_per_click
+        self.min_cost_per_click = min_cost_per_click
 
         self.a_conversion_rate = a_conversion_rate
         self.b_conversion_rate = b_conversion_rate
@@ -176,6 +188,16 @@ class Customer:
         var = self.var_new_users
         return round(np.random.normal(loc=mean, scale=var))
 
+    def mean_cost_per_click(self, bid):
+        """
+        This method returns a daily mean cost per click as a function of the bid.
+        The seller pays more for this class depending on his bid.
+        :param bid: The seller's bid
+        :return: The mean cost that will be due for the customer of this customer with the given bid
+        """
+
+        return ( self.a_cost_per_click/(self.a_cost_per_click + self.b_cost_per_click) ) * (1-self.min_cost_per_click) + self.min_cost_per_click
+
     def cost_per_click_daily(self, bid):
         """ Customer's characteristic n. 2.
         This method returns a daily stochastic cost per click as a function of the bid.
@@ -184,8 +206,9 @@ class Customer:
         :param bid: The seller's bid
         :return: The cost that will be due for the customer of this customer with the given bid
         """
+        #it is a beta normalized on [min_cost_per_click,1]
 
-        return np.random.beta(self.a_cost_per_click,self.b_cost_per_click) /(1-self.min_cost_per_click) + self.min_cost_per_click
+        return np.random.beta(self.a_cost_per_click,self.b_cost_per_click) * (1-self.min_cost_per_click) + self.min_cost_per_click
 
         #return self.a_cost_per_click * bid
 

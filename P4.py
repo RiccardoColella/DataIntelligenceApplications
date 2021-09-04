@@ -24,7 +24,7 @@ from scipy.stats import t as tstudent
 
 from environment import Environment
 from tsgausspricecontextgeneration import TSLearnerGauss
-from P1asutilities import get_best_bid_price_possible_reward
+from P1utilities import get_best_bid_price_possible_reward
 
 # A --> B + C
 # C --> D + E

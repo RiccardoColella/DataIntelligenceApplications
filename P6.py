@@ -31,7 +31,7 @@ from operator import add
 from environment import Environment
 from tsgaussprice import TSLearnerGauss as TSLearnerGaussPrices
 from tsgaussbid import TSLearnerGauss as TSLearnerGaussBids
-from P1asutilities import get_best_bid_price_possible_reward
+from P1utilities import get_best_bid_price_possible_reward
 
 env = Environment()
 

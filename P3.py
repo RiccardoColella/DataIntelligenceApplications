@@ -32,7 +32,7 @@ from plotutilities import plot
 from ucb1 import UCB1Learner
 from environment import Environment
 from tsgaussprice import TSLearnerGauss
-from P1asutilities import get_best_bid_price_possible_reward
+from P1utilities import get_best_bid_price_possible_reward
 
 env = Environment()
 

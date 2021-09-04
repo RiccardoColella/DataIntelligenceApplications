@@ -25,6 +25,8 @@ import os
 import numpy as np
 from matplotlib import pyplot
 
+from plotutilities import multiplot
+
 from operator import add
 
 from environment import Environment
@@ -154,18 +156,6 @@ def to_np_arr_and_then_mean_per_class(list_of_lists_of_lists):
         mean.append(to_np_arr_and_then_mean(final[i]))
 
     return mean
-
-def multi_plot(list_of_mean, name):
-    'plot 3 list of mean: one for every class'
-
-    pyplot.figure()
-    for i in range(len(list_of_mean)):
-        pyplot.plot(list_of_mean[i])
-    pyplot.xlim([0, T - 30])
-    pyplot.legend(['Mean ' + str(name) + ' class 1', 'Mean ' + str(name) + ' of class 2', 'Mean ' + str(name) + ' of class 3'])
-    pyplot.title('Mean' + str(name) + ' per class')
-    pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean ' + str(name) + ' per class.png'))
 
 if __name__ == '__main__':
     log('N = ' + str(N))

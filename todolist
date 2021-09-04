@@ -1,6 +1,6 @@
 terru:
 P1 as a function:
-  occorre calcolare il cost per click medio, perchè adesso è stocastico
+  ###occorre calcolare il cost per click medio, perchè adesso è stocastico
   sostituire le robe manuali nelle altre funzioni
 plot file for plotting:
   multiplot and plot
