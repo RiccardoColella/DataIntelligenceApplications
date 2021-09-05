@@ -16,7 +16,7 @@ class Environment:
                                          price_min=product_price,
                                          mean_n_times_comeback=10, dev_n_times_comeback=0.5)
         self.customer_class_3 = Customer(a_new_users=-4, b_new_users=0, c_new_users=1.4, d_new_users=50, var_new_users=2,
-                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.95s,
+                                         a_cost_per_click=5, b_cost_per_click=1, min_cost_per_click=0.95,
                                          a_conversion_rate=-3.05, b_conversion_rate=1.2, c_conversion_rate=84, d_conversion_rate=20.1, e_conversion_rate=-13,
                                          price_min=product_price,
                                          mean_n_times_comeback=15, dev_n_times_comeback=0.2)
