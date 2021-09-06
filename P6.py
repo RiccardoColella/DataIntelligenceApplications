@@ -161,7 +161,7 @@ if __name__ == '__main__':
     m = multiprocessing.Manager()
     q = m.Queue()
     # Start the execution
-    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()*2)
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
     multi_results = [pool.apply_async(iterate_days, args=(q, i,)) for i in range(N)]
 
     # collect the results

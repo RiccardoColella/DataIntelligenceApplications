@@ -47,12 +47,11 @@ def plot_learned_curve(mu, tau, real, n_pulled_arms, plots_folder):
     pyplot.plot(mu,'o-')
     pyplot.plot(real,'o-')
 
-    confidence = 0.95
+    confidence = 0.99
     x = [i for i in range(len(mu))]
-    sup = [mu[i] + tstudent.ppf(confidence, n_pulled_arms[i], loc=0, scale=1) * np.sqrt(tau / n_pulled_arms[i]) for i in range(len(mu))]
-    inf = [mu[i] - tstudent.ppf(confidence, n_pulled_arms[i], loc=0, scale=1) * np.sqrt(tau / n_pulled_arms[i]) for i in range(len(mu))]
-
-    pyplot.fill_between(x, inf, sup, color='C0')
+    sup = [mu[i] + tstudent.ppf(confidence, n_pulled_arms[i], loc=0, scale=1) * tau[i] / np.sqrt(n_pulled_arms[i]) for i in range(len(mu))]
+    inf = [mu[i] - tstudent.ppf(confidence, n_pulled_arms[i], loc=0, scale=1) * tau[i] / np.sqrt(n_pulled_arms[i]) for i in range(len(mu))]
+    pyplot.fill_between(x, inf, sup, alpha = 0.5)
 
     pyplot.ylabel('Rewards')
     pyplot.xlabel('Arms')

@@ -155,7 +155,7 @@ if __name__ == '__main__':
     m = multiprocessing.Manager()
     q = m.Queue()
     # Start the execution
-    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()*2)
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
     multi_results = [pool.apply_async(iterate_days, args=(q, i,)) for i in range(N)]
 
     # collect the results
@@ -200,7 +200,7 @@ if __name__ == '__main__':
             ['Revenue'], 'Revenue', plots_folder)
 
     # Plot regret
-    
+
     instantaneous_regret, cumulative_regret = regret_calculator(best_possible_reward, mean_revenue)
 
     plot([instantaneous_regret],
