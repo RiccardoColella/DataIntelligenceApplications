@@ -30,6 +30,7 @@ from plotutilities import plot
 from environment import Environment
 from tsgaussbid import TSLearnerGauss
 from P1utilities import get_best_bid_price_possible_reward
+from regretcalculator import regret_calculator
 
 from operator import add
 
@@ -197,3 +198,14 @@ if __name__ == '__main__':
 
     plot([mean_revenue, [best_possible_reward for i in range(T)]],
             ['Revenue'], 'Revenue', plots_folder)
+
+    # Plot regret
+    
+    instantaneous_regret, cumulative_regret = regret_calculator(best_possible_reward, mean_revenue)
+
+    plot([instantaneous_regret],
+            ['instantaneous_regret'], 'Instantaneous regret', plots_folder)
+
+
+    plot([cumulative_regret],
+            ['cumulative_regret'], 'cumulative regret', plots_folder)

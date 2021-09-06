@@ -52,7 +52,6 @@ def get_best_bid(bids, price, customer_class):
     max_revenue = max(revenues)
     return bids[revenues.index(max_revenue)]
 
-
 def get_best_bid_and_price(bids, prices, customer_class):
     '''return the best bid and price for a specific customer class'''
     best_price = get_best_price(prices, customer_class)

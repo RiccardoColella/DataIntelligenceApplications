@@ -33,6 +33,7 @@ from ucb1 import UCB1Learner
 from environment import Environment
 from tsgaussprice import TSLearnerGauss
 from P1utilities import get_best_bid_price_possible_reward
+from regretcalculator import regret_calculator
 
 env = Environment()
 
@@ -212,15 +213,13 @@ if __name__ == '__main__':
     plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ts]],
             ['Collected reward', 'Best', 'Price * 100'], 'TS price and revenue comparison', plots_folder, 1)
 
-    #calculate and plot mean regret
-    mean_regret_ts = [best_possible_reward * x for x in range(1,T-29)]
-    mean_regret_ts = np.array(mean_regret_ts)
+    #calculate and plot regret
+    instantaneous_regret_ucb1, cumulative_regret_ucb1 = regret_calculator(best_possible_reward, mean_collected_rewards_ucb1)
 
-    mean_regret_ts = np.add( mean_regret_ts , -1 * np.cumsum(mean_collected_rewards_ts))
+    instantaneous_regret_ts, cumulative_regret_ts = regret_calculator(best_possible_reward, mean_collected_rewards_ts)
 
-    mean_regret_ucb1 = [best_possible_reward * x for x in range(1,T-29)]
+    plot([instantaneous_regret_ucb1, instantaneous_regret_ts],
+            ['instantaneous_regret_ucb1', 'instantaneous_regret_ts'], 'Instantaneous regret comparison', plots_folder)
 
-    mean_regret_ucb1 = mean_regret_ucb1 - np.cumsum(mean_collected_rewards_ucb1)
-
-    plot([mean_regret_ucb1, mean_regret_ts],
-            ['cumulative_regret_ucb1', 'cumulative_regret_ts'], 'Regret comparison', plots_folder)
+    plot([cumulative_regret_ucb1, cumulative_regret_ts],
+            ['cumulative_regret_ucb1', 'cumulative_regret_ts'], 'Cumulative regret comparison', plots_folder)
