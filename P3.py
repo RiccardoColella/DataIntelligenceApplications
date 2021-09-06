@@ -28,11 +28,13 @@ import numpy as np
 
 from matplotlib import pyplot
 from plotutilities import plot
+from plotutilities import plot_learned_curve
 
 from ucb1 import UCB1Learner
 from environment import Environment
 from tsgaussprice import TSLearnerGauss
 from P1utilities import get_best_bid_price_possible_reward
+from P1utilities import get_bid_and_price_revenue
 from regretcalculator import regret_calculator
 
 env = Environment()
@@ -131,7 +133,7 @@ def iterate_days(results_queue, idx=0):
 
     # put results in the given queue
     results_queue.put((ucb1_learner.collected_rewards, tsgauss_learner.collected_rewards, vector_daily_price_ucb1_loc,
-                       vector_daily_revenue_ucb1_loc, vector_daily_price_ts_loc, vector_daily_revenue_ts_loc))
+                       vector_daily_revenue_ucb1_loc, vector_daily_price_ts_loc, vector_daily_revenue_ts_loc, tsgauss_learner.mu, tsgauss_learner.tau, tsgauss_learner.n_pulled_arms))
 
 
 def to_np_arr_and_then_mean(list_of_lists):
@@ -155,6 +157,9 @@ if __name__ == '__main__':
     vector_daily_revenue_ucb1 = [] * N
     vector_daily_price_ts = [] * N
     vector_daily_revenue_ts = [] * N
+    vector_mu = [] * N
+    vector_tau = [] * N
+    vector_n_pulled_arms = [] * N
 
     # Multiprocessing initializations
     processes = []
@@ -180,6 +185,10 @@ if __name__ == '__main__':
         vector_daily_revenue_ucb1.insert(i, results[i][3])
         vector_daily_price_ts.insert(i, results[i][4])
         vector_daily_revenue_ts.insert(i, results[i][5])
+        vector_mu.insert(i, results[i][6])
+        vector_tau.insert(i, results[i][7])
+        vector_n_pulled_arms.insert(i, results[i][8])
+
     # calculate the mean values
     mean_collected_rewards_ucb1 = to_np_arr_and_then_mean(collected_rewards_ucb1)
     mean_collected_rewards_ts = to_np_arr_and_then_mean(collected_rewards_ts)
@@ -187,6 +196,9 @@ if __name__ == '__main__':
     mean_vector_daily_revenue_ucb1 = to_np_arr_and_then_mean(vector_daily_revenue_ucb1)
     mean_vector_daily_price_ts = to_np_arr_and_then_mean(vector_daily_price_ts)
     mean_vector_daily_revenue_ts = to_np_arr_and_then_mean(vector_daily_revenue_ts)
+    mean_mu = to_np_arr_and_then_mean(vector_mu)
+    mean_tau = to_np_arr_and_then_mean(vector_tau)
+    mean_n_pulled_arms = to_np_arr_and_then_mean(vector_n_pulled_arms)
 
     cwd = os.getcwd()
     print("Current working directory: " + cwd)
@@ -223,3 +235,10 @@ if __name__ == '__main__':
 
     plot([cumulative_regret_ucb1, cumulative_regret_ts],
             ['cumulative_regret_ucb1', 'cumulative_regret_ts'], 'Cumulative regret comparison', plots_folder)
+
+    #plot learned curve
+
+    real = [get_bid_and_price_revenue(bids[0], prices[i], 1) + get_bid_and_price_revenue(bids[0], prices[i], 2) + get_bid_and_price_revenue(bids[0], prices[i], 3)
+            for i in range(len(prices))]
+
+    plot_learned_curve(mean_mu, mean_tau, real, mean_n_pulled_arms, plots_folder)
