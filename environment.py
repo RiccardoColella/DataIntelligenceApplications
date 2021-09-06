@@ -195,8 +195,8 @@ class Customer:
         :param bid: The seller's bid
         :return: The mean cost that will be due for the customer of this customer with the given bid
         """
-        print(( self.a_cost_per_click/(self.a_cost_per_click + self.b_cost_per_click) ) * (1-self.min_cost_per_click) + self.min_cost_per_click)
-        return ( self.a_cost_per_click/(self.a_cost_per_click + self.b_cost_per_click) ) * (1-self.min_cost_per_click) + self.min_cost_per_click
+
+        return ( ( self.a_cost_per_click/(self.a_cost_per_click + self.b_cost_per_click) ) * (1-self.min_cost_per_click) + self.min_cost_per_click ) * bid
 
     def cost_per_click_daily(self, bid):
         """ Customer's characteristic n. 2.
@@ -208,7 +208,7 @@ class Customer:
         """
         #it is a beta normalized on [min_cost_per_click,1]
 
-        return np.random.beta(self.a_cost_per_click,self.b_cost_per_click) * (1-self.min_cost_per_click) + self.min_cost_per_click
+        return ( np.random.beta(self.a_cost_per_click,self.b_cost_per_click) * (1-self.min_cost_per_click) + self.min_cost_per_click ) * bid
 
         #return self.a_cost_per_click * bid
 
