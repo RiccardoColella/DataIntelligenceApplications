@@ -1,5 +1,6 @@
 from learner import *
 import numpy as np
+from scipy.stats import norm
 
 
 class TSLearnerGauss(Learner):
@@ -28,23 +29,24 @@ class TSLearnerGauss(Learner):
         Pulls the current arm with the given budget and returns it.
         :return: The index of the pulled arm
         """
-        #initializing
-        idx=-1
-        index=-2
-        m = self.mu
-        ta=self.tau
 
         if self.t<10:
             idx = np.random.randint(0,10)
+
         else:
-            while idx != index:
-                mean = np.random.normal(m[:],ta[:])
-                index = np.argmax(np.random.normal(mean[:], self.sigma))
-                if np.quantile(self.rewards_per_arm[index], self.percentage)>=0:
-                    idx = index
-                else:
-                    m=m.delete(index)
-                    ta=ta.delete(index)
+            mean = np.random.normal(self.mu[:],self.tau[:])
+            draw = np.random.normal(mean[:], self.sigma)
+            order = np.argsort(draw)
+            order = np.flip(order)
+
+            i = 0
+            flag = True
+
+            while flag == True:
+                if norm.ppf(self.percentage, self.mu[order[i]], self.sigma)>=0:
+                    flag = False
+                    idx = order[i]
+                i = i+1
 
         return idx
 
@@ -81,8 +83,3 @@ class TSLearnerGauss(Learner):
             self.tau[arm] = (self.tau[arm] * self.sigma) ** 2 / (self.n_pulled_arms[arm] * self.tau[arm] ** 2 + self.sigma ** 2)
 
         self.t += 1
-
-        #print("Collected rewards:")
-        #print(self.collected_rewards)
-
-        #print('------')

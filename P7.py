@@ -74,6 +74,7 @@ def iterate_days(results_queue, idx=0):
         vector_daily_prices_loc.append(daily_price)
 
         #bid:
+
         daily_arm_bid = [tsgauss_learner_bids[i].pull_arm() for i in range(3)]
         daily_bid = [bids[daily_arm_bid[i]] for i in range(3)]
         vector_daily_bids_loc.append(daily_bid)
@@ -111,7 +112,7 @@ def iterate_days(results_queue, idx=0):
 
         for user in range(1, 4):
             next_30_days.append(env.get_next_30_days(daily_bought_items_per_class[user - 1], daily_price[user-1],user))
-
+        #print(f'{next_30_days=}')
         #update observations
         for i in range(3):
             tsgauss_learner_prices[i].update_observations(daily_arm_price[i], daily_revenue[i], next_30_days[i])
@@ -200,9 +201,6 @@ if __name__ == '__main__':
     print("Current working directory: " + cwd)
     plots_folder = os.path.join(cwd, "plotsp7")
     print("Plots folder: " + plots_folder)
-
-    # Manual set this variable for plotting and regret
-    # TODO: regret? and line plotting
 
     multi_plot(mean_price,'price', plots_folder)
     multi_plot(mean_bids,'bid', plots_folder)
