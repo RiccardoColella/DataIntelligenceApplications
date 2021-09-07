@@ -118,13 +118,13 @@ def iterate_days(results_queue, idx=0):
             tsgauss_learner_bids[i].update_observations(daily_arm_bid[i], daily_revenue[i], next_30_days[i])
 
     # put results in the given queue
-    print('prima'+ str(idx))
+
     revenue_loc=[]
     for k in range(T-30):
         revenue_loc.append([])
         for i in range(3):
             revenue_loc[k].append(tsgauss_learner_prices[i].collected_rewards[k])
-    print('dopo'+ str(idx))
+
     results_queue.put((vector_daily_prices_loc, vector_daily_bids_loc, revenue_loc, vector_daily_user_per_class_loc))
 
     print('Ending execution ' + str(idx))
