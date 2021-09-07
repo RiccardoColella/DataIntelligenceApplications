@@ -25,7 +25,7 @@ import os
 import numpy as np
 from matplotlib import pyplot
 
-from plotutilities import multiplot
+from plotutilities import multi_plot
 
 from operator import add
 
