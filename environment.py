@@ -9,7 +9,7 @@ class Environment:
         self.product_price = product_price
         self.customer_class_1 = Customer(a_new_users=-5, b_new_users=1, c_new_users=0.9, d_new_users=100, var_new_users=2,
                                          a_cost_per_click=1, b_cost_per_click=10, min_cost_per_click=0.95,
-                                         a_conversion_rate=-3.7, b_conversion_rate=-10, c_conversion_rate=0.1, d_conversion_rate=35.7, e_conversion_rate=-0.2,
+                                         a_conversion_rate=-3.7, b_conversion_rate=-10, c_conversion_rate=0.1, d_conversion_rate=34.8, e_conversion_rate=-0.2,
                                          price_min=product_price,
                                          mean_n_times_comeback=5, dev_n_times_comeback=0.2)
         self.customer_class_2 = Customer(a_new_users=-0.8, b_new_users=-0.8, c_new_users=-3, d_new_users=71.2, var_new_users=2,
