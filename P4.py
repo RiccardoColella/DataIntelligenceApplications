@@ -43,8 +43,8 @@ bids, best_daily_price, best_possible_reward = get_best_bid_price_possible_rewar
 bids = [bids]
 
 mu0 = 1000
-tau = 13.5
-sigma0 = 13.5
+tau = 38
+sigma0 = 38
 
 # split --> context_a_split --> splitting
 #       --> context_c_split --> splitting
