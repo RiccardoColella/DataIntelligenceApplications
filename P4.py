@@ -33,9 +33,11 @@ confidence = 0.99
 
 T = 365
 
+env = Environment()
+
 #bids and prices range
-prices = np.linspace(1, 10, num=10)
-bids = np.linspace(0.1, 1, num=10)
+bids = env.bids
+prices = env.prices
 
 bids, best_daily_price, best_possible_reward = get_best_bid_price_possible_reward(bids, prices)
 bids = [bids]
@@ -398,8 +400,6 @@ def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
 if __name__ == '__main__':
 
     for iter in range(N):
-
-        env = Environment()
 
         users_per_class = []
         revenue_per_class = []

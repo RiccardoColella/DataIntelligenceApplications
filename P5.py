@@ -40,8 +40,8 @@ env = Environment()
 T = 395
 
 #bids and prices range
-prices = np.linspace(1, 10, num=10)
-bids = np.linspace(0.1, 1, num=10)
+bids = env.bids
+prices = env.prices
 
 best_daily_bid, prices, best_possible_reward = get_best_bid_price_possible_reward(bids, prices)
 prices = [prices]

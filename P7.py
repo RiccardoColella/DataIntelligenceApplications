@@ -37,10 +37,9 @@ env = Environment()
 
 # day of algorithm execution
 T = 395
-#prices range
-prices = np.linspace(1, 10, num=10)
-# bids range
-bids = np.linspace(0.1, 1, num=10)
+#bids and prices range
+bids = env.bids
+prices = env.prices
 
 def iterate_days(results_queue, idx=0):
     """

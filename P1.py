@@ -21,8 +21,8 @@ from P1utilities import *
 
 env = Environment()
 
-bids = np.linspace(0.1, 1, num=10)
-prices = np.linspace(1, 10, num=10)
+bids = env.bids
+prices = env.prices
 
 if __name__ == '__main__':
     # find the best joint bid and price strategy for all the customer classes
