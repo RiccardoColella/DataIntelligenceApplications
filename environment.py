@@ -21,7 +21,7 @@ class Environment:
                                          a_cost_per_click=1, b_cost_per_click=10, min_cost_per_click=0.95,
                                          a_conversion_rate=-3.05, b_conversion_rate=1.2, c_conversion_rate=84, d_conversion_rate=20.1, e_conversion_rate=-13,
                                          price_min=product_price,
-                                         mean_n_times_comeback=15, dev_n_times_comeback=0.2)
+                                         mean_n_times_comeback=5, dev_n_times_comeback=0.2)
 
         self.customer_classes = [self.customer_class_1, self.customer_class_2, self.customer_class_3]
 
