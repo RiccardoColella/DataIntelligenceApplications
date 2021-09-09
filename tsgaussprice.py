@@ -15,8 +15,8 @@ class TSLearnerGauss(Learner):
 
         # Assignments and Initializations
         self.n_arms = n_arms
-        self.sigma = 10
-        self.tau = [10] * n_arms
+        self.sigma = 20
+        self.tau = [20] * n_arms
         self.mu = [1000] * n_arms
         self.last30dayschoice = []
         self.delayedreward = []
