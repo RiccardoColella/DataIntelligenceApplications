@@ -4,14 +4,13 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
 #argument to plot learned curve
-parser.add_argument('-l', help="plot learned curve, automatically set n=1", action="store_true")
+parser.add_argument('-p', help="plot learned curve, automatically set n=1", action="store_true")
 
 # how many executions:
 parser.add_argument('-n', help="set number of iteration", default = 200)
 N = int(parser.parse_args().n)
 
 verbose = parser.parse_args().verbose
-plot_l_t =  parser.parse_args().l
 
 if verbose:
     def log(argument):
@@ -20,10 +19,13 @@ else:
     def log(argument):
         return
 
+plot_l_t =  parser.parse_args().p
+
 # now the real code begins
 
 import multiprocessing
 import os
+from matplotlib import pyplot
 
 from operator import add
 
@@ -220,12 +222,12 @@ if __name__ == '__main__':
     # Plot collected rewards
 
     plot([mean_collected_rewards_ucb1, mean_collected_rewards_ts, [best_possible_reward for i in range(T)]],
-            ['UCB1', 'TS', 'Best'], 'Collected reward', plots_folder)
+            ['UCB1', 'TS', 'Best'], 'Collected reward', plots_folder, 3)
 
     # Plot daily prices
 
     plot([mean_vector_daily_price_ucb1, mean_vector_daily_price_ts, [best_daily_price for i in range(T)]],
-            ['UCB1', 'TS', 'Best'], 'Daily prices', plots_folder)
+            ['UCB1', 'TS', 'Best'], 'Daily prices', plots_folder, 3)
 
     # Plot UCB1 price and revenue comparison
 
@@ -243,10 +245,10 @@ if __name__ == '__main__':
     instantaneous_regret_ts, cumulative_regret_ts = regret_calculator(best_possible_reward, mean_collected_rewards_ts)
 
     plot([instantaneous_regret_ucb1, instantaneous_regret_ts],
-            ['instantaneous_regret_ucb1', 'instantaneous_regret_ts'], 'Instantaneous regret comparison', plots_folder)
+            ['instantaneous regret ucb1', 'instantaneous regret ts'], 'Instantaneous regret comparison', plots_folder, 3)
 
     plot([cumulative_regret_ucb1, cumulative_regret_ts],
-            ['cumulative_regret_ucb1', 'cumulative_regret_ts'], 'Cumulative regret comparison', plots_folder)
+            ['cumulative regret ucb1', 'cumulative regret ts'], 'Cumulative regret comparison', plots_folder, 3)
 
     #plot learned curve
 

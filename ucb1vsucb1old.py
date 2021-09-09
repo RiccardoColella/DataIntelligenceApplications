@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
 
 # how many executions:
-parser.add_argument('-n', help="set number of iteration", default = 200)
+parser.add_argument('-n', help="set number of iteration", default = 1)
 N = int(parser.parse_args().n)
 
 verbose = parser.parse_args().verbose
@@ -180,12 +180,12 @@ if __name__ == '__main__':
 
     # Plot collected rewards
     plot([mean_collected_rewards_ucb1, mean_collected_rewards_ucb1_old, [best_possible_reward for i in range(T)]],
-            ['UCB1', 'UCB1old', 'Best'], 'Collected reward', plots_folder)
+            ['UCB1', 'UCB1old', 'Best'], 'Collected reward', plots_folder, 2)
 
     # Plot daily prices
 
     plot([mean_vector_daily_price_ucb1, mean_vector_daily_price_ucb1_old, [best_daily_price for i in range(T)]],
-            ['UCB1', 'UCB1old', 'Best'], 'Daily prices', plots_folder)
+            ['UCB1', 'UCB1old', 'Best'], 'Daily prices', plots_folder, 2)
 
     #calculate and plot regret
     instantaneous_regret_ucb1, cumulative_regret_ucb1 = regret_calculator(best_possible_reward, mean_collected_rewards_ucb1)
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     instantaneous_regret_ucb1_old, cumulative_regret_ucb1_old = regret_calculator(best_possible_reward, mean_collected_rewards_ucb1_old)
 
     plot([instantaneous_regret_ucb1, instantaneous_regret_ucb1_old],
-            ['instantaneous_regret_ucb1', 'instantaneous_regret_ucb1_old'], 'Instantaneous regret comparison', plots_folder)
+            ['instantaneous_regret_ucb1', 'instantaneous_regret_ucb1_old'], 'Instantaneous regret comparison', plots_folder, 2)
 
     plot([cumulative_regret_ucb1, cumulative_regret_ucb1_old],
-            ['cumulative_regret_ucb1', 'cumulative_regret_ucb1_old'], 'Cumulative regret comparison', plots_folder)
+            ['cumulative_regret_ucb1', 'cumulative_regret_ucb1_old'], 'Cumulative regret comparison', plots_folder, 2)

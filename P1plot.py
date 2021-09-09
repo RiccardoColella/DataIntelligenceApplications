@@ -25,6 +25,7 @@ pyplot.xlabel('Bids')
 pyplot.ylabel('New customers')
 pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+pyplot.close()
 
 title = 'Mean daily clicks of new customers aggregated'
 pyplot.figure()
@@ -33,6 +34,7 @@ pyplot.xlabel('Bids')
 pyplot.ylabel('New customers')
 pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+pyplot.close()
 
 title = 'Mean cost per click'
 pyplot.figure()
@@ -43,6 +45,7 @@ pyplot.ylabel('Cost per click')
 pyplot.legend(class_list)
 pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+pyplot.close()
 
 title = 'Conversion rate'
 pyplot.figure()
@@ -54,8 +57,8 @@ pyplot.ylabel('Conversion rate')
 pyplot.xticks([prices[i] for i in range(1,len(prices),2)])
 pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+pyplot.close()
 
-best_bid_class, best_price_class, best_users_class, best_possible_reward_class = get_best_bid_price_users_possible_reward_per_class(bids, prices)
 for classe in range(1,4):
     title = 'Revenue function class ' + str(classe)
     fig, ax = pyplot.subplots(subplot_kw={"projection": "3d"})
@@ -73,3 +76,17 @@ for classe in range(1,4):
     pyplot.ylabel('Prices')
     pyplot.title(title)
     pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+    pyplot.close()
+
+title = 'Revenue function'
+fig, ax = pyplot.subplots(subplot_kw={"projection": "3d"})
+X, Y = np.meshgrid(bids, prices)
+Z = np.array([[sum([get_bid_and_price_revenue(bid, price, classe) for classe in range(1,4)]) for bid in bids] for price in prices])
+ax.plot_surface(X, Y, Z, cmap = cm.Greys, linewidth=0, antialiased=False)
+ax.view_init(elev=30., azim=40)
+pyplot.yticks([prices[i] for i in range(1,len(prices),2)])
+pyplot.xlabel('Bids')
+pyplot.ylabel('Prices')
+pyplot.title(title)
+pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+pyplot.close()

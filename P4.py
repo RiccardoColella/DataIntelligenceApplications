@@ -17,10 +17,16 @@ else:
     def log(argument):
         return
 
+plot_this =  parser.parse_args().p
+if plot_this == True:
+    N=1
+
 # now the real code begins
 
 import numpy as np
 from scipy.stats import t as tstudent
+import os
+from matplotlib import pyplot
 
 from environment import Environment
 from tsgausspricecontextgeneration import TSLearnerGauss
@@ -56,13 +62,6 @@ def splitting(p1, mu1, p2, mu2, muzero):
     log('splitting: ' + str(p1 * mu1 + p2 * mu2 > muzero))
 
     return p1 * mu1 + p2 * mu2 > muzero
-
-'''
-def daily_normalized_rev(rev_per_class_daily, us_per_class_daily):
-    'normalize the rev per class for the users'
-
-    return sum([a/b for a,b in zip(rev_per_class_daily,us_per_class_daily)])
-'''
 
 def n_pulled_arm_and_reward_per_arm_counter(rev_per_class, d_arm_per_class, us_per_class,classes):
     '''return n_pulled_arm and reward_per_arm'''
@@ -115,9 +114,6 @@ def find_lower_bound(rev_per_class, d_arm_per_class, us_per_class, n_pulled_arm,
 
     var = np.var(rewards_best_arm)
 
-    ''''print('mean, t_student')
-    print(mean_best_arm, tstudent.ppf(confidence, 1 if n_pulled_arm[best_arm]==0 or n_pulled_arm[best_arm]==1 else n_pulled_arm[best_arm] - 1, loc=0, scale=1) * np.sqrt(var / n_pulled_arm[best_arm]  ))'''
-
     return mean_best_arm - tstudent.ppf(confidence, 1 if n_pulled_arm[best_arm]==0 or n_pulled_arm[best_arm]==1 else n_pulled_arm[best_arm] - 1, loc=0, scale=1) * np.sqrt(var / n_pulled_arm[best_arm])
 
 def context_split(rev_per_class, d_arm_per_class, us_per_class, context):
@@ -164,9 +160,9 @@ def context_split(rev_per_class, d_arm_per_class, us_per_class, context):
     mu_2 = find_lower_bound(rev_per_class, d_arm_per_class, us_per_class, n_pulled_arm_2, best_arm_2, mean_best_arm_2, classes_2)
     mu_tot = find_lower_bound(rev_per_class, d_arm_per_class, us_per_class, n_pulled_arm_tot, best_arm_tot, mean_best_arm_tot, classes_tot)
 
-    '''print(f'{best_arm_1,best_arm_2,best_arm_tot=}')
-    print(f'{mu_1,mu_2,mu_tot=}')
-    print(f'{p_1,p_2=}')'''
+    log(f'{best_arm_1,best_arm_2,best_arm_tot=}')
+    log(f'{mu_1,mu_2,mu_tot=}')
+    log(f'{p_1,p_2=}')
 
     if best_arm_1 != best_arm_2:
         return splitting(p_1, mu_1, p_2, mu_2, mu_tot)
@@ -241,6 +237,7 @@ if __name__ == '__main__':
 
                         if context == 2:
                             print('A -- > B + C at day: ' + str (t) + '--------------------------------------------------------------------------------------------------------------------------------' + str(iter))
+                            time_first_split = t
 
                             #compute tau_b and mu_b then create the new tsgauss_learner_b
                             reward_per_arm_b = [0] * n_arms
@@ -290,6 +287,7 @@ if __name__ == '__main__':
 
                         if context == 3:
                             print('C -- > D + E at day: ' + str (t) + '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++' + str(iter))
+                            time_second_split = t
 
                             #compute tau_d and mu_d then create the new tsgauss_learner_d
                             reward_per_arm_d = [0] * n_arms
@@ -388,3 +386,39 @@ if __name__ == '__main__':
                 tsgauss_learner_e.update_observations(daily_arm_b, revenue_per_class_today[2], next_30_days[2])
 
             revenue_per_class.append([revenue_per_class_today[i] + sum_next_30_days[i] for i in range(len(revenue_per_class_today))])
+
+    if plot_this == True:
+        cwd = os.getcwd()
+        print("Current working directory: " + cwd)
+        plots_folder = os.path.join(cwd, "plotsp4")
+        print("Plots folder: " + plots_folder)
+        def multi_plot(list_of_things_to_plot, name, yticks=False):
+            'plot 3 list of mean: one for every class'
+
+            pyplot.figure()
+            for i in range(len(list_of_things_to_plot)):
+                pyplot.plot(list_of_things_to_plot[i])
+            pyplot.axvline(x=time_first_split, color='k')
+            pyplot.axvline(x=time_second_split, color='k')
+            if type(yticks)!=type(False):
+                pyplot.yticks(yticks)
+            pyplot.xlim([0, 365])
+            pyplot.legend(['Class 1', 'Class 2', 'Class 3'])
+            pyplot.title(str(name) + ' per class')
+            pyplot.xlabel('Days')
+            pyplot.savefig(os.path.join(plots_folder,str(name) + ' per class.png'))
+            pyplot.close()
+
+        revenue_per_class_new = [[[] for i in range(len(revenue_per_class))] for i in range(len(revenue_per_class[0]))]
+        for i in range(len(revenue_per_class)):
+            for j in range(len(revenue_per_class[0])):
+                revenue_per_class_new[j][i] = revenue_per_class[i][j]
+
+        multi_plot(revenue_per_class_new, 'Revenue')
+
+        daily_price_per_class = [[[] for i in range(len(daily_arm_per_class))] for i in range(len(daily_arm_per_class[0]))]
+        for i in range(len(daily_arm_per_class)):
+            for j in range(len(daily_arm_per_class[0])):
+                daily_price_per_class[j][i] = prices[daily_arm_per_class[i][j]]
+
+        multi_plot(daily_price_per_class, 'Price', prices)
