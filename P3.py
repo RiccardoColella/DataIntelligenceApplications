@@ -90,7 +90,7 @@ def iterate_days(results_queue, idx=0):
         for user in range(len(new_users)):
             total_cost += new_users[user] * cost[user]
 
-        # Choose the arm and thus the price for UCB
+        # Choose the arm and thus the price for UCB1
         daily_arm_ucb1 = ucb1_learner.pull_arm()
         daily_price_ucb1 = prices[daily_arm_ucb1]
         vector_daily_price_ucb1_loc.append(daily_price_ucb1)
@@ -130,7 +130,7 @@ def iterate_days(results_queue, idx=0):
 
         ucb1_learner.update_observations(daily_arm_ucb1, daily_revenue_ucb1, next_30_days)
 
-        # get earnings in the following 30 days
+        # Get delayed rewards
         next_30_days = [0] * 30
         for user in range(1, 4):
             next_30_days = list(
@@ -163,7 +163,7 @@ if __name__ == '__main__':
 
     log('N = ' + str(N))
 
-    collected_rewards_ucb1 = [] * 10
+    collected_rewards_ucb1 = [] * N
     collected_rewards_ts = [] * N
     vector_daily_price_ucb1 = [] * N
     vector_daily_revenue_ucb1 = [] * N
