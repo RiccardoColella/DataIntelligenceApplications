@@ -2,7 +2,7 @@ from learner import Learner
 import numpy as np
 
 
-class ucb1_learner(Learner):
+class UCB1Learnerold(Learner):
     def __init__(self, n_arms):
         super().__init__(n_arms)
         self.empirical_means = np.zeros(n_arms)
@@ -60,7 +60,3 @@ class ucb1_learner(Learner):
             if self.n_pulled_arms[a] > 0:
                 self.empirical_means[a] = self.rewards_per_arm[a] / self.n_pulled_arms[a]
                 self.confidence[a] = (2 * np.log(self.t) / self.n_pulled_arms[a]) ** 0.5
-
-        print("Collected rewards:")
-        print(self.collected_rewards)
-

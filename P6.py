@@ -201,33 +201,3 @@ if __name__ == '__main__':
 
     plot([mean_revenue, [best_possible_reward for i in range(T-30)]],
             ['Mean revenue'], 'Mean revenue', plots_folder)
-
-
-
-
-    # # Plot mean prices
-    # pyplot.figure()
-    # pyplot.plot(mean_price)
-    # pyplot.xlim([0, T - 30])
-    # pyplot.legend(['Mean prices'])
-    # pyplot.title('Mean prices')
-    # pyplot.xlabel('Days')
-    # pyplot.savefig(os.path.join(plots_folder, 'Mean prices.png'))
-
-    # # Plot mean bids
-    # pyplot.figure()
-    # pyplot.plot(mean_bid)
-    # pyplot.xlim([0, T - 30])
-    # pyplot.legend(['Mean bids'])
-    # pyplot.title('Mean bids')
-    # pyplot.xlabel('Days')
-    # pyplot.savefig(os.path.join(plots_folder, 'Mean bids.png'))
-
-    # # Plot mean revenue
-    # pyplot.figure()
-    # pyplot.plot(mean_revenue)
-    # pyplot.xlim([0, T - 30])
-    # pyplot.legend(['Mean revenue'])
-    # pyplot.title('Mean revenue')
-    # pyplot.xlabel('Days')
-    # pyplot.savefig(os.path.join(plots_folder, 'Mean revenue.png'))

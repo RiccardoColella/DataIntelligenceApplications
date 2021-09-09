@@ -64,8 +64,3 @@ class UCB1Learner(Learner):
             if self.n_pulled_arms[a] > 0:
                 self.empirical_means[a] = self.rewards_per_arm[a] / self.n_pulled_arms[a]
                 self.confidence[a] = (2 * np.log(self.t) / self.n_pulled_arms[a]) ** 0.5
-
-        # print("Collected rewards:")
-        # print(self.collected_rewards)
-
-        #print('------')
