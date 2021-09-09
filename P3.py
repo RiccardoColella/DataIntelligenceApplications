@@ -3,12 +3,15 @@
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
+#argument to plot learned curve
+parser.add_argument('-l', help="plot learned curve, automatically set n=1", action="store_true")
 
 # how many executions:
 parser.add_argument('-n', help="set number of iteration", default = 200)
 N = int(parser.parse_args().n)
 
 verbose = parser.parse_args().verbose
+plot_l_t =  parser.parse_args().l
 
 if verbose:
     def log(argument):
@@ -46,6 +49,14 @@ bids = [bids]
 
 # day of algorithm execution
 T = 395
+
+if plot_l_t== True:
+    N=1
+    cwd = os.getcwd()
+    plots_folder = os.path.join(cwd, "plotsp3")
+    plots_folder = os.path.join(plots_folder, "learnedcurve")
+    real = [get_bid_and_price_revenue(bids[0], prices[i], 1) + get_bid_and_price_revenue(bids[0], prices[i], 2) + get_bid_and_price_revenue(bids[0], prices[i], 3)
+            for i in range(len(prices))]
 
 def iterate_days(results_queue, idx=0):
     """
@@ -126,6 +137,9 @@ def iterate_days(results_queue, idx=0):
                 map(add, next_30_days, env.get_next_30_days(daily_bought_items_per_class_ts[user - 1], daily_price_ts,
                                                             user)))
         tsgauss_learner.update_observations(daily_arm_ts, daily_revenue_ts, next_30_days)
+
+        if plot_l_t == True and t>=29:
+            plot_learned_curve(tsgauss_learner.mu, tsgauss_learner.tau, real, tsgauss_learner.n_pulled_arms, plots_folder, t)
 
     print('Ending execution ' + str(idx))
 

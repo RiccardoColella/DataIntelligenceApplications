@@ -37,10 +37,10 @@ pyplot.savefig(os.path.join(plots_folder, title + '.png'))
 title = 'Mean cost per click'
 pyplot.figure()
 for i in range(1,4):
-    print([env.get_mean_cost_per_click(bid,i) for bid in bids])
-    pyplot.plot(bids, [env.get_mean_cost_per_click(bid,i) for bid in bids])
+    pyplot.plot(bids, [env.get_mean_cost_per_click(bid,i) for bid in bids], 'o-')
 pyplot.xlabel('Bids')
 pyplot.ylabel('Cost per click')
+pyplot.legend(class_list)
 pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
 
@@ -55,6 +55,7 @@ pyplot.xticks([prices[i] for i in range(1,len(prices),2)])
 pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
 
+best_bid_class, best_price_class, best_users_class, best_possible_reward_class = get_best_bid_price_users_possible_reward_per_class(bids, prices)
 for classe in range(1,4):
     title = 'Revenue function class ' + str(classe)
     fig, ax = pyplot.subplots(subplot_kw={"projection": "3d"})
