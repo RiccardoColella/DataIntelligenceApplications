@@ -34,6 +34,16 @@ pyplot.ylabel('New customers')
 pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
 
+title = 'Mean cost per click'
+pyplot.figure()
+for i in range(1,4):
+    print([env.get_mean_cost_per_click(bid,i) for bid in bids])
+    pyplot.plot(bids, [env.get_mean_cost_per_click(bid,i) for bid in bids])
+pyplot.xlabel('Bids')
+pyplot.ylabel('Cost per click')
+pyplot.title(title)
+pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+
 title = 'Conversion rate'
 pyplot.figure()
 for i in range(1,4):
