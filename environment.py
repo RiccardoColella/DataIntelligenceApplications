@@ -13,12 +13,12 @@ class Environment:
                                          price_min=product_price,
                                          mean_n_times_comeback=5, dev_n_times_comeback=0.2)
         self.customer_class_2 = Customer(a_new_users=-0.8, b_new_users=-0.8, c_new_users=-3, d_new_users=71.2, var_new_users=2,
-                                         a_cost_per_click=1, b_cost_per_click=10, min_cost_per_click=0.9,
+                                         a_cost_per_click=5, b_cost_per_click=5, min_cost_per_click=0.9,
                                          a_conversion_rate=-4.8, b_conversion_rate=-3, c_conversion_rate=0.1, d_conversion_rate=21, e_conversion_rate=-19.5,
                                          price_min=product_price,
                                          mean_n_times_comeback=10, dev_n_times_comeback=0.2)
         self.customer_class_3 = Customer(a_new_users=-4, b_new_users=0, c_new_users=1, d_new_users=50, var_new_users=2,
-                                         a_cost_per_click=5, b_cost_per_click=5, min_cost_per_click=0.85,
+                                         a_cost_per_click=1, b_cost_per_click=10, min_cost_per_click=0.85,
                                          a_conversion_rate=-3.05, b_conversion_rate=1.2, c_conversion_rate=84, d_conversion_rate=20.1, e_conversion_rate=-13,
                                          price_min=product_price,
                                          mean_n_times_comeback=5, dev_n_times_comeback=0.2)
