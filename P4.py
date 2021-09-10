@@ -49,7 +49,7 @@ bids, best_daily_price, best_possible_reward = get_best_bid_price_possible_rewar
 bids = [bids]
 
 mu0 = [1200, 800, 400, 300, 100]
-tau = 15
+tau_list = [15, 10, 5, 3, 1]
 sigma0 = 15
 
 # split --> context_a_split --> splitting
@@ -219,6 +219,7 @@ if __name__ == '__main__':
         context = 1
 
         n_arms = len(prices)
+        tau=tau_list[0]
         tsgauss_learner = TSLearnerGauss(n_arms, [], [mu0[0]] * n_arms, [tau] * n_arms, sigma0, [], [], np.zeros(n_arms), 0, [0]*n_arms)
 
         for t in range(T):
@@ -268,7 +269,7 @@ if __name__ == '__main__':
 
                             n_pulled_arm_b = np.array(n_pulled_arm_b)
                             mean_per_arm_b = np.array(mean_per_arm_b)
-
+                            tau = tau_list[1]
                             mu_b = n_pulled_arm_b * tau**2 * mean_per_arm_b / (n_pulled_arm_b * tau**2 + sigma0**2) + sigma0**2 * mu0[1] / (n_pulled_arm_b * tau**2 + sigma0**2)
 
                             tau_b = (sigma0 * tau)**2 / (n_pulled_arm_b * tau**2 + sigma0**2)
@@ -294,7 +295,7 @@ if __name__ == '__main__':
 
                             n_pulled_arm_c = np.array(n_pulled_arm_c)
                             mean_per_arm_c = np.array(mean_per_arm_c)
-
+                            tau=tau_list[2]
                             mu_c = n_pulled_arm_c * tau**2 * mean_per_arm_c / (n_pulled_arm_c * tau**2 + sigma0**2) + sigma0**2 * mu0[2] / (n_pulled_arm_c * tau**2 + sigma0**2)
                             tau_c = (sigma0 * tau)**2 / (n_pulled_arm_c * tau**2 + sigma0**2)
 
@@ -323,7 +324,7 @@ if __name__ == '__main__':
 
                             n_pulled_arm_d = np.array(n_pulled_arm_d)
                             mean_per_arm_d = np.array(mean_per_arm_d)
-
+                            tau=tau_list[3]
                             mu_d = n_pulled_arm_d * tau**2 * mean_per_arm_d / (n_pulled_arm_d * tau**2 + sigma0**2) + sigma0**2 * mu0[3] / (n_pulled_arm_d * tau**2 + sigma0**2)
 
                             tau_d = (sigma0 * tau)**2 / (n_pulled_arm_d * tau**2 + sigma0**2)
@@ -350,7 +351,7 @@ if __name__ == '__main__':
 
                             n_pulled_arm_e = np.array(n_pulled_arm_e)
                             mean_per_arm_e = np.array(mean_per_arm_e)
-
+                            tau=tau_list[4]
                             mu_e = n_pulled_arm_e * tau**2 * mean_per_arm_e / (n_pulled_arm_e * tau**2 + sigma0**2) + sigma0**2 * mu0[4] / (n_pulled_arm_e * tau**2 + sigma0**2)
                             tau_e = (sigma0 * tau)**2 / (n_pulled_arm_e * tau**2 + sigma0**2)
 
