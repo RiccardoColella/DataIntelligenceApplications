@@ -26,6 +26,7 @@ import numpy as np
 from matplotlib import pyplot
 
 from plotutilities import multi_plot
+from P1utilities import get_best_bid_price_users_possible_reward_per_class
 
 from operator import add
 
@@ -161,8 +162,8 @@ if __name__ == '__main__':
     log('N = ' + str(N))
 
     #initializations of results list
-    prices = [] * N
-    bids = [] * N
+    vector_prices = [] * N
+    vector_bids = [] * N
     revenue = [] * N
     user = [] * N
 
@@ -185,14 +186,14 @@ if __name__ == '__main__':
 
     # merge the results in a list of lists
     for i in range(len(results)):
-        prices.insert(i, results[i][0])
-        bids.insert(i, results[i][1])
+        vector_prices.insert(i, results[i][0])
+        vector_bids.insert(i, results[i][1])
         revenue.insert(i, results[i][2])
         user.insert(i, results[i][3])
 
     # calculate the mean values
-    mean_price = to_np_arr_and_then_mean_per_class(prices)
-    mean_bids = to_np_arr_and_then_mean_per_class(bids)
+    mean_price = to_np_arr_and_then_mean_per_class(vector_prices)
+    mean_bids = to_np_arr_and_then_mean_per_class(vector_bids)
     mean_revenue = to_np_arr_and_then_mean_per_class(revenue)
     mean_user = to_np_arr_and_then_mean_per_class(user)
 
@@ -201,7 +202,9 @@ if __name__ == '__main__':
     plots_folder = os.path.join(cwd, "plotsp7")
     print("Plots folder: " + plots_folder)
 
-    multi_plot(mean_price,'price', plots_folder)
-    multi_plot(mean_bids,'bid', plots_folder)
-    multi_plot(mean_revenue,'revenue', plots_folder)
-    multi_plot(mean_user,'user', plots_folder)
+    best_bid, best_price, best_users, best_possible_reward = get_best_bid_price_users_possible_reward_per_class(bids, prices)
+    print(best_bid, best_price, best_users, best_possible_reward)
+    multi_plot(mean_price,'price', plots_folder, best_price)
+    multi_plot(mean_bids,'bid', plots_folder, best_bid)
+    multi_plot(mean_revenue,'revenue', plots_folder, best_possible_reward)
+    multi_plot(mean_user,'user', plots_folder, best_users)

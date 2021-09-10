@@ -68,7 +68,7 @@ def get_best_bid_price_users_possible_reward_per_class(bids, prices):
 
     for i in range(1, 4):
         best_bid[i-1], best_price[i-1] = get_best_bid_and_price(bids, prices, i)
-        best_users =  env.get_mean_new_users_daily(best_bid[i-1], i)
+        best_users[i-1] =  env.get_mean_new_users_daily(best_bid[i-1], i)
         best_possible_reward[i-1] = get_bid_and_price_revenue(best_bid[i-1], best_price[i-1], i)
 
     return best_bid, best_price, best_users, best_possible_reward
