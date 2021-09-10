@@ -48,15 +48,10 @@ prices = env.prices
 bids, best_daily_price, best_possible_reward = get_best_bid_price_possible_reward(bids, prices)
 bids = [bids]
 
-<<<<<<< HEAD
-mu0 = 1000
-tau = 13
-sigma0 = 13
-=======
+
 mu0 = [1200, 800, 400, 300, 100]
 tau_list = [15, 10, 5, 3, 1]
 sigma0 = 15
->>>>>>> f97907d9e8056629fbb6861a2089f14bcae77ba9
 
 # split --> context_a_split --> splitting
 #       --> context_c_split --> splitting
