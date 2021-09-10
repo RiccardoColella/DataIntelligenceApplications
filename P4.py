@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
 parser.add_argument('-p', help="make plot, automatically set n=1", action="store_true")
 # how many executions:
-parser.add_argument('-n', help="set number of iteration", default = 200)
+parser.add_argument('-n', help="set number of iteration", default = 10)
 N = int(parser.parse_args().n)
 
 verbose = parser.parse_args().verbose
@@ -18,8 +18,8 @@ else:
         return
 
 plot_this =  parser.parse_args().p
-if plot_this == True:
-    N=1
+'''if plot_this == True:
+    N=1'''
 
 # now the real code begins
 
@@ -48,7 +48,7 @@ prices = env.prices
 bids, best_daily_price, best_possible_reward = get_best_bid_price_possible_reward(bids, prices)
 bids = [bids]
 
-mu0 = 1000
+mu0 = [1200, 800, 400, 300, 100]
 tau = 15
 sigma0 = 15
 
@@ -187,7 +187,22 @@ def split(split_context, rev_per_class, d_arm_per_class, us_per_class):
     else:
         return 3
 
-## TODO: parallelization like P3
+def multi_plot(list_of_things_to_plot, name, yticks=False):
+    'plot 3 list of mean: one for every class'
+
+    pyplot.figure()
+    for i in range(len(list_of_things_to_plot)):
+        pyplot.plot(list_of_things_to_plot[i])
+    pyplot.axvline(x=time_first_split, color='k')
+    pyplot.axvline(x=time_second_split, color='k')
+    if type(yticks)!=type(False):
+        pyplot.yticks(yticks)
+    pyplot.xlim([0, 365])
+    pyplot.legend(['Class 1', 'Class 2', 'Class 3'])
+    pyplot.title(str(name) + ' per class')
+    pyplot.xlabel('Days')
+    pyplot.savefig(os.path.join(plots_folder, str(iter) + str(name) + ' per class.png'))
+    pyplot.close()
 
 if __name__ == '__main__':
 
@@ -198,10 +213,13 @@ if __name__ == '__main__':
         daily_arm_per_class = []
         last30dayschoice = []
 
+        time_first_split = 0
+        time_second_split = 0
+
         context = 1
 
         n_arms = len(prices)
-        tsgauss_learner = TSLearnerGauss(n_arms, [], [mu0] * n_arms, [tau] * n_arms, sigma0, [], [], np.zeros(n_arms), 0, [0]*n_arms)
+        tsgauss_learner = TSLearnerGauss(n_arms, [], [mu0[0]] * n_arms, [tau] * n_arms, sigma0, [], [], np.zeros(n_arms), 0, [0]*n_arms)
 
         for t in range(T):
             if t%7==0:
@@ -251,7 +269,7 @@ if __name__ == '__main__':
                             n_pulled_arm_b = np.array(n_pulled_arm_b)
                             mean_per_arm_b = np.array(mean_per_arm_b)
 
-                            mu_b = n_pulled_arm_b * tau**2 * mean_per_arm_b / (n_pulled_arm_b * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_b * tau**2 + sigma0**2)
+                            mu_b = n_pulled_arm_b * tau**2 * mean_per_arm_b / (n_pulled_arm_b * tau**2 + sigma0**2) + sigma0**2 * mu0[1] / (n_pulled_arm_b * tau**2 + sigma0**2)
 
                             tau_b = (sigma0 * tau)**2 / (n_pulled_arm_b * tau**2 + sigma0**2)
 
@@ -259,7 +277,9 @@ if __name__ == '__main__':
                             mean_per_arm_b=mean_per_arm_b.tolist()
                             mu_b=mu_b.tolist()
                             tau_b=tau_b.tolist()
-
+                            # print(mean_per_arm_b)
+                            # print(mu_b)
+                            # print(tau_b)
                             k = 31
                             tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][0] for i in range(t-k,t)], np.array(reward_per_arm_b), t, n_pulled_arm_b)
 
@@ -275,13 +295,16 @@ if __name__ == '__main__':
                             n_pulled_arm_c = np.array(n_pulled_arm_c)
                             mean_per_arm_c = np.array(mean_per_arm_c)
 
-                            mu_c = n_pulled_arm_c * tau**2 * mean_per_arm_c / (n_pulled_arm_c * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_c * tau**2 + sigma0**2)
+                            mu_c = n_pulled_arm_c * tau**2 * mean_per_arm_c / (n_pulled_arm_c * tau**2 + sigma0**2) + sigma0**2 * mu0[2] / (n_pulled_arm_c * tau**2 + sigma0**2)
                             tau_c = (sigma0 * tau)**2 / (n_pulled_arm_c * tau**2 + sigma0**2)
 
                             n_pulled_arm_c=n_pulled_arm_c.tolist()
                             mean_per_arm_c=mean_per_arm_c.tolist()
                             mu_c=mu_c.tolist()
                             tau_c=tau_c.tolist()
+                            # print(mean_per_arm_c)
+                            # print(mu_c)
+                            # print(tau_c)
 
                             tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_c, tau_c, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_c), t, n_pulled_arm_c)
 
@@ -301,7 +324,7 @@ if __name__ == '__main__':
                             n_pulled_arm_d = np.array(n_pulled_arm_d)
                             mean_per_arm_d = np.array(mean_per_arm_d)
 
-                            mu_d = n_pulled_arm_d * tau**2 * mean_per_arm_d / (n_pulled_arm_d * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_d * tau**2 + sigma0**2)
+                            mu_d = n_pulled_arm_d * tau**2 * mean_per_arm_d / (n_pulled_arm_d * tau**2 + sigma0**2) + sigma0**2 * mu0[3] / (n_pulled_arm_d * tau**2 + sigma0**2)
 
                             tau_d = (sigma0 * tau)**2 / (n_pulled_arm_d * tau**2 + sigma0**2)
 
@@ -310,6 +333,9 @@ if __name__ == '__main__':
                             mean_per_arm_d=mean_per_arm_d.tolist()
                             mu_d=mu_d.tolist()
                             tau_d=tau_d.tolist()
+                            # print(mean_per_arm_d)
+                            # print(mu_d)
+                            # print(tau_d)
 
                             tsgauss_learner_d = TSLearnerGauss(n_arms, [revenue_per_class[i][1] for i in range(len(revenue_per_class)-k)], mu_d, tau_d, sigma0, [daily_arm_per_class[i][1] for i in range(t-k,t)], [revenue_per_class[i][1] for i in range(t-k,t)], np.array(reward_per_arm_d), t, n_pulled_arm_d)
 
@@ -325,13 +351,16 @@ if __name__ == '__main__':
                             n_pulled_arm_e = np.array(n_pulled_arm_e)
                             mean_per_arm_e = np.array(mean_per_arm_e)
 
-                            mu_e = n_pulled_arm_e * tau**2 * mean_per_arm_e / (n_pulled_arm_e * tau**2 + sigma0**2) + sigma0**2 * mu0 / (n_pulled_arm_e * tau**2 + sigma0**2)
+                            mu_e = n_pulled_arm_e * tau**2 * mean_per_arm_e / (n_pulled_arm_e * tau**2 + sigma0**2) + sigma0**2 * mu0[4] / (n_pulled_arm_e * tau**2 + sigma0**2)
                             tau_e = (sigma0 * tau)**2 / (n_pulled_arm_e * tau**2 + sigma0**2)
 
                             n_pulled_arm_e=n_pulled_arm_e.tolist()
                             mean_per_arm_e=mean_per_arm_e.tolist()
                             mu_e=mu_e.tolist()
                             tau_e=tau_e.tolist()
+                            # print(mean_per_arm_e)
+                            # print(mu_e)
+                            # print(tau_e)
 
                             tsgauss_learner_e = TSLearnerGauss(n_arms, [revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_e, tau_e, sigma0, [daily_arm_per_class[i][2] for i in range(t-k,t)], [revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_e), t, n_pulled_arm_e)
 
@@ -387,38 +416,22 @@ if __name__ == '__main__':
 
             revenue_per_class.append([revenue_per_class_today[i] + sum_next_30_days[i] for i in range(len(revenue_per_class_today))])
 
-    if plot_this == True:
-        cwd = os.getcwd()
-        print("Current working directory: " + cwd)
-        plots_folder = os.path.join(cwd, "plotsp4")
-        print("Plots folder: " + plots_folder)
-        def multi_plot(list_of_things_to_plot, name, yticks=False):
-            'plot 3 list of mean: one for every class'
+        if plot_this == True and time_first_split!=0 and time_second_split!=0:
+            cwd = os.getcwd()
+            print("Current working directory: " + cwd)
+            plots_folder = os.path.join(cwd, "plotsp4")
+            print("Plots folder: " + plots_folder)
 
-            pyplot.figure()
-            for i in range(len(list_of_things_to_plot)):
-                pyplot.plot(list_of_things_to_plot[i])
-            pyplot.axvline(x=time_first_split, color='k')
-            pyplot.axvline(x=time_second_split, color='k')
-            if type(yticks)!=type(False):
-                pyplot.yticks(yticks)
-            pyplot.xlim([0, 365])
-            pyplot.legend(['Class 1', 'Class 2', 'Class 3'])
-            pyplot.title(str(name) + ' per class')
-            pyplot.xlabel('Days')
-            pyplot.savefig(os.path.join(plots_folder,str(name) + ' per class.png'))
-            pyplot.close()
+            revenue_per_class_new = [[[] for i in range(len(revenue_per_class))] for i in range(len(revenue_per_class[0]))]
+            for i in range(len(revenue_per_class)):
+                for j in range(len(revenue_per_class[0])):
+                    revenue_per_class_new[j][i] = revenue_per_class[i][j]
 
-        revenue_per_class_new = [[[] for i in range(len(revenue_per_class))] for i in range(len(revenue_per_class[0]))]
-        for i in range(len(revenue_per_class)):
-            for j in range(len(revenue_per_class[0])):
-                revenue_per_class_new[j][i] = revenue_per_class[i][j]
+            multi_plot(revenue_per_class_new, 'Revenue')
 
-        multi_plot(revenue_per_class_new, 'Revenue')
+            daily_price_per_class = [[[] for i in range(len(daily_arm_per_class))] for i in range(len(daily_arm_per_class[0]))]
+            for i in range(len(daily_arm_per_class)):
+                for j in range(len(daily_arm_per_class[0])):
+                    daily_price_per_class[j][i] = prices[daily_arm_per_class[i][j]]
 
-        daily_price_per_class = [[[] for i in range(len(daily_arm_per_class))] for i in range(len(daily_arm_per_class[0]))]
-        for i in range(len(daily_arm_per_class)):
-            for j in range(len(daily_arm_per_class[0])):
-                daily_price_per_class[j][i] = prices[daily_arm_per_class[i][j]]
-
-        multi_plot(daily_price_per_class, 'Price', prices)
+            multi_plot(daily_price_per_class, 'Price', prices)
