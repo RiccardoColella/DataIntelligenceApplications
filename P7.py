@@ -27,6 +27,7 @@ from matplotlib import pyplot
 
 from plotutilities import multi_plot
 from P1utilities import get_best_bid_price_users_possible_reward_per_class
+from regretcalculator import regret_per_class_calculator
 
 from operator import add
 
@@ -203,8 +204,13 @@ if __name__ == '__main__':
     print("Plots folder: " + plots_folder)
 
     best_bid, best_price, best_users, best_possible_reward = get_best_bid_price_users_possible_reward_per_class(bids, prices)
-    print(best_bid, best_price, best_users, best_possible_reward)
+    #print(best_bid, best_price, best_users, best_possible_reward)
     multi_plot(mean_price,'price', plots_folder, best_price)
     multi_plot(mean_bids,'bid', plots_folder, best_bid)
     multi_plot(mean_revenue,'revenue', plots_folder, best_possible_reward)
     multi_plot(mean_user,'user', plots_folder, best_users)
+
+    #calculate and plot regret
+    instantaneous_regret, cumulative_regret =  regret_per_class_calculator(best_possible_reward, mean_revenue)
+    multi_plot(instantaneous_regret,'instantaneous regret', plots_folder)
+    multi_plot(cumulative_regret,'cumulative regret', plots_folder)

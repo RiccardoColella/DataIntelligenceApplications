@@ -38,7 +38,7 @@ def multi_plot(list_of_mean, name, plots_folder, best = False):
         for i in range(len(list_of_mean)):
             pyplot.plot([best[i] for a in range(len(list_of_mean[i]))],'k')
     pyplot.xlim([0, 364])
-    pyplot.legend(['Mean ' + str(name) + ' class 1', 'Mean ' + str(name) + ' of class 2', 'Mean ' + str(name) + ' of class 3'])
+    pyplot.legend(['Mean ' + str(name) + ' class 1', 'Mean ' + str(name) + ' class 2', 'Mean ' + str(name) + ' class 3'])
     pyplot.title('Mean ' + str(name) + ' per class')
     pyplot.xlabel('Days')
     pyplot.savefig(os.path.join(plots_folder, 'Mean ' + str(name) + ' per class.png'))
