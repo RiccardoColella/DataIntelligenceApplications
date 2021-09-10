@@ -50,8 +50,8 @@ bids = [bids]
 
 
 mu0 = [1200, 800, 400, 300, 100]
-tau_list = [15, 10, 5, 3, 1]
-sigma0_list = [15, 10, 5, 3, 1]
+tau_list = [40, 3, 30, 3, 3]
+sigma0_list = [40, 3, 30, 3, 3]
 
 # split --> context_a_split --> splitting
 #       --> context_c_split --> splitting
