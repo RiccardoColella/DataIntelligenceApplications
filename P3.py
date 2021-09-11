@@ -39,7 +39,7 @@ from environment import Environment
 from tsgaussprice import TSLearnerGauss
 from P1utilities import get_best_bid_price_possible_reward
 from P1utilities import get_bid_and_price_revenue
-from regretcalculator import regret_calculator
+from regretcalculator import *
 
 env = Environment()
 
@@ -222,34 +222,36 @@ if __name__ == '__main__':
     # Plot collected rewards
 
     plot([mean_collected_rewards_ucb1, mean_collected_rewards_ts, [best_possible_reward for i in range(T)]],
-            ['UCB1', 'TS', 'Best'], 'Collected reward', plots_folder, 3)
+            ['UCB1', 'TS', 'Clairvoyant'], 'Collected reward', plots_folder, 3)
 
     # Plot daily prices
 
     plot([mean_vector_daily_price_ucb1, mean_vector_daily_price_ts, [best_daily_price for i in range(T)]],
-            ['UCB1', 'TS', 'Best'], 'Daily prices', plots_folder, 3, yticks=prices)
+            ['UCB1', 'TS', 'Clairvoyant'], 'Daily prices', plots_folder, 3, yticks=prices)
 
     # Plot UCB1 price and revenue comparison
 
     plot([mean_collected_rewards_ucb1, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ucb1]],
-            ['Collected reward', 'Best', 'Price * 100'], 'UCB1 price and revenue comparison', plots_folder, 1)
+            ['Collected reward', 'Clairvoyant', 'Price * 100'], 'UCB1 price and revenue comparison', plots_folder, 1)
 
     # Plot TS price and revenue comparison
 
     plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ts]],
-            ['Collected reward', 'Best', 'Price * 100'], 'TS price and revenue comparison', plots_folder, 1)
+            ['Collected reward', 'Clairvoyant', 'Price * 100'], 'TS price and revenue comparison', plots_folder, 1)
 
     # Plot UCB1 and TS revenue
     plot([mean_collected_rewards_ucb1, [best_possible_reward for i in range(T)]],
-    ['Collected reward', 'Best'], 'UCB1 revenue', plots_folder, 5)
+    ['Collected reward', 'Clairvoyant'], 'UCB1 revenue', plots_folder, 5)
 
     plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)]],
-     ['Collected reward', 'Best'], 'TS revenue', plots_folder, 4)
+     ['Collected reward', 'Clairvoyant'], 'TS revenue', plots_folder, 4)
 
     #calculate and plot regret
     instantaneous_regret_ucb1, cumulative_regret_ucb1 = regret_calculator(best_possible_reward, mean_collected_rewards_ucb1)
 
     instantaneous_regret_ts, cumulative_regret_ts = regret_calculator(best_possible_reward, mean_collected_rewards_ts)
+
+    #upper_bound_ucb1 = regret_upper_bound_ucb1(bids[0], prices, best_daily_price, best_possible_reward, T)
 
     plot([instantaneous_regret_ucb1, instantaneous_regret_ts],
             ['instantaneous regret ucb1', 'instantaneous regret ts'], 'Instantaneous regret comparison', plots_folder, 3)
@@ -257,7 +259,17 @@ if __name__ == '__main__':
     plot([cumulative_regret_ucb1, cumulative_regret_ts],
             ['cumulative regret ucb1', 'cumulative regret ts'], 'Cumulative regret comparison', plots_folder, 3)
 
+    # plot([[np.log(c) for c in cumulative_regret_ucb1], [np.log(c) for c in cumulative_regret_ts]],
+    #         ['cumulative regret ucb1', 'cumulative regret ts'], 'Cumulative regret comparison', plots_folder, 3)
+    #
+    # pyplot.figure()
+    # pyplot.plot([c for c in cumulative_regret_ucb1[40:-1]])
+    # pyplot.plot([8*np.log(t+40)+cumulative_regret_ucb1[40] for t in range(len(cumulative_regret_ucb1[40:-1]))])
+    # pyplot.savefig(os.path.join(plots_folder, 'prova.png'))
+    # pyplot.close()
+
     #plot learned curve
+
 
     real = [get_bid_and_price_revenue(bids[0], prices[i], 1) + get_bid_and_price_revenue(bids[0], prices[i], 2) + get_bid_and_price_revenue(bids[0], prices[i], 3)
             for i in range(len(prices))]

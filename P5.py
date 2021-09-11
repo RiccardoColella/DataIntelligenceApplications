@@ -187,7 +187,7 @@ if __name__ == '__main__':
     # Plot mean bids
 
     plot([mean_bids,[best_daily_bid for i in range(T)]],
-            ['Bid', 'Best'], 'Bid', plots_folder, 4)
+            ['Bid', 'Clairvoyant'], 'Bid', plots_folder, 4)
 
     # Plot mean user per class
 
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     # Plot mean revenue
 
     plot([mean_revenue, [best_possible_reward for i in range(T)]],
-            ['Revenue', 'Best'], 'Revenue', plots_folder, 4)
+            ['Revenue', 'Clairvoyant'], 'Revenue', plots_folder, 4)
 
     # Plot regret
 
