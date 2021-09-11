@@ -1,6 +1,7 @@
 # the following 15 lines just add verbose option
 
 import argparse
+import pandas
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
 verbose = parser.parse_args().verbose
@@ -52,7 +53,9 @@ if __name__ == '__main__':
     for i in range(0,3):
         log('class' + str(i+1))
         log(revenuesmatrix_per_class[i])
+    
     log("Revenue matrix:")
-    log(revenuesmatrix)
+    df = pandas.DataFrame(revenuesmatrix, prices, np.around(bids,decimals=1))
+    log( df.to_markdown(tablefmt="latex") )
 
     print("The best joint bid and price strategy is (" + str(best_bid) + ', ' + str(best_price) + ')')
