@@ -3,7 +3,8 @@
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
-parser.add_argument('-p', help="make plot, automatically set n=1", action="store_true")
+parser.add_argument('-p', help="make plots for every iteration", action="store_true")
+parser.add_argument('-s', help="make split plot", action="store_true")
 # how many executions:
 parser.add_argument('-n', help="set number of iteration", default = 10)
 N = int(parser.parse_args().n)
@@ -18,8 +19,10 @@ else:
         return
 
 plot_this =  parser.parse_args().p
-'''if plot_this == True:
-    N=1'''
+plot_split = parser.parse_args().s
+if plot_split == True:
+    first_counter = 0
+    second_counter = 0
 
 # now the real code begins
 
@@ -27,6 +30,7 @@ import numpy as np
 from scipy.stats import t as tstudent
 import os
 from matplotlib import pyplot
+from matplotlib import cm
 
 from environment import Environment
 from tsgausspricecontextgeneration import TSLearnerGauss
@@ -260,7 +264,8 @@ if __name__ == '__main__':
                         if context == 2:
                             print('A -- > B + C at day: ' + str (t) + '--------------------------------------------------------------------------------------------------------------------------------' + str(iter))
                             time_first_split = t
-
+                            if plot_split == True:
+                                first_counter +=1
                             #compute tau_b and mu_b then create the new tsgauss_learner_b
                             reward_per_arm_b = [0] * n_arms
                             n_pulled_arm_b = [0] * n_arms
@@ -317,7 +322,8 @@ if __name__ == '__main__':
                         if context == 3:
                             print('C -- > D + E at day: ' + str (t) + '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++' + str(iter))
                             time_second_split = t
-
+                            if plot_split == True:
+                                second_counter += 1
                             #compute tau_d and mu_d then create the new tsgauss_learner_d
                             reward_per_arm_d = [0] * n_arms
                             n_pulled_arm_d = [0] * n_arms
@@ -455,3 +461,20 @@ if __name__ == '__main__':
 
             multi_plot(instantaneous_regret, 'Instantaneous regret')
             multi_plot(cumulative_regret, 'Cumulative regret')
+
+    if plot_split == True:
+        cwd = os.getcwd()
+        print("Current working directory: " + cwd)
+        plots_folder = os.path.join(cwd, "plotsp4")
+        print("Plots folder: " + plots_folder)
+
+        pyplot.figure()
+        a=N - (first_counter - second_counter) - second_counter
+        b=first_counter - second_counter
+        c= second_counter
+        pyplot.pie([a, b, c],
+            colors = [cm.winter(0.9), cm.winter(0.6), cm.winter(0.3)],
+            labels=['No split: ' + str(a), 'One split: ' + str(b), 'Two Splits: ' + str(c)])
+        pyplot.title('Final context in ' + str(N) + ' iteration')
+        pyplot.savefig(os.path.join(plots_folder, 'Split.png'))
+        pyplot.close()

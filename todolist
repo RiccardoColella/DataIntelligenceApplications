@@ -6,6 +6,9 @@ terru:
   ###multiplot and plot
 ###magari conviene avere un file con la lista di bid e price e importarli, anzichè ricrearli ogni volta
 ###fare grafico curva imparata da tsgauss dopo 100 giorni che magari viene meglio con una tau ancora altina
+yticks grafici prezzo
+grafico solo ucb1 e solo ts togliere prezzo
+
 
 ross:
   prova tutti i parametri fino a che non vengono dei risultati decenti
