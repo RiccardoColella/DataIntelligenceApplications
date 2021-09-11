@@ -180,12 +180,20 @@ if __name__ == '__main__':
 
     # Plot collected rewards
     plot([mean_collected_rewards_ucb1, mean_collected_rewards_ucb1_old, [best_possible_reward for i in range(T)]],
+<<<<<<< HEAD
             ['UCB1', 'UCB1old', 'Clairvoyant'], 'Collected reward', plots_folder, 2)
+=======
+            ['UCB1', 'UCB1old', 'clairvoyant'], 'Collected reward', plots_folder, 2)
+>>>>>>> e9df8b334933134fd9fd69f6c181569c2b3ee56f
 
     # Plot daily prices
 
     plot([mean_vector_daily_price_ucb1, mean_vector_daily_price_ucb1_old, [best_daily_price for i in range(T)]],
+<<<<<<< HEAD
             ['UCB1', 'UCB1old', 'Clairvoyant'], 'Daily prices', plots_folder, 2, yticks=prices)
+=======
+            ['UCB1', 'UCB1old', 'clairvoyant'], 'Daily prices', plots_folder, 2)
+>>>>>>> e9df8b334933134fd9fd69f6c181569c2b3ee56f
 
     #calculate and plot regret
     instantaneous_regret_ucb1, cumulative_regret_ucb1 = regret_calculator(best_possible_reward, mean_collected_rewards_ucb1)
