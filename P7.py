@@ -91,10 +91,10 @@ def iterate_days(results_queue, idx=0):
         for i in range(1,4):
             cost.append(env.get_cost_per_click(daily_bid[i-1],i))
 
-        # Get the total cost
-        total_cost = 0
+        # Get the total cost per class
+        total_cost = []
         for user in range(len(new_users)):
-            total_cost += new_users[user] * cost[user]
+            total_cost.append(new_users[user] * cost[user])
 
         # Calculate the number of bought items
         daily_bought_items_per_class = [0, 0, 0]
@@ -106,7 +106,7 @@ def iterate_days(results_queue, idx=0):
         # Calculate the revenue
         daily_revenue = [0, 0, 0]
         for i in range(3):
-            daily_revenue[i] = daily_bought_items_per_class[i] * env.get_margin(daily_price[i]) - cost[i]
+            daily_revenue[i] = daily_bought_items_per_class[i] * env.get_margin(daily_price[i]) - total_cost[i]
 
         # Get delayed rewards
         next_30_days = []

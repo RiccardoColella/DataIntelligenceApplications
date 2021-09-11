@@ -198,7 +198,7 @@ class Customer:
         :param bid: The seller's bid
         :return: The mean cost that will be due for the customer of this customer with the given bid
         """
-
+        
         return ( ( self.a_cost_per_click/(self.a_cost_per_click + self.b_cost_per_click) ) * (1-self.min_cost_per_click) + self.min_cost_per_click ) * bid
 
     def cost_per_click_daily(self, bid):
