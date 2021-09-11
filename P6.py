@@ -196,7 +196,7 @@ if __name__ == '__main__':
     # Plot mean user per class
 
     plot([mean_price, [best_daily_price for i in range(T)]],
-            ['Price','Best'], 'Prices', plots_folder, 4)
+            ['Price','Best'], 'Prices', plots_folder, 4, yticks=env.prices)
 
     # Plot mean revenue
 

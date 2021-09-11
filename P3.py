@@ -227,7 +227,7 @@ if __name__ == '__main__':
     # Plot daily prices
 
     plot([mean_vector_daily_price_ucb1, mean_vector_daily_price_ts, [best_daily_price for i in range(T)]],
-            ['UCB1', 'TS', 'Best'], 'Daily prices', plots_folder, 3)
+            ['UCB1', 'TS', 'Best'], 'Daily prices', plots_folder, 3, yticks=prices)
 
     # Plot UCB1 price and revenue comparison
 
@@ -238,6 +238,13 @@ if __name__ == '__main__':
 
     plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)], [i * 100 for i in mean_vector_daily_price_ts]],
             ['Collected reward', 'Best', 'Price * 100'], 'TS price and revenue comparison', plots_folder, 1)
+
+    # Plot UCB1 and TS revenue
+    plot([mean_collected_rewards_ucb1, [best_possible_reward for i in range(T)]],
+    ['Collected reward', 'Best'], 'UCB1 revenue', plots_folder, 5)
+
+    plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)]],
+     ['Collected reward', 'Best'], 'TS revenue', plots_folder, 4)
 
     #calculate and plot regret
     instantaneous_regret_ucb1, cumulative_regret_ucb1 = regret_calculator(best_possible_reward, mean_collected_rewards_ucb1)
