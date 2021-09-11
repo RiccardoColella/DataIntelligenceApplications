@@ -12,7 +12,8 @@ def plot(list_of_things_to_plot, legend, title, plots_folder, color=0):
 
     palette_list = [['#006A4E', '#FFF154','#FF00FF', '#87CEEB'],
                     ['r' ,'gold' , 'k'],
-                    ['r', 'deepskyblue', 'k']]
+                    ['r', 'deepskyblue', 'k'],
+                    ['deepskyblue', 'k']]
     if color == 0:
         for things_to_plot in list_of_things_to_plot:
             pyplot.plot(things_to_plot)
@@ -38,10 +39,10 @@ def multi_plot(list_of_mean, name, plots_folder, best = False):
         for i in range(len(list_of_mean)):
             pyplot.plot([best[i] for a in range(len(list_of_mean[i]))],'k')
     pyplot.xlim([0, 364])
-    pyplot.legend(['Mean ' + str(name) + ' class 1', 'Mean ' + str(name) + ' class 2', 'Mean ' + str(name) + ' class 3'])
-    pyplot.title('Mean ' + str(name) + ' per class')
+    pyplot.legend([str(name) + ' class 1', str(name) + ' class 2', str(name) + ' class 3'])
+    pyplot.title(str(name) + ' per class')
     pyplot.xlabel('Days')
-    pyplot.savefig(os.path.join(plots_folder, 'Mean ' + str(name) + ' per class.png'))
+    pyplot.savefig(os.path.join(plots_folder, str(name) + ' per class.png'))
     pyplot.close()
 
 def plot_learned_curve(mu, tau, real, n_pulled_arms, plots_folder, t=0):

@@ -187,25 +187,25 @@ if __name__ == '__main__':
     # Plot mean bids
 
     plot([mean_bids,[best_daily_bid for i in range(T)]],
-            ['Bids'], 'Bids', plots_folder)
+            ['Bid', 'Best'], 'Bid', plots_folder, 4)
 
     # Plot mean user per class
 
     plot(mean_user_per_class,
-            ['User of class 1', 'User of class 2', 'User of class 3'], 'User per class', plots_folder)
+            ['User class 1', 'User class 2', 'User class 3'], 'User per class', plots_folder)
 
     # Plot mean revenue
 
     plot([mean_revenue, [best_possible_reward for i in range(T)]],
-            ['Revenue'], 'Revenue', plots_folder)
+            ['Revenue', 'Best'], 'Revenue', plots_folder, 4)
 
     # Plot regret
 
     instantaneous_regret, cumulative_regret = regret_calculator(best_possible_reward, mean_revenue)
 
     plot([instantaneous_regret],
-            ['instantaneous_regret'], 'Instantaneous regret', plots_folder)
+            ['Instantaneous regret'], 'Instantaneous regret', plots_folder, 4)
 
 
     plot([cumulative_regret],
-            ['cumulative_regret'], 'cumulative regret', plots_folder)
+            ['Cumulative regret'], 'Cumulative regret', plots_folder, 4)

@@ -32,6 +32,7 @@ from environment import Environment
 from tsgaussprice import TSLearnerGauss as TSLearnerGaussPrices
 from tsgaussbid import TSLearnerGauss as TSLearnerGaussBids
 from P1utilities import get_best_bid_price_possible_reward
+from regretcalculator import regret_calculator
 
 env = Environment()
 
@@ -189,15 +190,22 @@ if __name__ == '__main__':
 
     # Plot mean bids
 
-    plot([mean_bid,[best_daily_bid for i in range(T-30)]],
-            ['Bids'], 'Bids', plots_folder)
+    plot([mean_bid,[best_daily_bid for i in range(T)]],
+            ['Bid', 'Best'], 'Bids', plots_folder, 4)
 
     # Plot mean user per class
 
-    plot([mean_price, [best_daily_price for i in range(T-30)]],
-            ['Mean prices'], 'Mean prices', plots_folder)
+    plot([mean_price, [best_daily_price for i in range(T)]],
+            ['Price','Best'], 'Prices', plots_folder, 4)
 
     # Plot mean revenue
 
-    plot([mean_revenue, [best_possible_reward for i in range(T-30)]],
-            ['Mean revenue'], 'Mean revenue', plots_folder)
+    plot([mean_revenue, [best_possible_reward for i in range(T)]],
+            ['Revenue', 'Best'], 'Revenue', plots_folder, 4)
+
+    #calculate and plot regret
+    instantaneous_regret, cumulative_regret = regret_calculator(best_possible_reward, mean_revenue)
+    plot([instantaneous_regret],
+            ['Instantaneous regret'], 'Instantaneous regret', plots_folder, 4)
+    plot([cumulative_regret],
+        ['Cumulative regret'], 'Cumulative regret', plots_folder, 4)

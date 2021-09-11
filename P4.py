@@ -30,7 +30,8 @@ from matplotlib import pyplot
 
 from environment import Environment
 from tsgausspricecontextgeneration import TSLearnerGauss
-from P1utilities import get_best_bid_price_possible_reward
+from P1utilities import *
+from regretcalculator import *
 
 # A --> B + C
 # C --> D + E
@@ -429,6 +430,12 @@ if __name__ == '__main__':
             plots_folder = os.path.join(cwd, "plotsp4")
             print("Plots folder: " + plots_folder)
 
+            best_price = []
+            best_list = []
+            for customer_class in range(1,4):
+                best_price.append(get_best_price(prices, customer_class))
+                best_list.append(get_bid_and_price_revenue(bids[0] ,best_price[-1], customer_class))
+
             revenue_per_class_new = [[[] for i in range(len(revenue_per_class))] for i in range(len(revenue_per_class[0]))]
             for i in range(len(revenue_per_class)):
                 for j in range(len(revenue_per_class[0])):
@@ -442,3 +449,9 @@ if __name__ == '__main__':
                     daily_price_per_class[j][i] = prices[daily_arm_per_class[i][j]]
 
             multi_plot(daily_price_per_class, 'Price', prices)
+
+            #calculate and plot regret
+            instantaneous_regret, cumulative_regret = regret_per_class_calculator(best_list, revenue_per_class_new)
+
+            multi_plot(instantaneous_regret, 'Instantaneous regret')
+            multi_plot(cumulative_regret, 'Cumulative regret')
