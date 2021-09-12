@@ -254,22 +254,13 @@ if __name__ == '__main__':
     #upper_bound_ucb1 = regret_upper_bound_ucb1(bids[0], prices, best_daily_price, best_possible_reward, T)
 
     plot([instantaneous_regret_ucb1, instantaneous_regret_ts],
-            ['instantaneous regret ucb1', 'instantaneous regret ts'], 'Instantaneous regret comparison', plots_folder, 3)
+            ['Instantaneous regret ucb1', 'Instantaneous regret ts'], 'Instantaneous regret comparison', plots_folder, 3)
 
     plot([cumulative_regret_ucb1, cumulative_regret_ts],
-            ['cumulative regret ucb1', 'cumulative regret ts'], 'Cumulative regret comparison', plots_folder, 3)
+            ['Cumulative regret ucb1', 'Cumulative regret ts'], 'Cumulative regret comparison', plots_folder, 3)
 
-    # plot([[np.log(c) for c in cumulative_regret_ucb1], [np.log(c) for c in cumulative_regret_ts]],
-    #         ['cumulative regret ucb1', 'cumulative regret ts'], 'Cumulative regret comparison', plots_folder, 3)
-    #
-    # pyplot.figure()
-    # pyplot.plot([c for c in cumulative_regret_ucb1[40:-1]])
-    # pyplot.plot([8*np.log(t+40)+cumulative_regret_ucb1[40] for t in range(len(cumulative_regret_ucb1[40:-1]))])
-    # pyplot.savefig(os.path.join(plots_folder, 'prova.png'))
-    # pyplot.close()
-
-    #plot learned curve
-
+    plot([cumulative_regret_ucb1, regret_upper_bound_ucb1(bids[0], prices, best_daily_price, best_possible_reward, T)],
+            ['Cumulative regret ucb1', 'Upper bound'], 'Cumulative regret ucb1', plots_folder, 5)
 
     real = [get_bid_and_price_revenue(bids[0], prices[i], 1) + get_bid_and_price_revenue(bids[0], prices[i], 2) + get_bid_and_price_revenue(bids[0], prices[i], 3)
             for i in range(len(prices))]
