@@ -191,12 +191,12 @@ if __name__ == '__main__':
     # Plot mean bids
 
     plot([mean_bid,[best_daily_bid for i in range(T)]],
-            ['Bid', 'Clairvoyant'], 'Bids', plots_folder, 4)
+            ['Bid', 'Clairvoyant'], 'Bid', plots_folder, 4)
 
     # Plot mean user per class
 
     plot([mean_price, [best_daily_price for i in range(T)]],
-            ['Price','Clairvoyant'], 'Prices', plots_folder, 4, yticks=env.prices)
+            ['Price','Clairvoyant'], 'Price', plots_folder, 4, yticks=env.prices)
 
     # Plot mean revenue
 

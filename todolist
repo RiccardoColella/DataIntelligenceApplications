@@ -1,5 +1,5 @@
 terru:
-  cambiare i best in Clairvoyant nelle legende dei grafici
-  inventarsi grafici sulla complessità dell'algoritmo di P1
-  confronto regret rispetto a quello previsto dalla teoria
-  grafico 3 beta bidding
+  #cambiare i best in Clairvoyant nelle legende dei grafici
+  ###inventarsi grafici sulla complessità dell'algoritmo di P1
+  #confronto regret rispetto a quello previsto dalla teoria
+  ###grafico 3 beta bidding
