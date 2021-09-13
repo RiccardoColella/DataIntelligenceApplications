@@ -160,3 +160,15 @@ ax.legend([Line2D([0], [0], color=cm.autumn(0.3), lw=4), Line2D([0], [0], color=
     ['Brute force alghoritm (P*X)', 'Our alghoritm (P+X)'])
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
 pyplot.close()
+
+title = 'Margin'
+pyplot.figure()
+pyplot.title(title)
+margin = [env.get_margin(a) for a in prices]
+pyplot.plot(prices, margin, 'ok-')
+pyplot.xticks(prices)
+pyplot.yticks(margin)
+pyplot.xlabel('Price')
+pyplot.ylabel('Margin')
+pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+pyplot.close()
