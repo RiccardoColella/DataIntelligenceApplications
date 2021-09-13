@@ -16,8 +16,7 @@ else:
 
 if latex:
     def printinlatex(argument):
-        print('dentro')
-        df = pandas.DataFrame(argument, prices, np.around(bids,decimals=1))
+        df = pandas.DataFrame(argument, np.around(bids,decimals=1), prices)
         print( df.to_markdown(tablefmt="latex") )
 else:
     def printinlatex(argument):
