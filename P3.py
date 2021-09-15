@@ -241,10 +241,10 @@ if __name__ == '__main__':
 
     # Plot UCB1 and TS revenue
     plot([mean_collected_rewards_ucb1, [best_possible_reward for i in range(T)]],
-    ['Collected reward', 'Clairvoyant'], 'UCB1 revenue', plots_folder, 5)
+    ['Collected reward', 'Clairvoyant'], 'UCB1 revenue', plots_folder, 5, yvalues=[0, best_possible_reward*1.1])
 
     plot([mean_collected_rewards_ts, [best_possible_reward for i in range(T)]],
-     ['Collected reward', 'Clairvoyant'], 'TS revenue', plots_folder, 4)
+     ['Collected reward', 'Clairvoyant'], 'TS revenue', plots_folder, 4, yvalues=[0, best_possible_reward*1.1])
 
     #calculate and plot regret
     instantaneous_regret_ucb1, cumulative_regret_ucb1 = regret_calculator(best_possible_reward, mean_collected_rewards_ucb1)

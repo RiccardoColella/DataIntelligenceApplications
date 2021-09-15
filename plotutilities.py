@@ -4,7 +4,7 @@ import os
 import numpy as np
 from scipy.stats import t as tstudent
 
-def plot(list_of_things_to_plot, legend, title, plots_folder, color=0, yticks=False):
+def plot(list_of_things_to_plot, legend, title, plots_folder, color=0, yticks=False, yvalues=False):
     '''plot the list of things to plot in a plot with the given legend, title and colors,
         then save the plot in the given folder as title.png'''
 
@@ -25,6 +25,9 @@ def plot(list_of_things_to_plot, legend, title, plots_folder, color=0, yticks=Fa
 
     if type(yticks)!=type(False):
         pyplot.yticks(yticks)
+
+    if type(yvalues)!=type(False):
+        pyplot.ylim((yvalues[0], yvalues[1]))
 
     pyplot.xlim([0, 365])
     pyplot.legend(legend)
