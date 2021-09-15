@@ -30,6 +30,35 @@ pyplot.title(title)
 pyplot.savefig(os.path.join(plots_folder, title + '.png'))
 pyplot.close()
 
+for i in range(3):
+    title = 'Distribution of daily clicks of new customers of class ' + str(i+1)
+    pyplot.figure(figsize=(10, 4.8))
+    means = [env.get_mean_new_users_daily(bid,i+1) for bid in bids]
+    if i == 0:
+        pyplot.plot(bids, means,'o-', color = 'C0')
+    elif i==1:
+        pyplot.plot(bids, means,'o-', color = 'C1')
+    elif i==2:
+        pyplot.plot(bids, means,'o-', color = 'C2')
+    pyplot.legend([class_list[i]])
+    for a in range(len(bids)):
+        mean = means[a]
+        dev = env.customer_classes[i].var_new_users
+        scaley = 3.2
+        y = np.linspace(-5+mean,5+mean,100)
+        x = [-norm.pdf(k,loc=mean, scale=dev)/scaley for k in y]
+        x = [k+bids[a] for k in x]
+        pyplot.plot(x, y,'k-')
+        excessy = 2
+        pyplot.arrow(bids[a] ,y[0]-excessy, 0, y[-1] - y[0] + excessy*2, color='k')
+        excessx = 0.01
+        pyplot.arrow(bids[a] + excessx, mean, -norm.pdf(mean,loc=mean, scale=dev)/scaley - excessx*2, 0, color='k')
+    pyplot.xlabel('Bids')
+    pyplot.ylabel('New customers')
+    pyplot.title(title)
+    pyplot.savefig(os.path.join(plots_folder, title + '.png'))
+    pyplot.close()
+
 title = 'Mean daily clicks of new customers aggregated'
 pyplot.figure()
 pyplot.plot(bids, [env.get_mean_new_users_daily(bid,1)+env.get_mean_new_users_daily(bid,2)+env.get_mean_new_users_daily(bid,3)  for bid in bids],'o-k')
@@ -123,13 +152,13 @@ for clas in range(1,4):
     dev = env.customer_classes[clas - 1].dev_n_times_comeback
     y = [norm.pdf(i,loc=mean, scale=dev) for i in x]
     if clas == 1:
-        ax1.plot(x,y,'b')
+        ax1.plot(x,y,'C0')
         ax1.legend([class_list[clas-1]])
     if clas == 2:
-        ax2.plot(x,y,'orange')
+        ax2.plot(x,y,'C1')
         ax2.legend([class_list[clas-1]])
     if clas == 3:
-        ax3.plot(x,y,'g')
+        ax3.plot(x,y,'C2')
         ax3.legend([class_list[clas-1]])
 
 ax2.set(ylabel='Probability density function')
@@ -164,6 +193,7 @@ pyplot.close()
 title = 'Margin'
 pyplot.figure()
 pyplot.title(title)
+
 margin = [env.get_margin(a) for a in prices]
 pyplot.plot(prices, margin, 'ok-')
 pyplot.xticks(prices)

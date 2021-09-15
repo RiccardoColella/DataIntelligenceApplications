@@ -5,7 +5,7 @@ class Environment:
     def __init__(self):
         self.prices = np.linspace(22,40,10)
         self.bids = np.linspace(0.1, 1, num=10)
-        product_price = 1
+        product_price = 22
         self.product_price = product_price
         self.customer_class_1 = Customer(a_new_users=-5, b_new_users=1.5, c_new_users=0.9, d_new_users=100, var_new_users=2,
                                          a_cost_per_click=10, b_cost_per_click=1, min_cost_per_click=0.95,
@@ -26,8 +26,8 @@ class Environment:
         self.customer_classes = [self.customer_class_1, self.customer_class_2, self.customer_class_3]
 
     def get_margin(self, selling_price):
-        selling_price = ( selling_price - 20 ) / 2
-        return selling_price - self.product_price
+        selling_price = ( selling_price - self.product_price ) / 2
+        return selling_price
 
     def get_next_30_days(self, n_customers, price, chosen_class):
         customer_class = self.customer_classes[chosen_class - 1]
@@ -198,7 +198,7 @@ class Customer:
         :param bid: The seller's bid
         :return: The mean cost that will be due for the customer of this customer with the given bid
         """
-        
+
         return ( ( self.a_cost_per_click/(self.a_cost_per_click + self.b_cost_per_click) ) * (1-self.min_cost_per_click) + self.min_cost_per_click ) * bid
 
     def cost_per_click_daily(self, bid):
