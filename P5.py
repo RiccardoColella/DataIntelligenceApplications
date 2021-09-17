@@ -194,6 +194,14 @@ if __name__ == '__main__':
     plot(mean_user_per_class,
             ['User class 1', 'User class 2', 'User class 3'], 'User per class', plots_folder)
 
+    # calculate and plot total user
+
+    mean_user = [sum([mean_user_per_class[j][i] for j in range(len(mean_user_per_class))]) for i in range(len(mean_user_per_class[0]))]
+
+    best_user = sum([env.get_mean_new_users_daily(best_daily_bid, i) for i in range(1,4)])
+    plot([mean_user, [best_user for i in range(T)]],
+        ['Users', 'Clairvoyant'], 'Users', plots_folder, 4)
+
     # Plot mean revenue
 
     plot([mean_revenue, [best_possible_reward for i in range(T)]],
