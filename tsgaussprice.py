@@ -1,3 +1,5 @@
+""" --------------------- THOMPSON SAMPLING for a PRICING STRATEGY ------------------------- """
+
 from learner import *
 import numpy as np
 

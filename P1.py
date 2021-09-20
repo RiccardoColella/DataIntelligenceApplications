@@ -1,5 +1,4 @@
 # the following 15 lines just add verbose option
-
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', help="increase output verbosity", action="store_true")
@@ -22,7 +21,7 @@ else:
     def printinlatex(argument):
         return
 
-
+"""------------ P1 ------------- """
 # now the real code begins
 
 from environment import Environment

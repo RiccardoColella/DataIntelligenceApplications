@@ -1,3 +1,5 @@
+""" --------------------- THOMPSON SAMPLING for a BIDDING STRATEGY ------------------------- """
+
 from learner import *
 import numpy as np
 from scipy.stats import norm
@@ -59,8 +61,6 @@ class TSLearnerGauss(Learner):
         :return: NA
         """
 
-        #print('arm, reward: ' + str(pulled_arm) + ', ' + str(sum(delayedr)+reward))
-
         if self.t <= 30:
             self.last30dayschoice.append(pulled_arm)
             self.delayedreward.append(sum(delayedr)+reward)
@@ -70,8 +70,6 @@ class TSLearnerGauss(Learner):
             self.delayedreward.pop(0)
             self.delayedreward.append(sum(delayedr)+reward)
 
-        #print('last30dayschoice: ' + str(self.last30dayschoice))
-        #print('delayedreward: ' + str(self.delayedreward))
 
         if self.t >= 30:
             self.collected_rewards=np.append(self.collected_rewards,self.delayedreward[0])

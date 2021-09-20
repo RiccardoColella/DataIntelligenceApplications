@@ -1,3 +1,5 @@
+""" ---------------- PLOT UTILITIES ---------------------------- """
+
 from matplotlib import pyplot
 import os
 

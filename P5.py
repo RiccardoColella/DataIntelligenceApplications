@@ -17,6 +17,7 @@ else:
     def log(argument):
         return
 
+""" --------------------------- P5 -------------------------------- """
 # now the real code begins
 
 import multiprocessing
@@ -118,7 +119,6 @@ def to_np_arr_and_then_mean(list_of_lists):
     :param list_of_lists: list containing the results for every day in a list for every iteration
     :return: an array of the mean based on values' index
     """
-    # print(list_of_lists)
     np_arr = np.array(list_of_lists)
     return np_arr.mean(axis=0)
 

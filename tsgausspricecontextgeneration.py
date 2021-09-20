@@ -1,9 +1,12 @@
+""" --------- THOMPSON SAMPLING for a PRICING STRATEGY in a context generation approach ----------------- """
+
 from learner import *
 import numpy as np
 
 
 class TSLearnerGauss(Learner):
     """ Thomson Sampling Learner Class """
+    
     def __init__(self, n_arms, collected_rewards, mu, tau, sigma0, last30dayschoice, delayedreward, rewards_per_arm, t, n_pulled_arms ):
         """
         Initialize the Thompson Sampling Learner class with number of arms, arms, sigma, expected mean.

@@ -24,6 +24,7 @@ if plot_split == True:
     first_counter = 0
     second_counter = 0
 
+""" ---------------------------- P4 ------------------------------- """
 # now the real code begins
 
 import numpy as np
@@ -287,9 +288,7 @@ if __name__ == '__main__':
                             mean_per_arm_b=mean_per_arm_b.tolist()
                             mu_b=mu_b.tolist()
                             tau_b=tau_b.tolist()
-                            # print(mean_per_arm_b)
-                            # print(mu_b)
-                            # print(tau_b)
+                          
                             k = 31
                             tsgauss_learner_b = TSLearnerGauss(n_arms, [revenue_per_class[i][0] for i in range(len(revenue_per_class)-k)], mu_b, tau_b, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][0] for i in range(t-k,t)], np.array(reward_per_arm_b), t, n_pulled_arm_b)
 
@@ -313,9 +312,6 @@ if __name__ == '__main__':
                             mean_per_arm_c=mean_per_arm_c.tolist()
                             mu_c=mu_c.tolist()
                             tau_c=tau_c.tolist()
-                            # print(mean_per_arm_c)
-                            # print(mu_c)
-                            # print(tau_c)
 
                             tsgauss_learner_c = TSLearnerGauss(n_arms, [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_c, tau_c, sigma0, [daily_arm_per_class[i][0] for i in range(t-k,t)], [revenue_per_class[i][1] + revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_c), t, n_pulled_arm_c)
 
@@ -324,6 +320,7 @@ if __name__ == '__main__':
                             time_second_split = t
                             if plot_split == True:
                                 second_counter += 1
+                                
                             #compute tau_d and mu_d then create the new tsgauss_learner_d
                             reward_per_arm_d = [0] * n_arms
                             n_pulled_arm_d = [0] * n_arms
@@ -346,9 +343,6 @@ if __name__ == '__main__':
                             mean_per_arm_d=mean_per_arm_d.tolist()
                             mu_d=mu_d.tolist()
                             tau_d=tau_d.tolist()
-                            # print(mean_per_arm_d)
-                            # print(mu_d)
-                            # print(tau_d)
 
                             tsgauss_learner_d = TSLearnerGauss(n_arms, [revenue_per_class[i][1] for i in range(len(revenue_per_class)-k)], mu_d, tau_d, sigma0, [daily_arm_per_class[i][1] for i in range(t-k,t)], [revenue_per_class[i][1] for i in range(t-k,t)], np.array(reward_per_arm_d), t, n_pulled_arm_d)
 
@@ -372,9 +366,6 @@ if __name__ == '__main__':
                             mean_per_arm_e=mean_per_arm_e.tolist()
                             mu_e=mu_e.tolist()
                             tau_e=tau_e.tolist()
-                            # print(mean_per_arm_e)
-                            # print(mu_e)
-                            # print(tau_e)
 
                             tsgauss_learner_e = TSLearnerGauss(n_arms, [revenue_per_class[i][2] for i in range(len(revenue_per_class)-k)], mu_e, tau_e, sigma0, [daily_arm_per_class[i][2] for i in range(t-k,t)], [revenue_per_class[i][2] for i in range(t-k,t)], np.array(reward_per_arm_e), t, n_pulled_arm_e)
 

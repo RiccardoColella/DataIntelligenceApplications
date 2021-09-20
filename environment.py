@@ -1,7 +1,13 @@
+"--------- ENVIRONMENT --------- "
+
 import numpy as np
 
 
 class Environment:
+    """
+    This class represents the Environment
+    """
+    
     def __init__(self):
         self.prices = np.linspace(22,40,10)
         self.bids = np.linspace(0.1, 1, num=10)
@@ -26,10 +32,24 @@ class Environment:
         self.customer_classes = [self.customer_class_1, self.customer_class_2, self.customer_class_3]
 
     def get_margin(self, selling_price):
+        """
+        Given a selling price this function returns the margin 
+        :param selling: the proposed selling price
+        :return: the margin 
+        """
         selling_price = ( selling_price - self.product_price ) / 2
         return selling_price
 
     def get_next_30_days(self, n_customers, price, chosen_class):
+        """
+        Given the number of customers for each class and the price,
+        this function returns the earning margin of the next 30 days
+        :param n_customers: number of customers
+        :param price: the proposed price
+        :param chosen_class: the proposed class
+        :return: a list of the next 30 days of margin
+        """
+        
         customer_class = self.customer_classes[chosen_class - 1]
         earning_margin = self.get_margin(price)
 
@@ -140,14 +160,19 @@ class Customer:
                  mean_n_times_comeback, dev_n_times_comeback):
         """
 
-        :param a_new_users: bid coeff
-        :param b_new_users: bid ** 2 coeff
-        :param c_new_users: bid ** 3 coeff
-        :param d_new_users: const  multiplier of all function
-        :param a_cost_per_click: coefficient of bid's value
-        :param a_conversion_rate: coeff of (price - price_min)
-        :param b_conversion_rate: denominator of exponent of (price - price_min)
-        :param c_conversion_rate: const multiplier of the whole equation
+        :param a_new_users: 1_bid coeff
+        :param b_new_users: 2_bid coeff
+        :param c_new_users: 3_bid coeff
+        :param d_new_users: 4_bid coeff
+        :param var_new_users: variance of new users
+        :param a_cost_per_click: const_per_click_coeff_1
+        :param b_cost_per_click: const_per_click_coeff_2
+        :param min_cost_per_click: const_per_click_coeff_3
+        :param a_conversion_rate: coeff_1 conversion_rate 
+        :param b_conversion_rate: coeff_2 conversion_rate 
+        :param c_conversion_rate: coeff_3 conversion_rate 
+        :param d_conversion_rate: coeff_4 conversion_rate 
+        :param e_conversion_rate: coeff_5 conversion_rate 
         :param mean_n_times_comeback: mean of the normal distribution
         :param dev_n_times_comeback: standard deviation of the normal distribution
         """
@@ -273,4 +298,8 @@ class Customer:
             return comebacks
 
     def get_mean_n_times_comeback(self):
+        """
+        This method returns the mean times a customer will comeback in the following 30 days after the first purchase
+        :return: mean times comebacks
+        """
         return self.mean_n_times_comeback

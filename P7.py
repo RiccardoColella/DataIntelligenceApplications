@@ -17,6 +17,7 @@ else:
     def log(argument):
         return
 
+"""---------------------- P7 -----------------------------"""
 # now the real code begins
 
 import multiprocessing
@@ -39,6 +40,7 @@ env = Environment()
 
 # day of algorithm execution
 T = 395
+
 #bids and prices range
 bids = env.bids
 prices = env.prices
@@ -75,7 +77,6 @@ def iterate_days(results_queue, idx=0):
         vector_daily_prices_loc.append(daily_price)
 
         #bid:
-
         daily_arm_bid = [tsgauss_learner_bids[i].pull_arm() for i in range(3)]
         daily_bid = [bids[daily_arm_bid[i]] for i in range(3)]
         vector_daily_bids_loc.append(daily_bid)
@@ -113,7 +114,7 @@ def iterate_days(results_queue, idx=0):
 
         for user in range(1, 4):
             next_30_days.append(env.get_next_30_days(daily_bought_items_per_class[user - 1], daily_price[user-1],user))
-        #print(f'{next_30_days=}')
+
         #update observations
         for i in range(3):
             tsgauss_learner_prices[i].update_observations(daily_arm_price[i], daily_revenue[i], next_30_days[i])
@@ -137,7 +138,7 @@ def to_np_arr_and_then_mean(list_of_lists):
     :param list_of_lists: list containing the results for every day in a list for every iteration
     :return: an array of the mean based on values' index
     """
-    # print(list_of_lists)
+
     np_arr = np.array(list_of_lists)
     return np_arr.mean(axis=0)
 
@@ -204,7 +205,7 @@ if __name__ == '__main__':
     print("Plots folder: " + plots_folder)
 
     best_bid, best_price, best_users, best_possible_reward = get_best_bid_price_users_possible_reward_per_class(bids, prices)
-    #print(best_bid, best_price, best_users, best_possible_reward)
+
     multi_plot(mean_price,'Price', plots_folder, best_price)
     multi_plot(mean_bids,'Bid', plots_folder, best_bid)
     multi_plot(mean_revenue,'Revenue', plots_folder, best_possible_reward)

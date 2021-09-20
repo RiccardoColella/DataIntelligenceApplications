@@ -1,4 +1,5 @@
-'''this file contains some functions used to calculate the best possible rewards,
+''' ---------------- P1 utilities -------------------
+this file contains some functions used to calculate the best possible rewards,
 best daily price, etc. ... '''
 
 from environment import Environment
